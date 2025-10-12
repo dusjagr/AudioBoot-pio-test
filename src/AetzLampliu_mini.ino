@@ -64,6 +64,10 @@ void setWhiteAllPixel(uint32_t color)
   }
 }
 
+
+
+// (moved) matrixLarsonScanner defined later after MATRIX_* helpers
+
 void setColorAllPixel(uint32_t color)
 {
   uint8_t n;
@@ -239,6 +243,60 @@ void matrixFade(uint8_t decay) {
   }
 }
 
+// Matrix Larson Scanner: classic Cylon/Knight Rider sweep with tails
+void matrixLarsonScanner(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  matrixFill(0);
+  pixels.show();
+
+  int8_t pos = 0;
+  int8_t dir = 1;
+  // Choose a middle-ish row for a nice horizontal sweep
+  uint8_t y = (MATRIX_H > 2) ? 2 : 1; // for 4 rows -> row index 2
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Slight fade to keep visible tails
+    matrixFade(40);
+
+    uint32_t head = pixels.Color(255, 0, 0);
+    uint32_t tail1 = dimColor(head, 140);
+    uint32_t tail2 = dimColor(head, 60);
+
+    // Dimmer duplicates for rows above and below, only center pixel (no tails)
+    int8_t yUp = ((int8_t)y) - 1;
+    int8_t yDown = ((int8_t)y) + 1;
+    // Adjacent row intensity (dimmer than main head)
+    uint32_t headAdj = dimColor(head, 80);
+    // Opposite direction x for adjacent rows
+    uint8_t oppX = (uint8_t)(MATRIX_W - 1 - pos);
+
+    // Draw head and symmetric tails
+    matrixSet((uint8_t)pos, y, head);
+    if (pos - 1 >= 0) matrixSet((uint8_t)(pos - 1), y, tail1);
+    if (pos + 1 < MATRIX_W) matrixSet((uint8_t)(pos + 1), y, tail1);
+    if (pos - 2 >= 0) matrixSet((uint8_t)(pos - 2), y, tail2);
+    if (pos + 2 < MATRIX_W) matrixSet((uint8_t)(pos + 2), y, tail2);
+
+    // Mirror on row above (if exists): only center pixel, opposite direction
+    if (yUp >= 0) {
+      matrixSet(oppX, (uint8_t)yUp, headAdj);
+    }
+
+    // Mirror on row below (if exists): only center pixel, opposite direction
+    if (yDown < (int8_t)MATRIX_H) {
+      matrixSet(oppX, (uint8_t)yDown, headAdj);
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+
+    // Advance and bounce at the ends
+    pos += dir;
+    if (pos <= 0) { pos = 0; dir = 1; }
+    if (pos >= (MATRIX_W - 1)) { pos = MATRIX_W - 1; dir = -1; }
+  }
+}
+
 // Animate a bouncing dot across the 5x4 matrix with a fading trail.
 // runtime_ms: total time to run the animation
 // stepDelay_ms: delay between frames
@@ -277,6 +335,145 @@ void matrixBouncingDot(uint16_t runtime_ms, uint16_t stepDelay_ms) {
     if (y >= MATRIX_H) { y = MATRIX_H - 1; vy = -vy; }
 
     frame++;
+  }
+}
+
+// Matrix Rain: random blue drops appear at top and fall down with tail fade
+void matrixRain(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  matrixFill(0);
+  pixels.show();
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Fade entire matrix to create trails
+    matrixFade(64);
+
+    // Spawn a new drop at random X on the top row occasionally
+    if ((millis() & 0x03) == 0) { // lightweight pseudo-random rate
+      uint8_t x = (uint8_t)random(MATRIX_W);
+      matrixSet(x, 0, pixels.Color(20, 60, 150));
+    }
+
+    // Move drops down by copying rows from top-1 to bottom
+    // We do this by reading and writing strip indices directly for speed
+    for (int8_t y = MATRIX_H - 1; y >= 0; y--) {
+      for (uint8_t x = 0; x < MATRIX_W; x++) {
+        int toIdx = matrixIndex(x, y);
+        int fromIdx = (y == 0) ? -1 : matrixIndex(x, y - 1);
+        uint32_t c = (fromIdx >= 0) ? pixels.getPixelColor(fromIdx) : 0;
+        pixels.setPixelColor(toIdx, c);
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+// Matrix Twinkle: random pixels flash gently with varying colors
+void matrixTwinkle(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  matrixFill(0);
+  pixels.show();
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Fade slightly so old twinkles decay
+    matrixFade(40);
+
+    // Add a few new twinkles per frame
+    for (uint8_t i = 0; i < 2; i++) {
+      uint8_t x = (uint8_t)random(MATRIX_W);
+      uint8_t y = (uint8_t)random(MATRIX_H);
+      uint8_t hue = (uint8_t)random(256);
+      uint32_t c = Wheel(hue);
+      // Dim to keep subtle
+      c = dimColor(c, 160);
+      matrixSet(x, y, c);
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+// Matrix Wipe: wipe a solid color across rows back and forth
+void matrixWipe(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  matrixFill(0);
+  pixels.show();
+
+  uint8_t phase = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint8_t hue = (phase * 8);
+    uint32_t c = Wheel(hue);
+
+    // Sweep left->right then right->left across each row
+    for (uint8_t y = 0; y < MATRIX_H; y++) {
+      if (y % 2 == 0) {
+        for (uint8_t x = 0; x < MATRIX_W; x++) { matrixSet(x, y, c); pixels.show(); delay(stepDelay_ms); }
+      } else {
+        for (int8_t x = MATRIX_W - 1; x >= 0; x--) { matrixSet((uint8_t)x, y, c); pixels.show(); delay(stepDelay_ms); }
+      }
+    }
+
+    // Clear before next color
+    matrixFill(0);
+    pixels.show();
+    phase++;
+  }
+}
+
+// Matrix Spinner: a bright dot moves around the perimeter with a fading trail
+void matrixSpinner(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  // Precompute perimeter path (clockwise)
+  const uint8_t pathLen = (MATRIX_W * 2) + (MATRIX_H * 2) - 4; // rectangular perimeter
+  uint8_t xs[24];
+  uint8_t ys[24];
+  uint8_t idx = 0;
+  for (uint8_t x = 0; x < MATRIX_W; x++) { xs[idx] = x; ys[idx] = 0; idx++; }
+  for (uint8_t y = 1; y < MATRIX_H; y++) { xs[idx] = MATRIX_W - 1; ys[idx] = y; idx++; }
+  for (int8_t x = MATRIX_W - 2; x >= 0; x--) { xs[idx] = (uint8_t)x; ys[idx] = MATRIX_H - 1; idx++; }
+  for (int8_t y = MATRIX_H - 2; y > 0; y--) { xs[idx] = 0; ys[idx] = (uint8_t)y; idx++; }
+
+  uint32_t start = millis();
+  matrixFill(0);
+  pixels.show();
+  uint16_t step = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFade(48);
+    uint8_t p = step % pathLen;
+    uint8_t x = xs[p];
+    uint8_t y = ys[p];
+    uint32_t c = Wheel((step * 5) & 0xFF);
+    matrixSet(x, y, c);
+    pixels.show();
+    delay(stepDelay_ms);
+    step++;
+  }
+}
+
+// Matrix Comet Sweep: a bright head sweeps through all pixels with trailing fade
+void matrixCometSweep(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  matrixFill(0);
+  pixels.show();
+
+  uint16_t pos = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFade(56);
+
+    // Convert linear pos to matrix coordinates (row-major serpentine aware through matrixIndex)
+    uint8_t y = (pos / MATRIX_W) % MATRIX_H;
+    uint8_t x = pos % MATRIX_W;
+    // To get a nicer path across actual wiring, map to index then set by index
+    int idx = matrixIndex(x, y);
+    uint32_t c = Wheel((pos * 7) & 0xFF);
+    pixels.setPixelColor(idx, c);
+
+    pixels.show();
+    delay(stepDelay_ms);
+    pos = (pos + 1) % (MATRIX_W * MATRIX_H);
   }
 }
 
@@ -398,8 +595,8 @@ void setup(void) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 void loop(void) {
-  // Run the bouncing dot animation continuously.
-  // Each call runs for 5 seconds at ~25 FPS.
-  matrixBouncingDot(5000, 40);
+  // Rotate through multiple matrix animations
+
+  matrixLarsonScanner(4000, 135);
 
 }
