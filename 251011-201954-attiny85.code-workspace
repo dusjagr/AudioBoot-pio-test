@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"name": "251011-201954-attiny85",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.tcc": "cpp",
+			"algorithm": "cpp",
+			"istream": "cpp",
+			"ostream": "cpp",
+			"cstring": "cpp",
+			"cmath": "cpp"
+		}
+	}
+}

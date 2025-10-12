@@ -596,7 +596,12 @@ void setup(void) {
 
 void loop(void) {
   // Rotate through multiple matrix animations
-
+  matrixBouncingDot(4000, 40);
+  matrixRain(4000, 60);
+  matrixTwinkle(4000, 40);
+  matrixWipe(3000, 20);
+  matrixSpinner(4000, 50);
+  matrixCometSweep(4000, 40);
   matrixLarsonScanner(4000, 135);
 
 }
