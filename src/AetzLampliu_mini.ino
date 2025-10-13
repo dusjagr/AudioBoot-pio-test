@@ -1,6 +1,7 @@
 #include <OneWire.h>
 #include <Adafruit_NeoPixel.h>
 #include "pitches.h"
+#include <neolib.h>
 
 // OneWire DS18S20, DS18B20, DS1822 Temperature Example
 //
@@ -561,7 +562,7 @@ void setup(void) {
 
 void loop(void) {
   // Rotate through multiple matrix animations
-
-  matrixLarsonScanner(20000, 200);
+  getButton();
+  matrixLarsonScanner(2000, 200);
 
 }
