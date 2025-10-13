@@ -546,42 +546,7 @@ void setup(void) {
   pixels.setBrightness(brightness);
   
   //rainbowCycle(3,20,20);
-  matrixDemoSmiley();
-  delay(1000);
-    for ( int i = brightness; i > 0; i--) {         
-    pixels.setBrightness(i);
-    pixels.show();
-    delay (5);
-  }
   
-  setColorAllPixel(0);
-  pixels.setBrightness(brightness);
-  pixels.show(); // Initialize all pixels to 'off'
-    
-  //playMart(c);
-  
-  /* 
-  for ( int i = 0; i < 1; i++) { 
-    setColorAllPixel(Wheel(220));       // all pixels set to pink using the Wheel() function to choose a color from the spectrum 0-255
-    
-    for ( int i = 0; i < brightness; i++) {  
-      for (int n = 0; n < NUMPIXELS; n++){       
-        pixels.setPixelColor(n,i,0,i);
-      }
-      pixels.show();
-      delay (3);
-    }
-    for ( int i = brightness; i > 0; i--) {         
-      for (int n = 0; n < NUMPIXELS; n++){       
-        pixels.setPixelColor(n,i,0,i);
-      }
-      pixels.show();
-      delay (3);
-    }
-    delay(300);
-  }
-  delay(500);
-  */
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -596,12 +561,7 @@ void setup(void) {
 
 void loop(void) {
   // Rotate through multiple matrix animations
-  matrixBouncingDot(4000, 40);
-  matrixRain(4000, 60);
-  matrixTwinkle(4000, 40);
-  matrixWipe(3000, 20);
-  matrixSpinner(4000, 50);
-  matrixCometSweep(4000, 40);
-  matrixLarsonScanner(4000, 135);
+
+  matrixLarsonScanner(10000, 235);
 
 }
