@@ -12,9 +12,6 @@
 
 
 #define ONEWIREPIN   PB4
-#define NEOPIXELPIN    0
-#define NUMPIXELS      20
-#define SPEAKERPIN     1
 
 #define hell          255 // Brightness
 #define lowTemp       10
@@ -37,8 +34,6 @@
   int16_t raw;
 
 OneWire  ds(ONEWIREPIN);  // on pin 10 (a 4.7K resistor is necessary)
-
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Specific functions of the NEO-Pixel Library
@@ -65,53 +60,7 @@ void setWhiteAllPixel(uint32_t color)
   }
 }
 
-
-
-// (moved) matrixLarsonScanner defined later after MATRIX_* helpers
-
-void setColorAllPixel(uint32_t color)
-{
-  uint8_t n;
-  for (n = 0; n < NUMPIXELS; n++)
-  {
-    pixels.setPixelColor(n, color);
-  }
-}
-
-void displayBinrayValue(uint16_t value, uint32_t color)
-{
-  uint8_t n;
-  for (n = 0; n < NUMPIXELS; n++)
-  {
-    if (value & (1 << n)) pixels.setPixelColor(n, color);
-    //else pixels.setPixelColor(n,0); // off
-  }
-}
-
-void rainbowCycle(uint8_t wait, uint8_t rounds, uint8_t rainbowPixels) {
-  uint16_t i, j;
-
-  for (j = 0; j < 256 * rounds; j++) { 
-    for (i = 0; i < rainbowPixels; i++) {
-      pixels.setPixelColor(i, Wheel(((i * 256 / rainbowPixels) + j) & 255));
-    }
-    pixels.show();
-    delay(wait);
-  }
-}
-
-uint32_t Wheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if (WheelPos < 85) {
-    return pixels.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if (WheelPos < 170) {
-    WheelPos -= 85;
-    return pixels.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return pixels.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-}
+// Use neolib's setColorAllPixel(), rainbowCycle(), Wheel(), displayBinaryValue()
 
 // Create a dimmed version of a color by a scale factor (0-255)
 uint32_t dimColor(uint32_t color, uint8_t scale) {
@@ -122,6 +71,38 @@ uint32_t dimColor(uint32_t color, uint8_t scale) {
   g = (uint16_t)g * scale / 255;
   b = (uint16_t)b * scale / 255;
   return pixels.Color(r, g, b);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* Button-driven effect switching (using neolib's buttons)
+========================================================================================================================
+   _________            _                 _            
+  |  mode  |   utils  | |__   __ _  __ _| |_ ___  _ __
+  |  o___o |          | '_ \ / _` |/ _` | __/ _ \| '__|
+  |__/___\_|          | | | | (_| | (_| | || (_) | |   
+                      |_| |_|\__,_|\__,_|\__\___/|_|   
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+static uint8_t g_mode = 0;
+static const uint8_t EFFECT_COUNT = 6; // adjust if you add/remove effects
+
+void changeMode(int8_t delta) {
+  int16_t m = (int16_t)g_mode + delta;
+  if (m < 0) m = EFFECT_COUNT - 1;
+  if (m >= EFFECT_COUNT) m = 0;
+  g_mode = (uint8_t)m;
+}
+
+void runCurrentEffect() {
+  // Keep runtimes short so button presses are handled quickly
+  switch (g_mode) {
+    case 0: matrixLarsonScanner(600, 220); break;
+    case 1: matrixBouncingDot(600, 250);   break;
+    case 2: matrixRain(600, 150);          break;
+    case 3: matrixTwinkle(600, 140);       break;
+    case 4: matrixWipe(600, 100);          break;
+    case 5: matrixSpinner(600, 130);       break;
+  }
 }
 
 // Render a nice temperature-driven gradient across the whole strip
@@ -515,10 +496,10 @@ void playMart(int notes[])
   // iterate over the notes of the melody:
   for (int thisNote = 0; thisNote <= 11; thisNote++) {
 
-    displayBinrayValue(notes[thisNote],pixels.Color(50,0,50));
+    displayBinaryValue(notes[thisNote],pixels.Color(50,0,50));
     pixels.show(); // This sends the updated pixel color to the hardware.
     playSound( notes[thisNote], noteDuration_ms);
-    setColorAllPixel(0); // pixels off
+    setColorAllPixel(0); // pixels off (neolib)
     // to distinguish the notes, set a minimum time between them.
     // the note's duration + 30% seems to work well:
     delay(pauseBetweenNotes);
@@ -543,7 +524,7 @@ void setup(void) {
 
   pinMode(SPEAKERPIN, OUTPUT);
   uint8_t brightness = hell;
-  pixels.begin();
+  neobegin();
   pixels.setBrightness(brightness);
   
   //rainbowCycle(3,20,20);
@@ -561,8 +542,9 @@ void setup(void) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 void loop(void) {
-  // Rotate through multiple matrix animations
-  getButton();
-  matrixLarsonScanner(2000, 200);
+  // Read debounced button on release (neolib)
+  uint8_t b = wasButtonPressed();
+
+  matrixBouncingDot(6000, 150); 
 
 }
