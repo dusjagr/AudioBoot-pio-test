@@ -562,6 +562,6 @@ void setup(void) {
 void loop(void) {
   // Rotate through multiple matrix animations
 
-  matrixLarsonScanner(20000, 235);
+  matrixLarsonScanner(20000, 200);
 
 }
