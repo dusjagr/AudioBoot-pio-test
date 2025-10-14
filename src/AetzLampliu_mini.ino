@@ -201,10 +201,15 @@ void matrixDrawBitmap(const uint8_t* bmp, uint8_t w, uint8_t h, uint32_t colorOn
 void matrixDemoSmiley() {
   // 5x4 bitmap (row-major): 1 = on, 0 = off
   const uint8_t bmp[20] = {
+    // Sadder face: brows above eyes, strong downturned mouth corners
+    // Row 0: eyes
     0,1,0,1,0,
-    0,0,0,0,0,
+    // Row 1: subtle brows at corners
     1,0,0,0,1,
-    0,1,1,1,0
+    // Row 2: mouth center
+    0,0,1,0,0,
+    // Row 3: mouth corners down
+    1,0,0,0,1
   };
   matrixDrawBitmap(bmp, 5, 4, pixels.Color(255, 200, 0), 0);
   pixels.show();
@@ -526,6 +531,11 @@ void setup(void) {
   uint8_t brightness = hell;
   neobegin();
   pixels.setBrightness(brightness);
+  // Quick splash screen on boot
+  matrixDemoSmiley();
+  delay(6000);
+  matrixFill(0);
+  pixels.show();
   
   //rainbowCycle(3,20,20);
   
