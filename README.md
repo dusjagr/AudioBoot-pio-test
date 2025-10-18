@@ -4,6 +4,8 @@ This project demonstrates an ATtiny85 PlatformIO setup with a working audio-boot
 
 Repository: https://github.com/dusjagr/AudioBoot-pio-test
 
+Live WAV player (GitHub Pages): https://dusjagr.github.io/AudioBoot-pio-test/wav/index.html
+
 ## Features
 
 - ATtiny85 using Arduino framework @ 16 MHz
@@ -91,6 +93,10 @@ Or change `hex2wav_player_cmd` to another player.
 
 - Inline audio players for each generated WAV: [`wav/index.html`](./wav/index.html)
 - Playlist and direct download links: [`wav/README.md`](./wav/README.md)
+
+Live (GitHub Pages) link:
+
+- https://dusjagr.github.io/AudioBoot-pio-test/wav/index.html
 
 Tip: Enable GitHub Pages for this repository (Settings → Pages → Deploy from a branch → `main`/`root`) to play WAVs directly in the browser via your Pages site at `/wav/index.html`.
 
