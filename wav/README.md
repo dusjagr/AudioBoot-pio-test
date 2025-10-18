@@ -1,11 +1,16 @@
 # Visual WAV Library
 
+Open the interactive player page (recommended):
+
+- [Open web player (index.html)](./index.html)
+
 This folder contains audio bootloader WAV files generated for each visual. You can play them directly on GitHub using the controls below, or download them for use with the 8Bit Mixtape / TinyAudioBoot workflow.
 
 Notes:
 - GitHub’s HTML rendering supports the HTML5 audio player with `controls`, but autoplay is blocked.
 - If a browser can’t play inline, use the “Download” link.
 - Files are named `visual-<id>-<slug>.wav`.
+ - Some Markdown renderers (including IDE previews) may not show inline audio controls; in that case use the web player page linked above.
 
 ## Playlist
 
