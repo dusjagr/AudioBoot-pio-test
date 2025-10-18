@@ -1,7 +1,18 @@
-#include <OneWire.h>
 #include <Adafruit_NeoPixel.h>
-#include "pitches.h"
 #include <neolib.h>
+#include <avr/pgmspace.h>
+#include "matrix_helpers.h"
+#include "visuals.h"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* Left-overs from measuring temperature and play family mart tune
+========================================================================================================================
+   _________            _                 _            
+  |  mode  |   utils  | |__   __ _  __ _| |_ ___  _ __
+  |  o___o |          | '_ \ / _` |/ _` | __/ _ \| '__|
+  |__/___\_|          | | | | (_| | (_| | || (_) | |   
+                      |_| |_|\__,_|\__,_|\__\___/|_|   
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 // OneWire DS18S20, DS18B20, DS1822 Temperature Example
 //
@@ -10,7 +21,8 @@
 // The DallasTemperature library can do all this work for you!
 // http://milesburton.com/Dallas_Temperature_Control_Library
 
-
+#include <OneWire.h>
+#include "pitches.h"
 #define ONEWIREPIN   PB4
 
 #define hell          255 // Brightness
@@ -36,44 +48,6 @@
 OneWire  ds(ONEWIREPIN);  // on pin 10 (a 4.7K resistor is necessary)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* Specific functions of the NEO-Pixel Library
- _____ _____ _____        _         _ 
-|   | |   __|     |   ___|_|_ _ ___| |
-| | | |   __|  |  |  | . | |_'_| -_| |
-|_|___|_____|_____|  |  _|_|_,_|___|_|
-                     |_|              
-========================================================================================================================
-   _________    
-  | NEO(x)  |   void setWhiteAllPixel(uint32_t color)                   -> Sets all the pixels to the white level
-  |  o___o  |   void displayBinrayValue(uint16_t value, uint32_t color) -> displays binary number
-  |__/___\__|   uint32_t Wheel(byte WheelPos)                           -> Input a value 0 to 255 to get a color value.   
-                                                                        The colours are a transition r - g - b - back to r. 
-                                
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-
-void setWhiteAllPixel(uint32_t color)
-{
-  uint8_t n;
-  for (n = 0; n < NUMPIXELS; n++)
-  {
-    pixels.setPixelColor(n, color, color, color);
-  }
-}
-
-// Use neolib's setColorAllPixel(), rainbowCycle(), Wheel(), displayBinaryValue()
-
-// Create a dimmed version of a color by a scale factor (0-255)
-uint32_t dimColor(uint32_t color, uint8_t scale) {
-  uint8_t r = (color >> 16) & 0xFF;
-  uint8_t g = (color >> 8) & 0xFF;
-  uint8_t b = color & 0xFF;
-  r = (uint16_t)r * scale / 255;
-  g = (uint16_t)g * scale / 255;
-  b = (uint16_t)b * scale / 255;
-  return pixels.Color(r, g, b);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Button-driven effect switching (using neolib's buttons)
 ========================================================================================================================
    _________            _                 _            
@@ -84,7 +58,7 @@ uint32_t dimColor(uint32_t color, uint8_t scale) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 static uint8_t g_mode = 0;
-static const uint8_t EFFECT_COUNT = 6; // adjust if you add/remove effects
+static const uint8_t EFFECT_COUNT = 7; // adjust if you add/remove effects
 
 void changeMode(int8_t delta) {
   int16_t m = (int16_t)g_mode + delta;
@@ -96,397 +70,30 @@ void changeMode(int8_t delta) {
 void runCurrentEffect() {
   // Keep runtimes short so button presses are handled quickly
   switch (g_mode) {
-    case 0: matrixLarsonScanner(600, 220); break;
-    case 1: matrixBouncingDot(600, 250);   break;
-    case 2: matrixRain(600, 150);          break;
-    case 3: matrixTwinkle(600, 140);       break;
-    case 4: matrixWipe(600, 100);          break;
-    case 5: matrixSpinner(600, 130);       break;
+    case 0: matrixLarsonScanner(600, 120); break;
+    case 1: matrixBouncingDot(600, 50);   break;
+    case 2: matrixRain(600, 50);          break;
+    case 3: matrixTwinkle(600, 40);       break;
+    case 4: matrixWipe(600, 10);          break;
+    case 5: matrixSpinner(600, 30);       break;
+    case 6: matrixFire(900, 60, 80, 35);  break; // new effect
   }
-}
-
-// Render a nice temperature-driven gradient across the whole strip
-// and a bright white indicator at the temperature position
-void renderNiceLeds(float currentCelsius) {
-  // Map temperature to a hue across blue->red range
-  uint8_t hue = map((int)currentCelsius, lowTemp, maxTemp, 160, 0);
-  if (hue < 10) hue = 10;
-  if (hue > 180) hue = 180;
-  uint32_t base = Wheel(hue);
-
-  // Background gradient: dim at start, bright at end
-  for (int n = 0; n < NUMPIXELS; n++) {
-    uint8_t scale = (uint16_t)(n + 1) * 255 / NUMPIXELS; // 1..255
-    pixels.setPixelColor(n, dimColor(base, scale));
-  }
-
-  // White indicator ("comet") at current temperature position
-  int16_t tempInt = (int16_t)currentCelsius;
-  int pos = map(tempInt, lowTemp, maxTemp, 0, NUMPIXELS - 1);
-  if (pos < 0) pos = 0;
-  if (pos > (NUMPIXELS - 1)) pos = NUMPIXELS - 1;
-  pixels.setPixelColor(pos, 255, 255, 255);
-
-  pixels.show();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* 5x4 LED Matrix helpers (map 20-pixel strip to matrix coordinates)
+/* Left-overs from measuring temperature and play family mart tune
 ========================================================================================================================
    _________            _                 _            
-  | matrix |   utils  | |__   __ _  __ _| |_ ___  _ __
+  |  mode  |   utils  | |__   __ _  __ _| |_ ___  _ __
   |  o___o |          | '_ \ / _` |/ _` | __/ _ \| '__|
   |__/___\_|          | | | | (_| | (_| | || (_) | |   
                       |_| |_|\__,_|\__,_|\__\___/|_|   
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-#define MATRIX_W 5
-#define MATRIX_H 4
-#define MATRIX_SERPENTINE 1   // 1 = serpentine wiring per row, 0 = progressive
-#define MATRIX_ORIGIN_TOPLEFT 1 // assume pixel 0 is top-left
-
-// Convert (x,y) -> strip index according to assumed wiring
-int matrixIndex(uint8_t x, uint8_t y) {
-  if (x >= MATRIX_W || y >= MATRIX_H) return -1;
-  uint8_t row = y;
-  uint8_t col = x;
-  if (!MATRIX_ORIGIN_TOPLEFT) {
-    // If origin is bottom-left, flip Y
-    row = (MATRIX_H - 1) - y;
-  }
-  if (MATRIX_SERPENTINE) {
-    if (row % 2 == 0) {
-      // even row: left -> right
-      return row * MATRIX_W + col;
-    } else {
-      // odd row: right -> left
-      return row * MATRIX_W + (MATRIX_W - 1 - col);
-    }
-  } else {
-    // progressive left -> right each row
-    return row * MATRIX_W + col;
-  }
-}
-
-// Set a pixel in matrix coordinates
-void matrixSet(uint8_t x, uint8_t y, uint32_t color) {
-  int idx = matrixIndex(x, y);
-  if (idx >= 0 && idx < NUMPIXELS) {
-    pixels.setPixelColor(idx, color);
-  }
-}
-
-// Fill entire matrix with a color
-void matrixFill(uint32_t color) {
-  for (uint8_t y = 0; y < MATRIX_H; y++) {
-    for (uint8_t x = 0; x < MATRIX_W; x++) {
-      matrixSet(x, y, color);
-    }
-  }
-}
-
-// Draw a simple binary bitmap (values 0/1) of size w*h onto the matrix
-void matrixDrawBitmap(const uint8_t* bmp, uint8_t w, uint8_t h, uint32_t colorOn, uint32_t colorOff) {
-  uint8_t mw = (w < MATRIX_W) ? w : MATRIX_W;
-  uint8_t mh = (h < MATRIX_H) ? h : MATRIX_H;
-  for (uint8_t y = 0; y < mh; y++) {
-    for (uint8_t x = 0; x < mw; x++) {
-      uint8_t v = bmp[y * w + x];
-      matrixSet(x, y, v ? colorOn : colorOff);
-    }
-  }
-}
-
-// Small demo pattern: a simple smiley on 5x4
-void matrixDemoSmiley() {
-  // 5x4 bitmap (row-major): 1 = on, 0 = off
-  const uint8_t bmp[20] = {
-    // Sadder face: brows above eyes, strong downturned mouth corners
-    // Row 0: eyes
-    0,1,0,1,0,
-    // Row 1: subtle brows at corners
-    1,0,0,0,1,
-    // Row 2: mouth center
-    0,0,1,0,0,
-    // Row 3: mouth corners down
-    1,0,0,0,1
-  };
-  matrixDrawBitmap(bmp, 5, 4, pixels.Color(255, 200, 0), 0);
-  pixels.show();
-}
-
-// Dim all pixels by a decay amount (0..255). Higher = faster fade.
-void matrixFade(uint8_t decay) {
-  uint8_t keep = 255 - decay;
-  for (uint8_t i = 0; i < NUMPIXELS; i++) {
-    uint32_t c = pixels.getPixelColor(i);
-    uint8_t r = (c >> 16) & 0xFF;
-    uint8_t g = (c >> 8) & 0xFF;
-    uint8_t b = c & 0xFF;
-    r = (uint16_t)r * keep / 255;
-    g = (uint16_t)g * keep / 255;
-    b = (uint16_t)b * keep / 255;
-    pixels.setPixelColor(i, r, g, b);
-  }
-}
-
-// Matrix Larson Scanner: classic Cylon/Knight Rider sweep with tails
-void matrixLarsonScanner(uint16_t runtime_ms, uint16_t stepDelay_ms) {
-  uint32_t start = millis();
-  matrixFill(0);
-  pixels.show();
-
-  int8_t pos = 0;
-  int8_t dir = 1;
-  // Choose a middle-ish row for a nice horizontal sweep
-  uint8_t y = (MATRIX_H > 2) ? 2 : 1; // for 4 rows -> row index 2
-
-  while ((uint16_t)(millis() - start) < runtime_ms) {
-    // Slight fade to keep visible tails
-    matrixFade(40);
-
-    uint32_t head = pixels.Color(255, 0, 0);
-    uint32_t tail1 = dimColor(head, 140);
-    uint32_t tail2 = dimColor(head, 60);
-
-    // Dimmer duplicates for rows above and below, only center pixel (no tails)
-    int8_t yUp = ((int8_t)y) - 1;
-    int8_t yDown = ((int8_t)y) + 1;
-    // Adjacent row intensity (dimmer than main head)
-    uint32_t headAdj = dimColor(head, 80);
-    // Opposite direction x for adjacent rows
-    uint8_t oppX = (uint8_t)(MATRIX_W - 1 - pos);
-
-    // Draw head and symmetric tails
-    matrixSet((uint8_t)pos, y, head);
-    if (pos - 1 >= 0) matrixSet((uint8_t)(pos - 1), y, tail1);
-    if (pos + 1 < MATRIX_W) matrixSet((uint8_t)(pos + 1), y, tail1);
-    if (pos - 2 >= 0) matrixSet((uint8_t)(pos - 2), y, tail2);
-    if (pos + 2 < MATRIX_W) matrixSet((uint8_t)(pos + 2), y, tail2);
-
-    // Mirror on row above (if exists): only center pixel, opposite direction
-    if (yUp >= 0) {
-      matrixSet(oppX, (uint8_t)yUp, headAdj);
-    }
-
-    // Mirror on row below (if exists): only center pixel, opposite direction
-    if (yDown < (int8_t)MATRIX_H) {
-      matrixSet(oppX, (uint8_t)yDown, headAdj);
-    }
-
-    pixels.show();
-    delay(stepDelay_ms);
-
-    // Advance and bounce at the ends
-    pos += dir;
-    if (pos <= 0) { pos = 0; dir = 1; }
-    if (pos >= (MATRIX_W - 1)) { pos = MATRIX_W - 1; dir = -1; }
-  }
-}
-
-// Animate a bouncing dot across the 5x4 matrix with a fading trail.
-// runtime_ms: total time to run the animation
-// stepDelay_ms: delay between frames
-void matrixBouncingDot(uint16_t runtime_ms, uint16_t stepDelay_ms) {
-  int8_t x = 0, y = 0;
-  int8_t vx = 1, vy = 1;
-  uint32_t start = millis();
-  uint16_t frame = 0;
-
-  // Start with a blank canvas
-  matrixFill(0);
-  pixels.show();
-
-  while ((uint16_t)(millis() - start) < runtime_ms) {
-    // Fade existing pixels to create a tail
-    matrixFade(48); // tweak to adjust tail length (smaller = longer tail)
-
-    // Color cycles over time for the head
-    uint8_t hue = (frame * 6) & 0xFF;
-    uint32_t headColor = Wheel(hue);
-
-    // Draw head
-    matrixSet((uint8_t)x, (uint8_t)y, headColor);
-
-    pixels.show();
-    delay(stepDelay_ms);
-
-    // Advance position
-    x += vx;
-    y += vy;
-
-    // Bounce on walls
-    if (x < 0) { x = 0; vx = -vx; }
-    if (x >= MATRIX_W) { x = MATRIX_W - 1; vx = -vx; }
-    if (y < 0) { y = 0; vy = -vy; }
-    if (y >= MATRIX_H) { y = MATRIX_H - 1; vy = -vy; }
-
-    frame++;
-  }
-}
-
-// Matrix Rain: random blue drops appear at top and fall down with tail fade
-void matrixRain(uint16_t runtime_ms, uint16_t stepDelay_ms) {
-  uint32_t start = millis();
-  matrixFill(0);
-  pixels.show();
-
-  while ((uint16_t)(millis() - start) < runtime_ms) {
-    // Fade entire matrix to create trails
-    matrixFade(64);
-
-    // Spawn a new drop at random X on the top row occasionally
-    if ((millis() & 0x03) == 0) { // lightweight pseudo-random rate
-      uint8_t x = (uint8_t)random(MATRIX_W);
-      matrixSet(x, 0, pixels.Color(20, 60, 150));
-    }
-
-    // Move drops down by copying rows from top-1 to bottom
-    // We do this by reading and writing strip indices directly for speed
-    for (int8_t y = MATRIX_H - 1; y >= 0; y--) {
-      for (uint8_t x = 0; x < MATRIX_W; x++) {
-        int toIdx = matrixIndex(x, y);
-        int fromIdx = (y == 0) ? -1 : matrixIndex(x, y - 1);
-        uint32_t c = (fromIdx >= 0) ? pixels.getPixelColor(fromIdx) : 0;
-        pixels.setPixelColor(toIdx, c);
-      }
-    }
-
-    pixels.show();
-    delay(stepDelay_ms);
-  }
-}
-
-// Matrix Twinkle: random pixels flash gently with varying colors
-void matrixTwinkle(uint16_t runtime_ms, uint16_t stepDelay_ms) {
-  uint32_t start = millis();
-  matrixFill(0);
-  pixels.show();
-
-  while ((uint16_t)(millis() - start) < runtime_ms) {
-    // Fade slightly so old twinkles decay
-    matrixFade(40);
-
-    // Add a few new twinkles per frame
-    for (uint8_t i = 0; i < 2; i++) {
-      uint8_t x = (uint8_t)random(MATRIX_W);
-      uint8_t y = (uint8_t)random(MATRIX_H);
-      uint8_t hue = (uint8_t)random(256);
-      uint32_t c = Wheel(hue);
-      // Dim to keep subtle
-      c = dimColor(c, 160);
-      matrixSet(x, y, c);
-    }
-
-    pixels.show();
-    delay(stepDelay_ms);
-  }
-}
-
-// Matrix Wipe: wipe a solid color across rows back and forth
-void matrixWipe(uint16_t runtime_ms, uint16_t stepDelay_ms) {
-  uint32_t start = millis();
-  matrixFill(0);
-  pixels.show();
-
-  uint8_t phase = 0;
-  while ((uint16_t)(millis() - start) < runtime_ms) {
-    uint8_t hue = (phase * 8);
-    uint32_t c = Wheel(hue);
-
-    // Sweep left->right then right->left across each row
-    for (uint8_t y = 0; y < MATRIX_H; y++) {
-      if (y % 2 == 0) {
-        for (uint8_t x = 0; x < MATRIX_W; x++) { matrixSet(x, y, c); pixels.show(); delay(stepDelay_ms); }
-      } else {
-        for (int8_t x = MATRIX_W - 1; x >= 0; x--) { matrixSet((uint8_t)x, y, c); pixels.show(); delay(stepDelay_ms); }
-      }
-    }
-
-    // Clear before next color
-    matrixFill(0);
-    pixels.show();
-    phase++;
-  }
-}
-
-// Matrix Spinner: a bright dot moves around the perimeter with a fading trail
-void matrixSpinner(uint16_t runtime_ms, uint16_t stepDelay_ms) {
-  // Precompute perimeter path (clockwise)
-  const uint8_t pathLen = (MATRIX_W * 2) + (MATRIX_H * 2) - 4; // rectangular perimeter
-  uint8_t xs[24];
-  uint8_t ys[24];
-  uint8_t idx = 0;
-  for (uint8_t x = 0; x < MATRIX_W; x++) { xs[idx] = x; ys[idx] = 0; idx++; }
-  for (uint8_t y = 1; y < MATRIX_H; y++) { xs[idx] = MATRIX_W - 1; ys[idx] = y; idx++; }
-  for (int8_t x = MATRIX_W - 2; x >= 0; x--) { xs[idx] = (uint8_t)x; ys[idx] = MATRIX_H - 1; idx++; }
-  for (int8_t y = MATRIX_H - 2; y > 0; y--) { xs[idx] = 0; ys[idx] = (uint8_t)y; idx++; }
-
-  uint32_t start = millis();
-  matrixFill(0);
-  pixels.show();
-  uint16_t step = 0;
-
-  while ((uint16_t)(millis() - start) < runtime_ms) {
-    matrixFade(48);
-    uint8_t p = step % pathLen;
-    uint8_t x = xs[p];
-    uint8_t y = ys[p];
-    uint32_t c = Wheel((step * 5) & 0xFF);
-    matrixSet(x, y, c);
-    pixels.show();
-    delay(stepDelay_ms);
-    step++;
-  }
-}
-
-// Matrix Comet Sweep: a bright head sweeps through all pixels with trailing fade
-void matrixCometSweep(uint16_t runtime_ms, uint16_t stepDelay_ms) {
-  uint32_t start = millis();
-  matrixFill(0);
-  pixels.show();
-
-  uint16_t pos = 0;
-  while ((uint16_t)(millis() - start) < runtime_ms) {
-    matrixFade(56);
-
-    // Convert linear pos to matrix coordinates (row-major serpentine aware through matrixIndex)
-    uint8_t y = (pos / MATRIX_W) % MATRIX_H;
-    uint8_t x = pos % MATRIX_W;
-    // To get a nicer path across actual wiring, map to index then set by index
-    int idx = matrixIndex(x, y);
-    uint32_t c = Wheel((pos * 7) & 0xFF);
-    pixels.setPixelColor(idx, c);
-
-    pixels.show();
-    delay(stepDelay_ms);
-    pos = (pos + 1) % (MATRIX_W * MATRIX_H);
-  }
-}
-
 // fast pin access
 #define AUDIOPIN (1<<SPEAKERPIN)
 #define PINLOW (PORTB&=~AUDIOPIN)
 #define PINHIGH (PORTB|=AUDIOPIN)
-
-void playSound(long freq_Hz, long duration_ms)
-{
-  uint16_t n;
-  uint32_t delayTime_us;
-  uint32_t counts;
-
-  delayTime_us = 1000000UL / freq_Hz / 2;
-  counts = duration_ms * 1000 / delayTime_us;
-
-  for (n = 0; n < counts; n++)
-  {
-    PINHIGH;
-    delayMicroseconds(delayTime_us);
-    PINLOW;
-    delayMicroseconds(delayTime_us);
-  }
-}
-
 
 int c[] = {
   NOTE_B4, NOTE_G4, NOTE_D4, NOTE_G4, NOTE_A4, NOTE_D5, PAUSE, NOTE_A4, NOTE_B4, NOTE_A4, NOTE_D4, NOTE_G4 
@@ -532,8 +139,8 @@ void setup(void) {
   neobegin();
   pixels.setBrightness(brightness);
   // Quick splash screen on boot
-  matrixDemoSmiley();
-  delay(6000);
+  //matrixDemoSmiley();
+  //delay(6000);
   matrixFill(0);
   pixels.show();
   
@@ -552,9 +159,58 @@ void setup(void) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 void loop(void) {
-  // Read debounced button on release (neolib)
-  uint8_t b = wasButtonPressed();
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /* Visual Selector (uncomment ONE)
+  ========================================================================================================================
+   ___    _ _____ _             _              _ _        
+  / _ \  / |_   _(_)_ __   __ _| |_ _   _  ___| (_)_ __   
+ | | | | | | | | | | '_ \ / _` | __| | | |/ __| | | '_ \  
+ | |_| | | | | | | | | | | (_| | |_| |_| | (__| | | | | | 
+  \___/  |_| |_| |_|_| |_|\__,_|\__|\__,_|\___|_|_|_| |_| 
+                                                           
+                 AI-tiny  8bit  slop
 
-  matrixBouncingDot(6000, 150); 
+    Each call uses (runtime_ms, speed/stepDelay params ...)
 
+    Lightweight visuals:
+    //matrixRainbowZoom(12000, 80);     // concentric rainbow rings zoom
+    //matrixPinkSpiral(12000, 60);      // pink dot traces inward spiral
+    //matrixBouncingDot(10000, 80);     // single dot bounces with trail
+    //matrixRain(10000, 60);            // blue drops fall with fading tails
+    //matrixTwinkle(10000, 60);         // soft random multicolor twinkles
+    //matrixLarsonScanner(10000, 120);  // Cylon scanner with tails
+    //matrixPong(12000, 60);            // mini Pong with AI paddles
+
+    Themed/new visuals:
+    //matrixKanjiScroll(12000, 90);     // kanji-like glyph scroll
+    //matrixExplosion(6000, 80);        // nasty explosion: flash, shockwave, debris, smoke
+    //matrixShoggoth(12000, 90);        // wobbling blob with blinking eyes
+    //matrixDnBDancer(12000, 290);      // two-frame dancer with bass pulse
+
+    Flag engine:
+    //matrixFlagsShowFade(14000, 900, 350, 6);  // cycle flags with cross-fade
+    //matrixFlagsShow(12000, 800);              // cycle flags without fade
+
+    Heavier visuals (enable only if flash allows):
+    //matrixSpinner(10000, 60);        // dot runs around the perimeter
+    //matrixWipe(10000, 20);           // color wipe back and forth
+    //matrixCometSweep(10000, 50);     // bright comet head sweeps all pixels
+    //matrixFire(12000, 160, 80, 80);  // fire with hotter center and breathing edges
+    //matrixLightning(10000);          // random lightning strikes with glow
+    //matrixGalagaInvader(10000, 120); // classic alien flapping across
+    //matrixStickManWall(10000, 120);  // stick figure runs and bonks (if included)
+
+    Extras:
+    //matrixRainbowWaves(12000, 80);   // flowing rainbow stripes across matrix
+    //matrixTetris(12000, 140);        // simple falling blocks, clear full rows
+    //matrixFiveEightSeam(12000, 240, 4); // 5/8 rhythm on seam (col 4), ~250ms per 8th
+    //matrixCoteAzur(12000, 80);       // French coastal landscape: blue sea, green coast, rock-gray
+    //matrixSunsetPickleSun(12000, 90); // Sunset sky with cucumber-green sun
+  */
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // Default preview (uncomment one selection above to try others)
+  //matrixCoteAzur(8000, 80);
+  matrixSunsetPickleSun(8000, 90);
+  //matrixExplosion(20000, 80);
 }
