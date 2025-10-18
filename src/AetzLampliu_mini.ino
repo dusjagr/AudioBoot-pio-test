@@ -4,6 +4,13 @@
 #include "matrix_helpers.h"
 #include "visuals.h"
 
+// Compile-time selection of a single visual for batch WAV generation.
+// Define VISUAL_ID via build flags to pick which visual runs.
+// When not defined, the default selection below in loop() remains active.
+#ifndef VISUAL_ID
+#define VISUAL_ID -1
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Left-overs from measuring temperature and play family mart tune
 ========================================================================================================================
@@ -208,6 +215,46 @@ void loop(void) {
     //matrixSunsetPickleSun(12000, 90); // Sunset sky with cucumber-green sun
   */
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // If VISUAL_ID is provided, run the selected visual and return.
+  // Otherwise, use the default preview selection below.
+#if (VISUAL_ID >= 0)
+  // Keep runtimes consistent so each WAV has similar length.
+  // Note: Many visuals accept (runtime_ms, stepDelay_ms) or other params.
+  switch (VISUAL_ID) {
+    // Lightweight visuals (IDs 0..9)
+    case 0: matrixLarsonScanner(10000, 120); break;
+    case 1: matrixBouncingDot(10000, 80);   break;
+    case 2: matrixRain(10000, 60);          break;
+    case 3: matrixTwinkle(10000, 60);       break;
+    case 4: matrixWipe(10000, 20);          break;
+    case 5: matrixSpinner(10000, 60);       break;
+    case 6: matrixFire(10000, 160, 80, 80); break;
+    case 7: matrixRainbowZoom(10000, 80);   break;
+    case 8: matrixPinkSpiral(10000, 60);    break;
+    case 9: matrixPong(10000, 60);          break;
+
+    // Themed visuals (IDs 10..19)
+    case 10: matrixDnBDancer(10000, 290);      break;
+    case 11: matrixKanjiScroll(10000, 90);     break;
+    case 12: matrixExplosion(10000, 80);       break;
+    case 13: matrixShoggoth(10000, 90);        break;
+    case 14: matrixRainbowWaves(10000, 80);    break;
+    case 15: matrixTetris(10000, 140);         break;
+    case 16: matrixFiveEightSeam(10000, 240, 4); break;
+    case 17: matrixCoteAzur(10000, 80);        break;
+    case 18: matrixSunsetPickleSun(10000, 90); break;
+    case 19: matrixLightning(10000);           break;
+
+    // Flags engine (IDs 20..21)
+    case 20: matrixFlagsShow(10000, 800);              break;
+    case 21: matrixFlagsShowFade(10000, 900, 350, 6);  break;
+
+    // Fallback
+    default: matrixSunsetPickleSun(10000, 90); break;
+  }
+  return; // run one visual per loop iteration to keep behavior deterministic per WAV
+#endif
 
   // Default preview (uncomment one selection above to try others)
   //matrixCoteAzur(8000, 80);
