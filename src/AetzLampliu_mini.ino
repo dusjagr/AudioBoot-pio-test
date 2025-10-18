@@ -1,11 +1,28 @@
-#include <OneWire.h>
 #include <Adafruit_NeoPixel.h>
 #include <neolib.h>
 #include <avr/pgmspace.h>
-#include "pitches.h"
 #include "matrix_helpers.h"
 #include "visuals.h"
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* Left-overs from measuring temperature and play family mart tune
+========================================================================================================================
+   _________            _                 _            
+  |  mode  |   utils  | |__   __ _  __ _| |_ ___  _ __
+  |  o___o |          | '_ \ / _` |/ _` | __/ _ \| '__|
+  |__/___\_|          | | | | (_| | (_| | || (_) | |   
+                      |_| |_|\__,_|\__,_|\__\___/|_|   
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+// OneWire DS18S20, DS18B20, DS1822 Temperature Example
+//
+// http://www.pjrc.com/teensy/td_libs_OneWire.html
+//
+// The DallasTemperature library can do all this work for you!
+// http://milesburton.com/Dallas_Temperature_Control_Library
+
+#include <OneWire.h>
+#include "pitches.h"
 #define ONEWIREPIN   PB4
 
 #define hell          255 // Brightness
@@ -27,13 +44,6 @@
   byte addr[8];
   float celsius;
   int16_t raw;
-
-// OneWire DS18S20, DS18B20, DS1822 Temperature Example
-//
-// http://www.pjrc.com/teensy/td_libs_OneWire.html
-//
-// The DallasTemperature library can do all this work for you!
-// http://milesburton.com/Dallas_Temperature_Control_Library
 
 OneWire  ds(ONEWIREPIN);  // on pin 10 (a 4.7K resistor is necessary)
 
@@ -71,7 +81,7 @@ void runCurrentEffect() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* Button-driven effect switching (using neolib's buttons)
+/* Left-overs from measuring temperature and play family mart tune
 ========================================================================================================================
    _________            _                 _            
   |  mode  |   utils  | |__   __ _  __ _| |_ ___  _ __
@@ -173,6 +183,7 @@ void loop(void) {
 
     Themed/new visuals:
     //matrixKanjiScroll(12000, 90);     // kanji-like glyph scroll
+    //matrixExplosion(6000, 80);        // nasty explosion: flash, shockwave, debris, smoke
     //matrixShoggoth(12000, 90);        // wobbling blob with blinking eyes
     //matrixDnBDancer(12000, 290);      // two-frame dancer with bass pulse
 
@@ -192,9 +203,14 @@ void loop(void) {
     Extras:
     //matrixRainbowWaves(12000, 80);   // flowing rainbow stripes across matrix
     //matrixTetris(12000, 140);        // simple falling blocks, clear full rows
+    //matrixFiveEightSeam(12000, 240, 4); // 5/8 rhythm on seam (col 4), ~250ms per 8th
+    //matrixCoteAzur(12000, 80);       // French coastal landscape: blue sea, green coast, rock-gray
+    //matrixSunsetPickleSun(12000, 90); // Sunset sky with cucumber-green sun
   */
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Default preview (uncomment one selection above to try others)
-  matrixFire(12000, 160, 80, 80);
+  //matrixCoteAzur(8000, 80);
+  matrixSunsetPickleSun(8000, 90);
+  //matrixExplosion(20000, 80);
 }
