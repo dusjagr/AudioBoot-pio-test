@@ -87,6 +87,13 @@ Or change `hex2wav_player_cmd` to another player.
 - `tools/hex2wav/` — Platform-specific tools used for the conversion
 - `platformio.ini` — PlatformIO environment configuration and custom upload
 
+## WAV Player & Files
+
+- Inline audio players for each generated WAV: [`wav/index.html`](./wav/index.html)
+- Playlist and direct download links: [`wav/README.md`](./wav/README.md)
+
+Tip: Enable GitHub Pages for this repository (Settings → Pages → Deploy from a branch → `main`/`root`) to play WAVs directly in the browser via your Pages site at `/wav/index.html`.
+
 ## Troubleshooting
 
 - No sound during upload: ensure your system volume is up and `aplay` is installed/working.

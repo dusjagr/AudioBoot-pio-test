@@ -1,5 +1,4 @@
 # Visual WAV Library
-
 Open the interactive player page (recommended):
 
 - [Open web player (index.html)](./index.html)
@@ -10,11 +9,11 @@ Notes:
 - GitHub’s HTML rendering supports the HTML5 audio player with `controls`, but autoplay is blocked.
 - If a browser can’t play inline, use the “Download” link.
 - Files are named `visual-<id>-<slug>.wav`.
- - Some Markdown renderers (including IDE previews) may not show inline audio controls; in that case use the web player page linked above.
+- Some Markdown renderers (including IDE previews) may not show inline audio controls; in that case use the web player page linked above.
 
 ## Playlist
 
-### 0 — Larson Scanner
+### 0 — Larson
 <a href="visual-00-larson.wav">Download</a>
 
 <audio controls>
@@ -27,6 +26,7 @@ Notes:
 
 <audio controls>
   <source src="visual-01-bouncing-dot.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 2 — Rain
@@ -34,6 +34,7 @@ Notes:
 
 <audio controls>
   <source src="visual-02-rain.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 3 — Twinkle
@@ -41,6 +42,7 @@ Notes:
 
 <audio controls>
   <source src="visual-03-twinkle.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 4 — Wipe
@@ -48,6 +50,7 @@ Notes:
 
 <audio controls>
   <source src="visual-04-wipe.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 5 — Spinner
@@ -55,6 +58,7 @@ Notes:
 
 <audio controls>
   <source src="visual-05-spinner.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 6 — Fire
@@ -62,6 +66,7 @@ Notes:
 
 <audio controls>
   <source src="visual-06-fire.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 7 — Rainbow Zoom
@@ -69,6 +74,7 @@ Notes:
 
 <audio controls>
   <source src="visual-07-rainbow-zoom.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 8 — Pink Spiral
@@ -76,6 +82,7 @@ Notes:
 
 <audio controls>
   <source src="visual-08-pink-spiral.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 9 — Pong
@@ -83,6 +90,7 @@ Notes:
 
 <audio controls>
   <source src="visual-09-pong.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 10 — DnB Dancer
@@ -90,6 +98,7 @@ Notes:
 
 <audio controls>
   <source src="visual-10-dnb-dancer.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 11 — Kanji Scroll
@@ -97,6 +106,7 @@ Notes:
 
 <audio controls>
   <source src="visual-11-kanji-scroll.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 12 — Explosion
@@ -104,6 +114,7 @@ Notes:
 
 <audio controls>
   <source src="visual-12-explosion.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 13 — Shoggoth
@@ -111,6 +122,7 @@ Notes:
 
 <audio controls>
   <source src="visual-13-shoggoth.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 14 — Rainbow Waves
@@ -118,6 +130,7 @@ Notes:
 
 <audio controls>
   <source src="visual-14-rainbow-waves.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 15 — Tetris
@@ -125,6 +138,7 @@ Notes:
 
 <audio controls>
   <source src="visual-15-tetris.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 16 — Five Eight Seam
@@ -132,6 +146,7 @@ Notes:
 
 <audio controls>
   <source src="visual-16-five-eight-seam.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 17 — Côte d’Azur
@@ -139,6 +154,7 @@ Notes:
 
 <audio controls>
   <source src="visual-17-cote-azur.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 18 — Sunset Pickle Sun
@@ -146,6 +162,7 @@ Notes:
 
 <audio controls>
   <source src="visual-18-sunset-pickle-sun.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
 ### 20 — Flags
@@ -153,15 +170,14 @@ Notes:
 
 <audio controls>
   <source src="visual-20-flags.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
-### 21 — Flags (Fade)
+### 21 — Flags Fade
 <a href="visual-21-flags-fade.wav">Download</a>
 
 <audio controls>
   <source src="visual-21-flags-fade.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
 </audio>
 
----
-
-If you add or regenerate WAVs, this list can be updated automatically. I can also make a small script to regenerate this README from the folder contents.
