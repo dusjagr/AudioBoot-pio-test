@@ -1,0 +1,9 @@
+[
+  {
+    // One-key Build & Upload for attiny85
+    "key": "ctrl+alt+u",
+    "command": "workbench.action.tasks.runTask",
+    "args": "PIO: Build & Upload attiny85",
+    "when": "workspaceFolderCount > 0"
+  }
+]

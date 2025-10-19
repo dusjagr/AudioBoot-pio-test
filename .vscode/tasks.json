@@ -1,0 +1,118 @@
+{
+  // VS Code tasks for one-click build & upload with PlatformIO
+  "$schema": "vscode://schemas/tasks",
+  "version": "2.0.0",
+  "tasks": [
+    {
+        "label": "PIO: Build attiny85",
+        "type": "shell",
+        "command": "pio",
+        "args": [
+            "run",
+            "-e",
+            "attiny85"
+        ],
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "problemMatcher": [
+            "$platformio"
+        ],
+        "presentation": {
+            "reveal": "always",
+            "panel": "shared"
+        }
+    },
+    {
+        "label": "PIO: Upload attiny85 (AudioBoot)",
+        "type": "shell",
+        "command": "pio",
+        "args": [
+            "run",
+            "-e",
+            "attiny85",
+            "-t",
+            "upload"
+        ],
+        "group": "build",
+        "problemMatcher": [
+            "$platformio"
+        ],
+        "presentation": {
+            "reveal": "always",
+            "panel": "shared"
+        }
+    },
+    {
+        "label": "PIO: Clean attiny85",
+        "type": "shell",
+        "command": "pio",
+        "args": [
+            "run",
+            "-e",
+            "attiny85",
+            "-t",
+            "clean"
+        ],
+        "group": "none",
+        "problemMatcher": [
+            "$platformio"
+        ],
+        "presentation": {
+            "reveal": "always",
+            "panel": "shared"
+        }
+    },
+    {
+        "label": "PIO: Build & Upload attiny85",
+        "type": "shell",
+        "command": "pio",
+        "args": [
+            "run",
+            "-e",
+            "attiny85",
+            "-t",
+            "upload"
+        ],
+        "detail": "Runs build then executes your custom upload (hex2wav + aplay)",
+        "group": {
+            "kind": "build",
+            "isDefault": false
+        },
+        "problemMatcher": [
+            "$platformio"
+        ],
+        "presentation": {
+            "reveal": "always",
+            "panel": "shared"
+        }
+    },
+    {
+        "label": "PIO: Build native (emulator)",
+        "type": "shell",
+        "command": "pio",
+        "args": [
+            "run",
+            "-e",
+            "native"
+        ],
+        "group": "build",
+        "problemMatcher": [
+            "$platformio"
+        ],
+        "presentation": {
+            "reveal": "always",
+            "panel": "shared"
+        }
+    },
+    {
+        "type": "PlatformIO",
+        "task": "Upload (attiny85)",
+        "problemMatcher": [
+            "$platformio"
+        ],
+        "label": "PlatformIO: Upload (attiny85)"
+    }
+]
+}

@@ -46,6 +46,7 @@ VISUALS = [
     (19, "lightning"),
     (20, "flags"),
     (21, "flags-fade"),
+    (22, "digital-rain"),
 ]
 
 
@@ -166,9 +167,21 @@ def build_one(vid: int, slug: str) -> Path:
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--only", type=str, default="", help="Comma-separated list of IDs to build (e.g. 6,18,22)")
+    args = ap.parse_args()
+
     ensure_dirs()
     failures = []
+
+    include = None
+    if args.only.strip():
+        include = {int(x.strip()) for x in args.only.split(',') if x.strip().isdigit()}
+
     for vid, slug in VISUALS:
+        if include is not None and vid not in include:
+            continue
         try:
             built_wav = build_one(vid, slug)
             out_name = f"visual-{vid:02d}-{slug}.wav"

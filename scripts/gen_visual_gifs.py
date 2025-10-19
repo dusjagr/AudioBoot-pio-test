@@ -44,6 +44,7 @@ VISUALS = [
     (19, "lightning"),
     (20, "flags"),
     (21, "flags-fade"),
+    (22, "digital-rain"),
 ]
 
 

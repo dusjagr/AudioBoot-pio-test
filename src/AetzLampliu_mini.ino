@@ -191,6 +191,7 @@ void loop(void) {
     Themed/new visuals:
     //matrixKanjiScroll(12000, 90);     // kanji-like glyph scroll
     //matrixExplosion(6000, 80);        // nasty explosion: flash, shockwave, debris, smoke
+    //matrixDigitalRain(12000, 90);     // Matrix-style green code rain for 5x4
     //matrixShoggoth(12000, 90);        // wobbling blob with blinking eyes
     //matrixDnBDancer(12000, 290);      // two-frame dancer with bass pulse
 
@@ -247,10 +248,9 @@ void loop(void) {
     case 19: matrixLightning(10000);           break;
 
     // Flags engine (IDs 20..21)
-    case 20: matrixFlagsShow(10000, 800);              break;
-    case 21: matrixFlagsShowFade(10000, 900, 350, 6);  break;
-
-    // Fallback
+    case 20: matrixFlagsShow(10000, 900);              break;
+    case 21: matrixFlagsShowFade(10000, 900, 300, 6); break;
+    case 22: matrixDigitalRain(10000, 90);     break;
     default: matrixSunsetPickleSun(10000, 90); break;
   }
   return; // run one visual per loop iteration to keep behavior deterministic per WAV
@@ -258,6 +258,7 @@ void loop(void) {
 
   // Default preview (uncomment one selection above to try others)
   //matrixCoteAzur(8000, 80);
-  matrixSunsetPickleSun(8000, 90);
+  //matrixSunsetPickleSun(8000, 90);
+  matrixDigitalRain(12000, 90);
   //matrixExplosion(20000, 80);
 }

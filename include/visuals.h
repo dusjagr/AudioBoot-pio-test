@@ -53,6 +53,7 @@ void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col);
 void matrixCoteAzur(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixSunsetPickleSun(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixExplosion(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixDigitalRain(uint16_t runtime_ms, uint16_t stepDelay_ms);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Visuals Index and Guide
@@ -86,6 +87,7 @@ void matrixExplosion(uint16_t runtime_ms, uint16_t stepDelay_ms);
   - matrixLightning(runtime): Random lightning strikes with glow and flicker.
   - matrixFlagsShow(runtime, hold_ms): Cycle through several 5x4 national flags.
   - matrixFlagsShowFade(runtime, hold_ms, fade_ms, steps): Flags with cross-fades.
+  - matrixDigitalRain(runtime, stepDelay): Matrix movie-style green code rain adapted to 5x4.
 
   Tip: For very small flash budgets, comment-out heavier effects or guard them with macros.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -202,6 +204,88 @@ inline void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col)
       if ((uint16_t)(millis() - start) >= runtime_ms) return;
     }
     bar++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixDigitalRain
+   Matrix movie-style green code rain. On a tiny 5x4, each column spawns a bright green head
+   that falls with variable speed, leaving a trailing fade. Heads respawn pseudo-randomly.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixDigitalRain(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W;
+  const uint8_t H = MATRIX_H;
+
+  // Small LFSR for pseudo-randomness
+  uint16_t lfsr = (uint16_t)(millis() ^ 0x1234);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  // Per-column head position (0..H-1) or 0xFF when inactive
+  uint8_t headY[8];
+  // Per-column speed divisor (1..3): lower = faster
+  uint8_t speed[8];
+  // Per-column tick counter
+  uint8_t tick[8];
+  for (uint8_t x = 0; x < W; x++) {
+    headY[x] = 0xFF; // inactive
+    speed[x] = (uint8_t)(1 + (nextL() % 3));
+    tick[x] = 0;
+  }
+
+  // Initial gentle clear
+  matrixFill(0);
+  pixels.show();
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Trail fade: higher value = faster fade; keep trails visible a bit
+    matrixFade(70);
+
+    for (uint8_t x = 0; x < W; x++) {
+      // Possibly spawn a new head at top if inactive
+      if (headY[x] == 0xFF) {
+        // Spawn chance ~ 1/5 per frame per column
+        if ((nextL() & 0x07) == 0) {
+          headY[x] = 0; // top
+          speed[x] = (uint8_t)(1 + (nextL() % 3));
+          tick[x] = 0;
+        }
+      } else {
+        // Advance based on speed divisor
+        tick[x]++;
+        if ((tick[x] % speed[x]) == 0) {
+          if (headY[x] + 1 < H) headY[x]++;
+          else {
+            // At bottom: either continue off then deactivate, or immediately reset
+            headY[x] = 0xFF; // deactivate; next loop may respawn
+            continue;
+          }
+        }
+        // Draw head and a dimmer body just above (if exists)
+        uint8_t y = headY[x];
+        uint32_t headCol = pixels.Color(170, 255, 170); // bright green with hint of white
+        matrixSet(x, y, headCol);
+        if (y > 0) {
+          uint32_t bodyCol = pixels.Color(40, 180, 60);
+          matrixSet(x, (uint8_t)(y - 1), dimColor(bodyCol, 200));
+        }
+      }
+    }
+
+    // Rare bright glyph flicker on random pixels to mimic characters
+    if ((nextL() & 0x0F) == 0) {
+      uint8_t rx = (uint8_t)(nextL() % W);
+      uint8_t ry = (uint8_t)(nextL() % H);
+      matrixSet(rx, ry, pixels.Color(120, 255, 120));
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
   }
 }
 
