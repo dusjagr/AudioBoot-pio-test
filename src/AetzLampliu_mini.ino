@@ -109,6 +109,18 @@ int c[] = {
 int pauseBetweenNotes = 80;
 int noteDuration_ms = 150;
 
+// Provide playSound() implementation for device builds
+void playSound(uint16_t freq, uint16_t dur) {
+  if (freq == 0 || dur == 0) {
+    delay(dur);
+    return;
+  }
+  tone(SPEAKERPIN, freq, dur);
+  // Ensure duration elapses before returning; tone() is non-blocking
+  delay(dur);
+  noTone(SPEAKERPIN);
+}
+
 void playMart(int notes[])
 {
 
