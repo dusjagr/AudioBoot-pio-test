@@ -264,8 +264,10 @@ void loop(void) {
   //matrixCoteAzur(8000, 80);
   //matrixSunsetPickleSun(18000, 90);
   //matrixDigitalRain(12000, 90);
-  matrixNightStreet2000(12000, 90);
-  matrixLarsonScannerDual(12000, 90);
-  matrixWaterfall(12000, 90);
+  //matrixNightStreet2000(12000, 90);
+  //matrixLarsonScannerDual(12000, 90);
+  //matrixWaterfall(12000, 90);
   //matrixExplosion(20000, 80);
+  //matrixTetris(10000, 250);
+  matrixLightning(10000); 
 }

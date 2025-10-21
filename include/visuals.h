@@ -149,8 +149,6 @@ inline void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col)
         uint32_t c = dimColor(Wheel(yHue), mainLevel);
         matrixSet(col, y, c);
       }
-
-
       // Light adjacent columns with falloff for a wider, more interesting look
       if (col > 0) {
         uint8_t leftLevel = (uint8_t)(mainLevel / 3);
@@ -1192,6 +1190,7 @@ inline void matrixGalagaInvader(uint16_t runtime_ms, uint16_t stepDelay_ms) {
       }
       pixels.show(); delay(stepDelay_ms); fidx ^= 1; if ((uint16_t)(millis() - start) >= runtime_ms) return;
     }
+
   }
 }
 
@@ -1570,102 +1569,151 @@ inline void matrixWipe(uint16_t runtime_ms, uint16_t stepDelay_ms) {
    Params: runtime_ms, stepDelay_ms
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixTetris(uint16_t runtime_ms, uint16_t stepDelay_ms) {
-  const uint8_t W = MATRIX_W, H = MATRIX_H;
-  uint8_t field[W * H];
-  for (uint8_t i = 0; i < W * H; i++) field[i] = 0;
+  // Use a logical 4x5 Tetris board so a 90° rotation fits on a 5x4 physical matrix without clipping.
+  const uint8_t GW = (MATRIX_H < 4 ? MATRIX_H : 4); // logical width  up to 4
+  const uint8_t GH = (MATRIX_W < 5 ? MATRIX_W : 5); // logical height up to 5
+  uint8_t field[GW * GH];
+  for (uint8_t i = 0; i < GW * GH; i++) field[i] = 0;
 
-  auto idx = [&](int8_t x, int8_t y) -> int { return y * W + x; };
+  // Seed randomness so piece sequence varies per run
+  randomSeed((unsigned long)millis());
+
+  auto idx = [&](int8_t x, int8_t y) -> int { return y * GW + x; };
   auto occupied = [&](int8_t x, int8_t y) -> bool {
     // Allow y < 0 (above top) to be empty so pieces can spawn/fall into view
-    if (x < 0 || x >= (int8_t)W || y >= (int8_t)H) return true; // walls and floor are solid
+    if (x < 0 || x >= (int8_t)GW || y >= (int8_t)GH) return true; // walls and floor are solid
     if (y < 0) return false; // above top is empty space
     return field[idx(x, y)] != 0;
   };
 
-  // 3 simple pieces (no rotation), each as 3-4 blocks
-  const int8_t P0[4][2] = {{0,0},{1,0},{0,1},{1,1}};          // square
-  const int8_t P1[3][2] = {{0,0},{1,0},{2,0}};                // bar
-  const int8_t P2[4][2] = {{0,0},{0,1},{1,1},{2,1}};          // L-ish
+  // Base piece definitions around an origin (0,0). We'll allow simple orientation variants.
+  const int8_t P0[4][2] = {{0,0},{1,0},{0,1},{1,1}};          // O (square)
+  const int8_t P1[3][2] = {{0,0},{1,0},{2,0}};                // I-3 (short bar) base horizontal (fits tiny board better)
+  const int8_t P2[4][2] = {{0,0},{0,1},{1,1},{2,1}};          // L base
+  const int8_t P3[4][2] = {{2,0},{0,1},{1,1},{2,1}};          // J (mirror L) base
+  const int8_t P4[4][2] = {{1,0},{0,1},{1,1},{2,1}};          // T base
+  const int8_t P5[4][2] = {{1,0},{2,0},{0,1},{1,1}};          // S base
+  const int8_t P6[4][2] = {{0,0},{1,0},{1,1},{2,1}};          // Z base
+
+  // Helper to apply an orientation variant to piece coords (0..3): 0=identity, 1=rot90, 2=rot180, 3=rot270
+  auto orient = [&](const int8_t base[][2], uint8_t count, uint8_t var, int8_t out[][2]) {
+    for (uint8_t i = 0; i < count; i++) {
+      int8_t x = base[i][0], y = base[i][1];
+      int8_t rx = x, ry = y;
+      switch (var & 0x03) {
+        case 1: rx = -y; ry = x;  break;  // 90°
+        case 2: rx = -x; ry = -y; break;  // 180°
+        case 3: rx = y;  ry = -x; break;  // 270°
+        default: break; // identity
+      }
+      out[i][0] = rx; out[i][1] = ry;
+    }
+    // Normalize so min x,y is 0 (top-left) to simplify spawn/fit calculations
+    int8_t minx = 127, miny = 127;
+    for (uint8_t i = 0; i < count; i++) { if (out[i][0] < minx) minx = out[i][0]; if (out[i][1] < miny) miny = out[i][1]; }
+    for (uint8_t i = 0; i < count; i++) { out[i][0] = (int8_t)(out[i][0] - minx); out[i][1] = (int8_t)(out[i][1] - miny); }
+  };
+
+  // Map logical (gx,gy) on a GWxGH board to physical 5x4 rotated 90° COUNTERCLOCKWISE
+  // CCW mapping on an MxN grid: (x,y) -> (N-1-y, x)
+  auto drawRot = [&](uint8_t gx, uint8_t gy, uint32_t col) {
+    uint8_t rx = (uint8_t)(GH - 1 - gy); // width side (maps to MATRIX_W)
+    uint8_t ry = gx;                     // height side (maps to MATRIX_H)
+    if (rx < MATRIX_W && ry < MATRIX_H) matrixSet(rx, ry, col);
+  };
 
   uint32_t start = millis();
   uint8_t hueBase = 0;
+  uint8_t pieceCounter = 0; // ensures variety even if RNG is weak
 
   while ((uint16_t)(millis() - start) < runtime_ms) {
-    uint8_t kind = (uint8_t)random(3);
-    // Safe spawn ranges per piece to avoid immediate OOB when writing
-    int8_t px;
-    if (kind == 0) { // 2x2 square spans x..x+1
-      px = (int8_t)random(0, (int8_t)(W >= 2 ? (W - 1) : 0));
-    } else if (kind == 1) { // 3-long bar spans x..x+2
-      px = (int8_t)random(0, (int8_t)(W >= 3 ? (W - 2) : 0));
-    } else { // L-ish spans x..x+2 on bottom row
-      px = (int8_t)random(0, (int8_t)(W >= 3 ? (W - 2) : 0));
+    // Cycle kinds deterministically across 7 types; still vary orientation
+    const uint8_t KINDS = 7;
+    uint8_t kind = (uint8_t)(pieceCounter % KINDS);
+    uint8_t var = (uint8_t)((pieceCounter * 3 + hueBase) & 0x03); // orientation 0..3
+    // Build oriented piece coords and determine width/height for spawn bounds
+    int8_t cells[4][2]; uint8_t count = 4;
+    switch (kind) {
+      case 0: orient(P0, 4, 0, cells); count = 4; break;               // O (no rotation changes)
+      case 1: orient(P1, 3, var, cells); count = 3; break;              // I-3
+      case 2: orient(P2, 4, var, cells); count = 4; break;              // L
+      case 3: orient(P3, 4, var, cells); count = 4; break;              // J
+      case 4: orient(P4, 4, var, cells); count = 4; break;              // T
+      case 5: orient(P5, 4, var, cells); count = 4; break;              // S
+      default: orient(P6, 4, var, cells); count = 4; break;             // Z
     }
-    int8_t py = H; // start just above top
+
+    int8_t maxx = 0, maxy = 0; for (uint8_t i = 0; i < count; i++) { if (cells[i][0] > maxx) maxx = cells[i][0]; if (cells[i][1] > maxy) maxy = cells[i][1]; }
+    // Safe spawn range so x..x+maxx fits in [0..GW-1]
+    int8_t px = (int8_t)random(0, (int8_t)(GW - maxx)); if (px < 0) px = 0;
+    // Spawn above top: py = -maxy so the highest cell enters first
+    int8_t py = (int8_t)(-maxy);
     uint8_t hue = hueBase;
 
     bool locked = false;
     while (!locked && (uint16_t)(millis() - start) < runtime_ms) {
-      int8_t ny = py - 1;
+      // Fall DOWN: increase y until collision
+      int8_t ny = (int8_t)(py + 1);
       bool hit = false;
-      if (kind == 0) { for (uint8_t i = 0; i < 4; i++) { if (occupied(px + P0[i][0], ny + P0[i][1])) { hit = true; break; } } }
-      else if (kind == 1) { for (uint8_t i = 0; i < 3; i++) { if (occupied(px + P1[i][0], ny + P1[i][1])) { hit = true; break; } } }
-      else { for (uint8_t i = 0; i < 4; i++) { if (occupied(px + P2[i][0], ny + P2[i][1])) { hit = true; break; } } }
+      for (uint8_t i = 0; i < count; i++) { if (occupied((int8_t)(px + cells[i][0]), (int8_t)(ny + cells[i][1]))) { hit = true; break; } }
 
       if (hit) {
-        // Lock piece into field; guard bounds to avoid OOB writes
-        if (kind == 0) {
-          for (uint8_t i = 0; i < 4; i++) {
-            int8_t ax = (int8_t)(px + P0[i][0]);
-            int8_t ay = (int8_t)(py + P0[i][1]);
-            if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) field[idx(ax, ay)] = 1;
-          }
-        } else if (kind == 1) {
-          for (uint8_t i = 0; i < 3; i++) {
-            int8_t ax = (int8_t)(px + P1[i][0]);
-            int8_t ay = (int8_t)(py + P1[i][1]);
-            if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) field[idx(ax, ay)] = 1;
-          }
-        } else {
-          for (uint8_t i = 0; i < 4; i++) {
-            int8_t ax = (int8_t)(px + P2[i][0]);
-            int8_t ay = (int8_t)(py + P2[i][1]);
-            if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) field[idx(ax, ay)] = 1;
-          }
+        // Lock piece into field only if at least one block is within bounds.
+        // This avoids "stuck at top" when collision occurs while piece is still above the visible area.
+        uint8_t wrote = 0;
+        for (uint8_t i = 0; i < count; i++) {
+          int8_t ax = (int8_t)(px + cells[i][0]);
+          int8_t ay = (int8_t)(py + cells[i][1]);
+          if (ax >= 0 && ax < (int8_t)GW && ay >= 0 && ay < (int8_t)GH) { field[idx(ax, ay)] = 1; wrote++; }
         }
+        if (wrote == 0) { py = ny; continue; }
         locked = true;
         // Clear any full rows
-        for (uint8_t y = 0; y < H; y++) {
+        for (uint8_t y = 0; y < GH; y++) {
           bool full = true;
-          for (uint8_t x = 0; x < W; x++) { if (!field[idx(x, y)]) { full = false; break; } }
+          for (uint8_t x = 0; x < GW; x++) { if (!field[idx(x, y)]) { full = false; break; } }
           if (full) {
-            for (int yy = y; yy < (int)H - 1; yy++) {
-              for (uint8_t x = 0; x < W; x++) field[idx(x, yy)] = field[idx(x, yy + 1)];
+            for (int yy = y; yy < (int)GH - 1; yy++) {
+              for (uint8_t x = 0; x < GW; x++) field[idx(x, yy)] = field[idx(x, yy + 1)];
             }
-            for (uint8_t x = 0; x < W; x++) field[idx(x, H - 1)] = 0;
+            for (uint8_t x = 0; x < GW; x++) field[idx(x, GH - 1)] = 0;
             y--; // recheck
           }
         }
+        // After lock, briefly render the updated field so placement is visible
+        matrixFill(0);
+        for (uint8_t ry = 0; ry < GH; ry++) {
+          for (uint8_t rx = 0; rx < GW; rx++) {
+            if (field[idx(rx, ry)]) drawRot(rx, ry, dimColor(pixels.Color(255,160,80), 180));
+          }
+        }
+        pixels.show();
+        delay((uint16_t)(stepDelay_ms > 40 ? 40 : stepDelay_ms));
         break;
       } else {
         py = ny;
       }
 
-      // Render field + active piece
+      // Render field + active piece (display rotated 90° counterclockwise)
       matrixFill(0);
-      for (uint8_t y = 0; y < H; y++) for (uint8_t x = 0; x < W; x++) if (field[idx(x, y)]) matrixSet(x, y, dimColor(pixels.Color(255,160,80), 180));
+      for (uint8_t y = 0; y < GH; y++) {
+        for (uint8_t x = 0; x < GW; x++) {
+          if (field[idx(x, y)]) drawRot(x, y, dimColor(pixels.Color(255,160,80), 180));
+        }
+      }
       uint32_t col = Wheel(hue);
-      if (kind == 0) {
-        for (uint8_t i = 0; i < 4; i++) { int8_t ax = px + P0[i][0], ay = py + P0[i][1]; if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) matrixSet((uint8_t)ax, (uint8_t)ay, col); }
-      } else if (kind == 1) {
-        for (uint8_t i = 0; i < 3; i++) { int8_t ax = px + P1[i][0], ay = py + P1[i][1]; if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) matrixSet((uint8_t)ax, (uint8_t)ay, col); }
-      } else {
-        for (uint8_t i = 0; i < 4; i++) { int8_t ax = px + P2[i][0], ay = py + P2[i][1]; if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) matrixSet((uint8_t)ax, (uint8_t)ay, col); }
+      for (uint8_t i = 0; i < count; i++) {
+        int8_t ax = (int8_t)(px + cells[i][0]);
+        int8_t ay = (int8_t)(py + cells[i][1]);
+        if (ax >= 0 && ax < (int8_t)GW && ay >= 0 && ay < (int8_t)GH) drawRot((uint8_t)ax, (uint8_t)ay, col);
       }
       pixels.show();
       delay(stepDelay_ms);
       hue += 7;
     }
+    // Advance to next piece and vary hue baseline for visible variety
+    pieceCounter++;
+    hueBase = (uint8_t)(hueBase + 23);
   }
 }
 
