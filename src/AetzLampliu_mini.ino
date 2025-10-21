@@ -251,6 +251,10 @@ void loop(void) {
     case 20: matrixFlagsShow(10000, 900);              break;
     case 21: matrixFlagsShowFade(10000, 900, 300, 6); break;
     case 22: matrixDigitalRain(10000, 90);     break;
+    case 23: matrixWaterfall(10000, 90);       break;
+    case 24: matrixLarsonScannerDual(10000, 90); break;
+    case 25: matrixNightStreet2000(10000, 80); break;
+    case 26: matrixSwitchToggle(10000, 120);    break;
     default: matrixSunsetPickleSun(10000, 90); break;
   }
   return; // run one visual per loop iteration to keep behavior deterministic per WAV
@@ -258,7 +262,10 @@ void loop(void) {
 
   // Default preview (uncomment one selection above to try others)
   //matrixCoteAzur(8000, 80);
-  //matrixSunsetPickleSun(8000, 90);
-  matrixDigitalRain(12000, 90);
+  //matrixSunsetPickleSun(18000, 90);
+  //matrixDigitalRain(12000, 90);
+  matrixNightStreet2000(12000, 90);
+  matrixLarsonScannerDual(12000, 90);
+  matrixWaterfall(12000, 90);
   //matrixExplosion(20000, 80);
 }

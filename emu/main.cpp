@@ -165,6 +165,10 @@ int main(int argc, char** argv) {
       case 20: matrixFlagsShow((uint16_t)runtime_ms, 700); break;
       case 21: matrixFlagsShowFade((uint16_t)runtime_ms, 800, 300, 6); break;
       case 22: matrixDigitalRain((uint16_t)runtime_ms, 90); break;
+      case 23: matrixWaterfall((uint16_t)runtime_ms, 90); break;
+      case 24: matrixLarsonScannerDual((uint16_t)runtime_ms, 90); break;
+      case 25: matrixNightStreet2000((uint16_t)runtime_ms, 80); break;
+      case 26: matrixSwitchToggle((uint16_t)runtime_ms, 120); break;
       default: matrixSunsetPickleSun((uint16_t)runtime_ms, 70); break;
     }
   };

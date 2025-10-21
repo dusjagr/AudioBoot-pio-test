@@ -52,8 +52,11 @@ void matrixFlagsShowFade(uint16_t runtime_ms, uint16_t hold_ms, uint16_t fade_ms
 void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col);
 void matrixCoteAzur(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixSunsetPickleSun(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixLarsonScannerDual(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixExplosion(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixDigitalRain(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixWaterfall(uint16_t runtime_ms, uint16_t stepDelay_ms);
+static inline void matrixNightStreet2000(uint16_t runtime_ms, uint16_t stepDelay_ms);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Visuals Index and Guide
@@ -146,6 +149,8 @@ inline void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col)
         uint32_t c = dimColor(Wheel(yHue), mainLevel);
         matrixSet(col, y, c);
       }
+
+
       // Light adjacent columns with falloff for a wider, more interesting look
       if (col > 0) {
         uint8_t leftLevel = (uint8_t)(mainLevel / 3);
@@ -286,6 +291,266 @@ inline void matrixDigitalRain(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 
     pixels.show();
     delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixWaterfall
+   A misty/spraying waterfall adapted to 5x4:
+   - Soft blue drops fall in each column leaving trails.
+   - On hitting the bottom, a light white/blue mist spreads sideways.
+   - Continuous subtle seep along bottom row for a wet look.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixWaterfall(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W;
+  const uint8_t H = MATRIX_H;
+
+  // Small LFSR for pseudo-randomness
+  uint16_t lfsr = (uint16_t)(millis() ^ 0x42AF);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  // Per-column falling head (0..H-1) or 0xFF when inactive
+  uint8_t headY[8];
+  uint8_t speed[8];   // 1..3 (lower is faster)
+  uint8_t tick[8];
+  for (uint8_t x = 0; x < W; x++) {
+    headY[x] = 0xFF; // inactive
+    speed[x] = (uint8_t)(1 + (nextL() % 3));
+    tick[x] = 0;
+  }
+
+  // Gentle clear
+  matrixFill(0);
+  pixels.show();
+
+  // Bottom foam persistence per column (0..255 intensity)
+  uint8_t foam[8];
+  for (uint8_t i = 0; i < W; i++) foam[i] = 0;
+
+  // Phase for color crossfade (blue <-> pink)
+  uint8_t t = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Trails fade; a bit slower to keep more mist visible
+    matrixFade(80);
+
+    // Triangle wave 0..255
+    uint8_t ph = (uint8_t)(t);
+    uint8_t tri = (ph & 0x80) ? (uint8_t)(255 - ((ph & 0x7F) << 1))
+                              : (uint8_t)(((ph & 0x7F) << 1));
+
+    // Helper to blend two RGB colors by weight w (0..255)
+    auto blend = [&](uint32_t a, uint32_t b, uint8_t w) -> uint32_t {
+      uint8_t ar = (a >> 16) & 0xFF, ag = (a >> 8) & 0xFF, ab = a & 0xFF;
+      uint8_t br = (b >> 16) & 0xFF, bg = (b >> 8) & 0xFF, bb = b & 0xFF;
+      uint8_t r = (uint16_t)ar * (255 - w) / 255 + (uint16_t)br * w / 255;
+      uint8_t g = (uint16_t)ag * (255 - w) / 255 + (uint16_t)bg * w / 255;
+      uint8_t bch = (uint16_t)ab * (255 - w) / 255 + (uint16_t)bb * w / 255;
+      return pixels.Color(r, g, bch);
+    };
+
+    // Define blue and pink palettes, then blend by tri
+    const uint32_t HEAD_BLUE  = pixels.Color(120, 180, 255);
+    const uint32_t HEAD_PINK  = pixels.Color(255, 120, 200);
+    const uint32_t BODY_BLUE  = pixels.Color(40, 100, 220);
+    const uint32_t BODY_PINK  = pixels.Color(220, 60, 140);
+    const uint32_t MISTA_BLUE = pixels.Color(200, 220, 255);
+    const uint32_t MISTA_PINK = pixels.Color(255, 200, 230);
+    const uint32_t MISTB_BLUE = pixels.Color(120, 180, 255);
+    const uint32_t MISTB_PINK = pixels.Color(255, 140, 200);
+    const uint32_t FOAM_BLUE  = pixels.Color(200, 230, 255);
+    const uint32_t FOAM_PINK  = pixels.Color(255, 220, 240);
+    const uint32_t SPARK_BLUE = pixels.Color(220, 240, 255);
+    const uint32_t SPARK_PINK = pixels.Color(255, 230, 245);
+
+    uint32_t COL_HEAD  = blend(HEAD_BLUE,  HEAD_PINK,  tri);
+    uint32_t COL_BODY  = blend(BODY_BLUE,  BODY_PINK,  tri);
+    uint32_t COL_MISTA = blend(MISTA_BLUE, MISTA_PINK, tri);
+    uint32_t COL_MISTB = blend(MISTB_BLUE, MISTB_PINK, tri);
+    uint32_t COL_FOAM  = blend(FOAM_BLUE,  FOAM_PINK,  tri);
+    uint32_t COL_SPARK = blend(SPARK_BLUE, SPARK_PINK, tri);
+
+    for (uint8_t x = 0; x < W; x++) {
+      // Spawn new drop at the top occasionally when inactive
+      if (headY[x] == 0xFF) {
+        if ((nextL() & 0x07) <= 1) { // ~2/8 chance
+          headY[x] = 0; // top
+          speed[x] = (uint8_t)(1 + (nextL() % 3));
+          tick[x] = 0;
+        }
+        continue;
+      }
+
+      // Progress falling based on per-column speed divider
+      tick[x]++;
+      if ((tick[x] % speed[x]) == 0) {
+        if (headY[x] + 1 < H) headY[x]++;
+        else {
+          // Splash at bottom: brief mist to sides and above
+          uint8_t y = (uint8_t)(H - 1);
+          matrixSet(x, y, dimColor(COL_MISTA, 160));
+          if (x > 0)      matrixSet((uint8_t)(x - 1), y, dimColor(COL_MISTB, 140));
+          if (x + 1 < W)  matrixSet((uint8_t)(x + 1), y, dimColor(COL_MISTB, 140));
+          if (y > 0)      matrixSet(x, (uint8_t)(y - 1), dimColor(COL_MISTB, 120));
+          // Chance of extra spray pixel popping up one row higher and to the side
+          if ((nextL() & 0x03) <= 1) { // slightly more spray
+            int8_t sx = (int8_t)x + (int8_t)((nextL() & 1) ? 1 : -1);
+            uint8_t sy = (uint8_t)(y > 0 ? y - 1 : y);
+            if (sx >= 0 && sx < (int8_t)W) matrixSet((uint8_t)sx, sy, dimColor(COL_MISTA, 200));
+          }
+          // Add foam persistence at the bottom with lateral push
+          if (foam[x] < 220) foam[x] = 220;
+          if (x > 0 && foam[x-1] < 140) foam[x-1] = 140;
+          if (x + 1 < W && foam[x+1] < 140) foam[x+1] = 140;
+          // Deactivate head; new one may spawn later
+          headY[x] = 0xFF;
+          continue;
+        }
+      }
+
+      // Draw falling head and faint body above
+      uint8_t y = headY[x];
+      matrixSet(x, y, dimColor(COL_HEAD, 220));
+      if (y > 0) matrixSet(x, (uint8_t)(y - 1), dimColor(COL_BODY, 160));
+    }
+
+    // Persistent foam rendering and shimmer along the bottom row
+    for (uint8_t x = 0; x < W; x++) {
+      // Light diffusion: nudge foam sideways a bit
+      if ((nextL() & 0x07) == 0) {
+        if ((nextL() & 1) && x + 1 < W && foam[x] > 10) { uint8_t d = (uint8_t)(foam[x] / 6); foam[x] -= d; if (foam[x+1] + d < 255) foam[x+1] += d; }
+        else if (x > 0 && foam[x] > 10) { uint8_t d = (uint8_t)(foam[x] / 6); foam[x] -= d; if (foam[x-1] + d < 255) foam[x-1] += d; }
+      }
+      // Decay foam slowly
+      if (foam[x] > 4) foam[x] = (uint8_t)(foam[x] - 4); else foam[x] = 0;
+      // Base foam color (white-blue) scaled by foam intensity
+      if (foam[x] > 0) matrixSet(x, (uint8_t)(H - 1), dimColor(COL_FOAM, foam[x]));
+
+      // Occasional sparkle and tiny up-splash
+      uint8_t rnd = (uint8_t)(nextL() & 0xFF);
+      if ((rnd & 0x07) == 0) {
+        uint8_t sparkle = (uint8_t)(160 + (rnd & 0x1F));
+        matrixSet(x, (uint8_t)(H - 1), dimColor(COL_SPARK, sparkle));
+      } else if ((rnd & 0x1F) == 0) {
+        if (H >= 2) matrixSet(x, (uint8_t)(H - 2), dimColor(pixels.Color(140, 200, 255), 140));
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t += 3; // advance color phase slowly
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixNightStreet2000
+   Night street scene on 5x4:
+   - Warm streetlights cast a vertical glow with subtle flicker.
+   - Passing car headlights sweep across the bottom row (paired white).
+   - Neon sign flickers in pink/cyan tones in a small 2x2 area.
+   - Distant window twinkles in the top rows.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+static inline void matrixNightStreet2000(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  // LFSR for light randomness
+  uint16_t lfsr = (uint16_t)(millis() ^ 0xA55A);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  // Car headlights state: two cars with x position and direction
+  int8_t carX0 = -3, carX1 = W + 2; // start off-screen
+  int8_t carDir0 = 1;               // left->right
+  int8_t carDir1 = -1;              // right->left
+  uint8_t tick = 0;
+
+  // Neon sign area (2x2) anchored near top-right if possible
+  const uint8_t neonX = (W >= 4) ? (W - 2) : 0;
+  const uint8_t neonY = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Fade trails gently
+    matrixFade(72);
+
+    // Base night tint (very dark blue), blended sparsely to save cycles
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        if (((x + y + tick) & 0x0F) == 0) {
+          uint32_t tint = pixels.Color(5, 8, 20);
+          int idx = matrixIndex(x, y);
+          uint32_t prev = pixels.getPixelColor(idx);
+          uint8_t a = 16; // small blend-in
+          uint8_t pr = (prev >> 16) & 0xFF, pg = (prev >> 8) & 0xFF, pb = prev & 0xFF;
+          uint8_t tr = (tint >> 16) & 0xFF, tg = (tint >> 8) & 0xFF, tb = tint & 0xFF;
+          uint8_t r = (uint16_t)pr * (255 - a) / 255 + (uint16_t)tr * a / 255;
+          uint8_t g = (uint16_t)pg * (255 - a) / 255 + (uint16_t)tg * a / 255;
+          uint8_t b = (uint16_t)pb * (255 - a) / 255 + (uint16_t)tb * a / 255;
+          pixels.setPixelColor(idx, r, g, b);
+        }
+      }
+    }
+
+    // Streetlights: choose a column and cast warm vertical glow with flicker
+    if ((tick & 0x03) == 0) {
+      uint8_t col = (uint8_t)(nextL() % W);
+      uint8_t base = (uint8_t)(180 + (nextL() & 0x1F)); // 180..211
+      for (uint8_t y = 0; y < H; y++) {
+        uint8_t lvl = (uint8_t)(base - y * 24); // stronger at bottom
+        if (lvl < 40) lvl = 40;
+        matrixSet(col, y, dimColor(pixels.Color(255, 200, 80), lvl));
+      }
+    }
+
+    // Car headlights sweeping on bottom row (two cars, opposite directions)
+    if ((tick & 0x01) == 0) {
+      carX0 += carDir0; carX1 += carDir1;
+      if (carX0 >= (int8_t)W + 2) carX0 = -3;   // wrap
+      if (carX1 < -3)            carX1 = (int8_t)W + 2; // wrap
+    }
+    auto drawCar = [&](int8_t cx, uint32_t headCol) {
+      for (int8_t k = 0; k < 2; k++) {
+        int8_t x = (int8_t)(cx + k);
+        if (x >= 0 && x < (int8_t)W) matrixSet((uint8_t)x, (uint8_t)(H - 1), headCol);
+      }
+    };
+    uint32_t headCol0 = pixels.Color(255, 255, 220);
+    uint32_t headCol1 = pixels.Color(220, 240, 255);
+    drawCar(carX0, dimColor(headCol0, 220));
+    drawCar(carX1, dimColor(headCol1, 200));
+
+    // Neon sign flicker in pink/cyan (2x2 area)
+    uint8_t neonPhase = (uint8_t)(nextL() & 0xFF);
+    uint8_t neonOn = (uint8_t)((neonPhase & 0x1F) > 3); // occasionally off
+    if (neonOn) {
+      uint32_t neonA = pixels.Color(255, 80, 160); // pink
+      uint32_t neonB = pixels.Color(40, 200, 200); // cyan
+      uint32_t neonMix = (neonPhase & 0x20) ? neonA : neonB;
+      uint8_t pul = (uint8_t)(180 + (neonPhase & 0x3F));
+      for (uint8_t dy = 0; dy < 2 && neonY + dy < H; dy++)
+        for (uint8_t dx = 0; dx < 2 && neonX + dx < W; dx++)
+          matrixSet((uint8_t)(neonX + dx), (uint8_t)(neonY + dy), dimColor(neonMix, pul));
+    }
+
+    // Distant windows twinkle in top half
+    if ((tick & 0x03) == 0) {
+      uint8_t wx = (uint8_t)(nextL() % W);
+      uint8_t wy = (uint8_t)(nextL() % (H > 2 ? (H - 2) : H)); // avoid bottom row
+      matrixSet(wx, wy, dimColor(pixels.Color(255, 220, 120), (uint8_t)(140 + (nextL() & 0x3F))));
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    tick++;
   }
 }
 
@@ -1187,6 +1452,41 @@ inline void matrixLarsonScanner(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   }
 }
 
+// Dual-row Larson scanner: top goes L->R, bottom goes R->L, both with tails
+inline void matrixLarsonScannerDual(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t yTop = 0;
+  const uint8_t yBot = (uint8_t)(MATRIX_H - 1);
+  int8_t posTop = 0, dirTop = 1;
+  int8_t posBot = (int8_t)(MATRIX_W - 1), dirBot = -1;
+  uint8_t hue = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFade(56);
+    uint32_t headCol = Wheel(hue);
+    uint32_t tail1 = dimColor(headCol, 160);
+    uint32_t tail2 = dimColor(headCol, 80);
+    // Top row
+    matrixSet((uint8_t)posTop, yTop, headCol);
+    if (posTop - 1 >= 0) matrixSet((uint8_t)(posTop - 1), yTop, tail1);
+    if (posTop - 2 >= 0) matrixSet((uint8_t)(posTop - 2), yTop, tail2);
+    // Bottom row
+    matrixSet((uint8_t)posBot, yBot, headCol);
+    if (posBot + 1 < (int8_t)MATRIX_W) matrixSet((uint8_t)(posBot + 1), yBot, tail1);
+    if (posBot + 2 < (int8_t)MATRIX_W) matrixSet((uint8_t)(posBot + 2), yBot, tail2);
+
+    pixels.show();
+    delay(stepDelay_ms);
+
+    // Advance
+    posTop += dirTop; posBot += dirBot; hue += 5;
+    // Bounce
+    if (posTop <= 0) { posTop = 0; dirTop = 1; }
+    if (posTop >= (int8_t)(MATRIX_W - 1)) { posTop = (int8_t)(MATRIX_W - 1); dirTop = -1; }
+    if (posBot <= 0) { posBot = 0; dirBot = 1; }
+    if (posBot >= (int8_t)(MATRIX_W - 1)) { posBot = (int8_t)(MATRIX_W - 1); dirBot = -1; }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* matrixRain
    Blue droplets spawn at the top and fall down, leaving fading trails.
@@ -1276,7 +1576,9 @@ inline void matrixTetris(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 
   auto idx = [&](int8_t x, int8_t y) -> int { return y * W + x; };
   auto occupied = [&](int8_t x, int8_t y) -> bool {
-    if (x < 0 || x >= (int8_t)W || y < 0 || y >= (int8_t)H) return true; // out of bounds = solid
+    // Allow y < 0 (above top) to be empty so pieces can spawn/fall into view
+    if (x < 0 || x >= (int8_t)W || y >= (int8_t)H) return true; // walls and floor are solid
+    if (y < 0) return false; // above top is empty space
     return field[idx(x, y)] != 0;
   };
 
@@ -1290,7 +1592,15 @@ inline void matrixTetris(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 
   while ((uint16_t)(millis() - start) < runtime_ms) {
     uint8_t kind = (uint8_t)random(3);
-    int8_t px = (kind == 1) ? (int8_t)random(0, (int8_t)(W - 2)) : (int8_t)random(0, (int8_t)(W - 1));
+    // Safe spawn ranges per piece to avoid immediate OOB when writing
+    int8_t px;
+    if (kind == 0) { // 2x2 square spans x..x+1
+      px = (int8_t)random(0, (int8_t)(W >= 2 ? (W - 1) : 0));
+    } else if (kind == 1) { // 3-long bar spans x..x+2
+      px = (int8_t)random(0, (int8_t)(W >= 3 ? (W - 2) : 0));
+    } else { // L-ish spans x..x+2 on bottom row
+      px = (int8_t)random(0, (int8_t)(W >= 3 ? (W - 2) : 0));
+    }
     int8_t py = H; // start just above top
     uint8_t hue = hueBase;
 
@@ -1303,9 +1613,26 @@ inline void matrixTetris(uint16_t runtime_ms, uint16_t stepDelay_ms) {
       else { for (uint8_t i = 0; i < 4; i++) { if (occupied(px + P2[i][0], ny + P2[i][1])) { hit = true; break; } } }
 
       if (hit) {
-        if (kind == 0) { for (uint8_t i = 0; i < 4; i++) field[idx(px + P0[i][0], py + P0[i][1])] = 1; }
-        else if (kind == 1) { for (uint8_t i = 0; i < 3; i++) field[idx(px + P1[i][0], py + P1[i][1])] = 1; }
-        else { for (uint8_t i = 0; i < 4; i++) field[idx(px + P2[i][0], py + P2[i][1])] = 1; }
+        // Lock piece into field; guard bounds to avoid OOB writes
+        if (kind == 0) {
+          for (uint8_t i = 0; i < 4; i++) {
+            int8_t ax = (int8_t)(px + P0[i][0]);
+            int8_t ay = (int8_t)(py + P0[i][1]);
+            if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) field[idx(ax, ay)] = 1;
+          }
+        } else if (kind == 1) {
+          for (uint8_t i = 0; i < 3; i++) {
+            int8_t ax = (int8_t)(px + P1[i][0]);
+            int8_t ay = (int8_t)(py + P1[i][1]);
+            if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) field[idx(ax, ay)] = 1;
+          }
+        } else {
+          for (uint8_t i = 0; i < 4; i++) {
+            int8_t ax = (int8_t)(px + P2[i][0]);
+            int8_t ay = (int8_t)(py + P2[i][1]);
+            if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) field[idx(ax, ay)] = 1;
+          }
+        }
         locked = true;
         // Clear any full rows
         for (uint8_t y = 0; y < H; y++) {
@@ -1328,9 +1655,13 @@ inline void matrixTetris(uint16_t runtime_ms, uint16_t stepDelay_ms) {
       matrixFill(0);
       for (uint8_t y = 0; y < H; y++) for (uint8_t x = 0; x < W; x++) if (field[idx(x, y)]) matrixSet(x, y, dimColor(pixels.Color(255,160,80), 180));
       uint32_t col = Wheel(hue);
-      if (kind == 0) { for (uint8_t i = 0; i < 4; i++) { int8_t ax = px + P0[i][0], ay = py + P0[i][1]; if (ay >= 0 && ay < (int8_t)H) matrixSet(ax, ay, col); } }
-      else if (kind == 1) { for (uint8_t i = 0; i < 3; i++) { int8_t ax = px + P1[i][0], ay = py + P1[i][1]; if (ay >= 0 && ay < (int8_t)H) matrixSet(ax, ay, col); } }
-      else { for (uint8_t i = 0; i < 4; i++) { int8_t ax = px + P2[i][0], ay = py + P2[i][1]; if (ay >= 0 && ay < (int8_t)H) matrixSet(ax, ay, col); } }
+      if (kind == 0) {
+        for (uint8_t i = 0; i < 4; i++) { int8_t ax = px + P0[i][0], ay = py + P0[i][1]; if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) matrixSet((uint8_t)ax, (uint8_t)ay, col); }
+      } else if (kind == 1) {
+        for (uint8_t i = 0; i < 3; i++) { int8_t ax = px + P1[i][0], ay = py + P1[i][1]; if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) matrixSet((uint8_t)ax, (uint8_t)ay, col); }
+      } else {
+        for (uint8_t i = 0; i < 4; i++) { int8_t ax = px + P2[i][0], ay = py + P2[i][1]; if (ax >= 0 && ax < (int8_t)W && ay >= 0 && ay < (int8_t)H) matrixSet((uint8_t)ax, (uint8_t)ay, col); }
+      }
       pixels.show();
       delay(stepDelay_ms);
       hue += 7;

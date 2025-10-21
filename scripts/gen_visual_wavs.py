@@ -47,6 +47,10 @@ VISUALS = [
     (20, "flags"),
     (21, "flags-fade"),
     (22, "digital-rain"),
+    (23, "waterfall"),
+    (24, "larson-dual"),
+    (25, "night-street-2000"),
+    (26, "switch-toggle"),
 ]
 
 
