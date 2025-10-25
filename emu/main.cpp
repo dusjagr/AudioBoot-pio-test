@@ -75,9 +75,10 @@ void randomSeed(unsigned long seed) { std::srand((unsigned)seed); }
 struct RGB { uint8_t r,g,b; };
 static inline RGB unpack(uint32_t c) { return RGB{ uint8_t((c>>16)&0xFF), uint8_t((c>>8)&0xFF), uint8_t(c&0xFF)}; }
 
-void write_ppm(const std::string& path, const std::vector<uint32_t>& buf, int mw, int mh, int cell=20) {
-  int W = mw * cell;
-  int H = mh * cell;
+// cellW/cellH allow non-square pixels; use 5:4 ratio by default (e.g., 30x24)
+void write_ppm(const std::string& path, const std::vector<uint32_t>& buf, int mw, int mh, int cellW=30, int cellH=24) {
+  int W = mw * cellW;
+  int H = mh * cellH;
   std::vector<uint8_t> img(W*H*3, 0);
   // fill background dark
   for (size_t i=0;i<img.size();++i) img[i]=10;
@@ -87,10 +88,10 @@ void write_ppm(const std::string& path, const std::vector<uint32_t>& buf, int mw
       int idx = matrixIndex((uint8_t)x,(uint8_t)y);
       if (idx<0) continue;
       RGB c = unpack(buf[(size_t)idx]);
-      for (int dy=1; dy<cell-1; ++dy) {
-        for (int dx=1; dx<cell-1; ++dx) {
-          int px = x*cell + dx;
-          int py = y*cell + dy;
+      for (int dy=1; dy<cellH-1; ++dy) {
+        for (int dx=1; dx<cellW-1; ++dx) {
+          int px = x*cellW + dx;
+          int py = y*cellH + dy;
           size_t off = (size_t)(py*W + px)*3;
           img[off+0]=c.r; img[off+1]=c.g; img[off+2]=c.b;
         }
@@ -124,7 +125,8 @@ int main(int argc, char** argv) {
     if (frame_no >= frames_limit) return; // cap frames
     char name[256];
     std::snprintf(name, sizeof(name), "%s/frame_%04d.ppm", outdir.c_str(), frame_no++);
-    write_ppm(name, data, MATRIX_W, MATRIX_H, 30);
+    // Render with 5:4 pixel aspect (e.g., 30x24)
+    write_ppm(name, data, MATRIX_W, MATRIX_H, 30, 24);
   });
 
   // Seed RNG deterministically for repeatable previews
