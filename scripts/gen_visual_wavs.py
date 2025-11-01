@@ -51,6 +51,10 @@ VISUALS = [
     (24, "larson-dual"),
     (25, "night-street-2000"),
     (26, "switch-toggle"),
+    (27, "blue-screen"),
+    (28, "snow-white"),
+    (29, "big-bad-wolf"),
+    (30, "trickster-plasma"),
 ]
 
 

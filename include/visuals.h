@@ -3,6 +3,7 @@
 #include <avr/pgmspace.h>
 #include <Adafruit_NeoPixel.h>
 #include "matrix_helpers.h"
+#include <math.h>
 
 // [Note for contributors]
 // Implementations of visuals are placed below in the "===== Implementations =====" section.
@@ -207,6 +208,53 @@ inline void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col)
       if ((uint16_t)(millis() - start) >= runtime_ms) return;
     }
     bar++;
+  }
+}
+
+inline void matrixTricksterPlasma(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  // Brown→Yellow palette endpoints
+  const uint32_t COL_DARK = pixels.Color(30, 15, 0);     // darker base for more contrast
+  const uint32_t COL_BRIGHT = pixels.Color(255, 220, 60); // brighter highlight
+  auto lerpCol = [&](uint8_t a){
+    // a: 0..255 -> interpolate COL_DARK..COL_BRIGHT
+    uint8_t dr = (uint8_t)((COL_DARK >> 16) & 0xFF), dg = (uint8_t)((COL_DARK >> 8) & 0xFF), db = (uint8_t)(COL_DARK & 0xFF);
+    uint8_t br = (uint8_t)((COL_BRIGHT >> 16) & 0xFF), bg = (uint8_t)((COL_BRIGHT >> 8) & 0xFF), bb = (uint8_t)(COL_BRIGHT & 0xFF);
+    uint8_t r = (uint8_t)(dr + ((uint16_t)(br - dr) * a >> 8));
+    uint8_t g = (uint8_t)(dg + ((uint16_t)(bg - dg) * a >> 8));
+    uint8_t b = (uint8_t)(db + ((uint16_t)(bb - db) * a >> 8));
+    return pixels.Color(r, g, b);
+  };
+  // Motion phases
+  float p1 = 0.f, p2 = 0.f, p3 = 0.f;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Slightly faster drift for more dynamic motion
+    p1 += 0.18f; p2 += 0.11f; p3 += 0.08f;
+    for (uint8_t y = 0; y < MATRIX_H; ++y) {
+      for (uint8_t x = 0; x < MATRIX_W; ++x) {
+        // 3-field interference for plasma-like value 0..1
+        float v = 0.0f;
+        v += sin((x + p1) * 0.8f);
+        v += cos((y - p2) * 1.1f);
+        v += sin(((int)x + (int)y + p3) * 0.6f);
+        v += 0.6f * sin((x * 0.5f - y * 0.7f) + p2 * 0.9f); // extra cross-term for contrasty motion
+        // normalize from [-3,3] -> [0,1]
+        v = (v * (1.0f / 7.2f)) + 0.5f; // adjust normalization for added term
+        if (v < 0.f) v = 0.f; if (v > 1.f) v = 1.f;
+        // add slight pulsing bias to mimic flickery trickster look
+        float pulse = (sin(p1 * 0.25f) * 0.15f);
+        float vv = v + pulse; if (vv < 0.f) vv = 0.f; if (vv > 1.f) vv = 1.f;
+        // logarithmic/gamma-like contrast to bias toward darkness
+        vv = vv * 1.05f; if (vv > 1.f) vv = 1.f; if (vv < 0.f) vv = 0.f;
+        vv = pow(vv, 2.4f);               // gamma > 1 darkens mid/highs
+        if (vv < 0.06f) vv = 0.f;         // black floor for deeper shadows
+        uint8_t a = (uint8_t)(vv * 255.0f + 0.5f);
+        uint32_t c = lerpCol(a);
+        matrixSet(x, y, c);
+      }
+    }
+    pixels.show();
+    delay(stepDelay_ms);
   }
 }
 
@@ -1426,23 +1474,48 @@ inline void matrixLarsonScanner(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   pixels.show();
   int8_t pos = 0;
   int8_t dir = 1;
-  uint8_t y = (MATRIX_H > 2) ? 2 : 1;
+  int8_t y = (MATRIX_H > 2) ? 2 : 1;
   while ((uint16_t)(millis() - start) < runtime_ms) {
     matrixFade(40);
     uint32_t head = pixels.Color(255, 0, 0);
     uint32_t tail1 = dimColor(head, 140);
-    uint32_t tail2 = dimColor(head, 60);
+    uint32_t tail2 = dimColor(head, 40);
     int8_t yUp = ((int8_t)y) - 1;
     int8_t yDown = ((int8_t)y) + 1;
-    uint32_t headAdj = dimColor(head, 80);
-    uint8_t oppX = (uint8_t)(MATRIX_W - 1 - pos);
-    matrixSet((uint8_t)pos, y, head);
+    uint32_t headAdj = dimColor(head, 90);
+    uint32_t tail1Adj = dimColor(headAdj, 140);
+    uint32_t tail2Adj = dimColor(headAdj, 80);
+    uint32_t tail3Adj = dimColor(headAdj, 40);
+    uint32_t tail4Adj = 0; // fully off at the far tail for above/below lines
+    // Boost center head with a hint of white for extra brightness
+    uint32_t headCenter = pixels.Color(255, 40, 40);
+    matrixSet((uint8_t)pos, y, headCenter);
     if (pos - 1 >= 0) matrixSet((uint8_t)(pos - 1), y, tail1);
     if (pos + 1 < MATRIX_W) matrixSet((uint8_t)(pos + 1), y, tail1);
     if (pos - 2 >= 0) matrixSet((uint8_t)(pos - 2), y, tail2);
     if (pos + 2 < MATRIX_W) matrixSet((uint8_t)(pos + 2), y, tail2);
-    if (yUp >= 0) { matrixSet(oppX, (uint8_t)yUp, headAdj); }
-    if (yDown < (int8_t)MATRIX_H) { matrixSet(oppX, (uint8_t)yDown, headAdj); }
+    if (yUp >= 0) {
+      matrixSet((uint8_t)pos, (uint8_t)yUp, headAdj);
+      if (pos - 1 >= 0) matrixSet((uint8_t)(pos - 1), (uint8_t)yUp, tail1Adj);
+      if (pos + 1 < MATRIX_W) matrixSet((uint8_t)(pos + 1), (uint8_t)yUp, tail1Adj);
+      if (pos - 2 >= 0) matrixSet((uint8_t)(pos - 2), (uint8_t)yUp, tail2Adj);
+      if (pos + 2 < MATRIX_W) matrixSet((uint8_t)(pos + 2), (uint8_t)yUp, tail2Adj);
+      if (pos - 3 >= 0) matrixSet((uint8_t)(pos - 3), (uint8_t)yUp, tail3Adj);
+      if (pos + 3 < MATRIX_W) matrixSet((uint8_t)(pos + 3), (uint8_t)yUp, tail3Adj);
+      if (pos - 4 >= 0) matrixSet((uint8_t)(pos - 4), (uint8_t)yUp, tail4Adj);
+      if (pos + 4 < MATRIX_W) matrixSet((uint8_t)(pos + 4), (uint8_t)yUp, tail4Adj);
+    }
+    if (yDown < (int8_t)MATRIX_H) {
+      matrixSet((uint8_t)pos, (uint8_t)yDown, headAdj);
+      if (pos - 1 >= 0) matrixSet((uint8_t)(pos - 1), (uint8_t)yDown, tail1Adj);
+      if (pos + 1 < MATRIX_W) matrixSet((uint8_t)(pos + 1), (uint8_t)yDown, tail1Adj);
+      if (pos - 2 >= 0) matrixSet((uint8_t)(pos - 2), (uint8_t)yDown, tail2Adj);
+      if (pos + 2 < MATRIX_W) matrixSet((uint8_t)(pos + 2), (uint8_t)yDown, tail2Adj);
+      if (pos - 3 >= 0) matrixSet((uint8_t)(pos - 3), (uint8_t)yDown, tail3Adj);
+      if (pos + 3 < MATRIX_W) matrixSet((uint8_t)(pos + 3), (uint8_t)yDown, tail3Adj);
+      if (pos - 4 >= 0) matrixSet((uint8_t)(pos - 4), (uint8_t)yDown, tail4Adj);
+      if (pos + 4 < MATRIX_W) matrixSet((uint8_t)(pos + 4), (uint8_t)yDown, tail4Adj);
+    }
     pixels.show();
     delay(stepDelay_ms);
     pos += dir;
@@ -1483,6 +1556,67 @@ inline void matrixLarsonScannerDual(uint16_t runtime_ms, uint16_t stepDelay_ms) 
     if (posTop >= (int8_t)(MATRIX_W - 1)) { posTop = (int8_t)(MATRIX_W - 1); dirTop = -1; }
     if (posBot <= 0) { posBot = 0; dirBot = 1; }
     if (posBot >= (int8_t)(MATRIX_W - 1)) { posBot = (int8_t)(MATRIX_W - 1); dirBot = -1; }
+  }
+}
+
+inline void matrixBlueScreen(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  uint32_t blue = pixels.Color(0, 0, 255);
+  matrixFill(blue);
+  pixels.show();
+  uint16_t d = (stepDelay_ms == 0) ? 50 : stepDelay_ms;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    delay(d);
+  }
+}
+
+inline void matrixSnowWhite(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  uint16_t t = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Cycle colors: white -> blue -> red
+    uint8_t phase = (t / 16) % 3;
+    uint32_t col = pixels.Color(255, 255, 255);
+    if (phase == 1) col = pixels.Color(20, 80, 255); // soft blue dress
+    if (phase == 2) col = pixels.Color(255, 40, 40); // red ribbon
+    matrixFill(col);
+    // "Apple" blink bottom-right
+    if (((t / 8) & 1) == 0) {
+      if (MATRIX_W >= 1 && MATRIX_H >= 1) {
+        matrixSet((uint8_t)(MATRIX_W - 1), (uint8_t)(MATRIX_H - 1), pixels.Color(255, 0, 0));
+      }
+    }
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+inline void matrixBigBadWolf(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  int8_t eyeX = 0, dir = 1;
+  const uint8_t y = (MATRIX_H > 0) ? (MATRIX_H - 1) : 0; // bottom row
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Dark night background
+    matrixFill(pixels.Color(0, 0, 10));
+    // Moon glow at top-left
+    if (MATRIX_W > 0 && MATRIX_H > 0) {
+      matrixSet(0, 0, pixels.Color(200, 200, 180));
+      if (MATRIX_W > 1) matrixSet(1, 0, pixels.Color(80, 80, 70));
+      if (MATRIX_H > 1) matrixSet(0, 1, pixels.Color(80, 80, 70));
+    }
+    // Wolf eyes (two pixels) with faint red core and yellow edge
+    uint32_t eyeCore = pixels.Color(220, 40, 0);
+    uint32_t eyeEdge = pixels.Color(180, 140, 0);
+    uint8_t x0 = (eyeX < 0) ? 0 : (uint8_t)eyeX;
+    if (x0 < MATRIX_W) matrixSet(x0, y, eyeCore);
+    if ((int)x0 + 1 < MATRIX_W) matrixSet((uint8_t)(x0 + 1), y, eyeEdge);
+    pixels.show();
+    delay(stepDelay_ms);
+    // Move eyes with bounce
+    eyeX += dir;
+    if (eyeX <= 0) { eyeX = 0; dir = 1; }
+    if (eyeX >= (int8_t)(MATRIX_W - 2)) { eyeX = (int8_t)(MATRIX_W - 2); dir = -1; }
   }
 }
 
@@ -1790,7 +1924,11 @@ inline void matrixFire(uint16_t runtime_ms, uint8_t cooling, uint8_t sparking, u
     for (uint8_t x = 0; x < FW; x++) {
       if ((uint8_t)random(255) < sparking) {
         int i = idxAt(x, 0);
-        heat[i] = (uint8_t)min(255, heat[i] + (int)random(160, 255));
+        {
+          int v = (int)heat[i] + (int)random(160, 255);
+          if (v > 255) v = 255;
+          heat[i] = (uint8_t)v;
+        }
       }
     }
     // Breathing edge scaling

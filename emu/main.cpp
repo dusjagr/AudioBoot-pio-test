@@ -8,6 +8,7 @@
 #include <thread>
 #include <filesystem>
 #include <iostream>
+#include <algorithm>
 
 #include "Adafruit_NeoPixel.h"
 
@@ -27,10 +28,6 @@ inline long rnd(long howsmall, long howbig) {
   return howsmall + rnd(howbig - howsmall);
 }
 #define random(...) rnd(__VA_ARGS__)
-
-#ifndef min
-#define min(a,b) (( (a) < (b) ) ? (a) : (b))
-#endif
 
 #include "../include/matrix_helpers.h"
 #include "../include/visuals.h"
@@ -171,6 +168,10 @@ int main(int argc, char** argv) {
       case 24: matrixLarsonScannerDual((uint16_t)runtime_ms, 90); break;
       case 25: matrixNightStreet2000((uint16_t)runtime_ms, 80); break;
       case 26: matrixSwitchToggle((uint16_t)runtime_ms, 120); break;
+      case 27: matrixBlueScreen((uint16_t)runtime_ms, 50); break;
+      case 28: matrixSnowWhite((uint16_t)runtime_ms, 90); break;
+      case 29: matrixBigBadWolf((uint16_t)runtime_ms, 90); break;
+      case 30: matrixTricksterPlasma((uint16_t)runtime_ms, 90); break;
       default: matrixSunsetPickleSun((uint16_t)runtime_ms, 70); break;
     }
   };

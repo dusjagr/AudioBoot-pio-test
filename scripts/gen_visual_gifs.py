@@ -17,7 +17,7 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTDIR = ROOT / "emu_out" / "gifs"
+OUTDIR = ROOT / "wav" / "gifs"
 RUNNER = ROOT / "scripts" / "run_emulator.py"
 
 # List of visuals (id, slug)
@@ -49,6 +49,10 @@ VISUALS = [
     (24, "larson-dual"),
     (25, "night-street-2000"),
     (26, "switch-toggle"),
+    (27, "blue-screen"),
+    (28, "snow-white"),
+    (29, "big-bad-wolf"),
+    (30, "trickster-plasma"),
 ]
 
 

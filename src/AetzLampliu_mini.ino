@@ -267,6 +267,10 @@ void loop(void) {
     case 24: matrixLarsonScannerDual(10000, 90); break;
     case 25: matrixNightStreet2000(10000, 80); break;
     case 26: matrixSwitchToggle(10000, 120);    break;
+    case 27: matrixBlueScreen(10000, 50);       break;
+    case 28: matrixSnowWhite(10000, 90);        break;
+    case 29: matrixBigBadWolf(10000, 90);       break;
+    case 30: matrixTricksterPlasma(10000, 90);  break;
     default: matrixSunsetPickleSun(10000, 90); break;
   }
   return; // run one visual per loop iteration to keep behavior deterministic per WAV
@@ -279,7 +283,13 @@ void loop(void) {
   //matrixNightStreet2000(12000, 90);
   //matrixLarsonScannerDual(12000, 90);
   //matrixWaterfall(12000, 90);
-  matrixExplosion(20000, 80);
+  //matrixExplosion(20000, 80);
   //matrixTetris(10000, 250);
   //matrixLightning(10000); 
+  //matrixPinkSpiral(12000, 60);
+  //matrixLarsonScanner(12000, 160);
+   //matrixBlueScreen(12000, 160);
+   //matrixSnowWhite(12000, 90);
+   //matrixBigBadWolf(12000, 90);
+   matrixTricksterPlasma(42000, 10);
 }
