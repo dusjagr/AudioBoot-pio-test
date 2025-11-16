@@ -123,3 +123,7 @@ static inline void matrixFade(uint8_t decay) {
     pixels.setPixelColor(i, r, g, b);
   }
 }
+
+struct RGB { uint8_t r,g,b; };
+static inline RGB unpack(uint32_t c) { return RGB{ uint8_t((c>>16)&0xFF), uint8_t((c>>8)&0xFF), uint8_t(c&0xFF)}; }
+struct Coordinate { uint8_t x,y; };
