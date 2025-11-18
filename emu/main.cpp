@@ -69,9 +69,6 @@ void playSound(uint16_t /*freq*/, uint16_t /*dur*/) {}
 void randomSeed(unsigned long seed) { std::srand((unsigned)seed); }
 
 // ---- Frame writer (PPM) ----
-struct RGB { uint8_t r,g,b; };
-static inline RGB unpack(uint32_t c) { return RGB{ uint8_t((c>>16)&0xFF), uint8_t((c>>8)&0xFF), uint8_t(c&0xFF)}; }
-
 // cellW/cellH allow non-square pixels; use 5:4 ratio by default (e.g., 30x24)
 void write_ppm(const std::string& path, const std::vector<uint32_t>& buf, int mw, int mh, int cellW=30, int cellH=24) {
   int W = mw * cellW;

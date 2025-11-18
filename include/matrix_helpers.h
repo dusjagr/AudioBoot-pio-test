@@ -12,9 +12,6 @@
 #ifndef MATRIX_SERPENTINE
 #define MATRIX_SERPENTINE 0   // 1 = serpentine wiring per row, 0 = progressive
 #endif
-#ifndef MATRIX_ORIGIN_TOPLEFT
-#define MATRIX_ORIGIN_TOPLEFT 1 // assume pixel 0 is top-left
-#endif
 
 // Externs expected from the sketch or libraries
 extern Adafruit_NeoPixel pixels;
@@ -22,12 +19,8 @@ extern Adafruit_NeoPixel pixels;
 // Convert (x,y) -> strip index according to assumed wiring
 static inline int matrixIndex(uint8_t x, uint8_t y) {
   if (x >= MATRIX_W || y >= MATRIX_H) return -1;
-  uint8_t row = y;
-  uint8_t col = x;
-  if (!MATRIX_ORIGIN_TOPLEFT) {
-    // If origin is bottom-left, flip Y
-    row = (MATRIX_H - 1) - y;
-  }
+  uint8_t row = (MATRIX_H - 1) - y;
+  uint8_t col = (MATRIX_W - 1) - x;
   if (MATRIX_SERPENTINE) {
     if (row % 2 == 0) {
       // even row: left -> right
@@ -123,3 +116,7 @@ static inline void matrixFade(uint8_t decay) {
     pixels.setPixelColor(i, r, g, b);
   }
 }
+
+struct RGB { uint8_t r,g,b; };
+static inline RGB unpack(uint32_t c) { return RGB{ uint8_t((c>>16)&0xFF), uint8_t((c>>8)&0xFF), uint8_t(c&0xFF)}; }
+struct Coordinate { uint8_t x,y; };

@@ -58,13 +58,14 @@ void matrixExplosion(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixDigitalRain(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixWaterfall(uint16_t runtime_ms, uint16_t stepDelay_ms);
 static inline void matrixNightStreet2000(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixColorRotor(uint16_t runtime_ms, uint16_t stepDelay_ms);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Visuals Index and Guide
 ========================================================================================================================
-    __     __           _       _ _       
-    \ \   / /__ _ __ __| | __ _| (_)_ __  
-     \ \ / / _ \ '__/ _` |/ _` | | | '_ \ 
+    __     __           _       _ _
+    \ \   / /__ _ __ __| | __ _| (_)_ __
+     \ \ / / _ \ '__/ _` |/ _` | | | '_ \
       \ V /  __/ | | (_| | (_| | | | | | |
        \_/ \___|_|  \__,_|\__,_|_|_|_| |_|
 
@@ -92,6 +93,7 @@ static inline void matrixNightStreet2000(uint16_t runtime_ms, uint16_t stepDelay
   - matrixFlagsShow(runtime, hold_ms): Cycle through several 5x4 national flags.
   - matrixFlagsShowFade(runtime, hold_ms, fade_ms, steps): Flags with cross-fades.
   - matrixDigitalRain(runtime, stepDelay): Matrix movie-style green code rain adapted to 5x4.
+  - matrixColorRotor(runtime, stepDelay): Rotor changing colors as it swipes the field.
 
   Tip: For very small flash budgets, comment-out heavier effects or guard them with macros.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -1952,6 +1954,112 @@ inline void matrixFire(uint16_t runtime_ms, uint8_t cooling, uint8_t sparking, u
       }
     }
     pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixColorRotor
+   Starts with a field of red, a rotor swiping from the center to top in a counter-clockwise fashion around the field.
+   As it passes over the pixels, their colors are slowly cicled upon contact with the rotor. Green is mixed in till
+   yellow is reached, then red is removed till pure green is reached, then blue is mixed in till cyan is reached, then
+   green is removed till pure blue is reached, then red is mixed in till violet is reached and finally blue is removed
+   till pure red is reached again, completing the color cycle.
+
+   The animation is pre-calculated for one quadrant, then mirrored in counter-clockwise sequence:
+   +---+---+
+   | 1 | 4 |
+   +---+---+
+   | 2 | 3 |
+   +---+---+
+
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixColorRotor(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  // pre-calculated animation for first quadrant
+  const Coordinate seq[4][2] = {
+    {
+      {.x = 2, .y = 1}, {.x = 2, .y = 0}
+    }, {
+      {.x = 2, .y = 1}, {.x = 1, .y = 0}
+    }, {
+      {.x = 1, .y = 1}, {.x = 0, .y = 0}
+    }, {
+      {.x = 1, .y = 1}, {.x = 0, .y = 1}
+    }
+  };
+  constexpr uint8_t seqCols = sizeof(seq[0]) / sizeof(Coordinate);
+  constexpr uint8_t seqRows = sizeof(seq) / sizeof(seq[0]);
+
+  pixels.setBrightness(16);
+  matrixFill(COL_RED);
+  RGB c{.r = 255, .g = 1, .b = 0};
+  uint8_t frame = 0;
+  uint8_t quadrant = 0;
+
+  const uint32_t start = millis();
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    for (uint8_t i = 0; i < seqCols; ++i) {
+      uint8_t x = seq[frame][i].x;
+      uint8_t y = seq[frame][i].y;
+      if (quadrant > 1) {
+        x = MATRIX_W - x - 1;
+      }
+      if (quadrant && quadrant < 3) {
+        y = MATRIX_H - y - 1;
+      }
+      matrixSet(x, y, Adafruit_NeoPixel::Color(c.r, c.g, c.b));
+    }
+    pixels.show();
+
+    // iterate over each dual combinations of the three colors
+    if (c.r == 255 && c.g < 255 && c.b == 0) {
+      // red to yellow
+      ++c.g;
+    } else if (c.r > 0 && c.g == 255 && c.b == 0) {
+      // yellow to green
+      --c.r;
+    } else if (c.r == 0 && c.g == 255 && c.b < 255) {
+      // green to cyan
+      ++c.b;
+    } else if (c.r == 0 && c.g > 0 && c.b == 255) {
+      // cyan to blue
+      --c.g;
+    } else if (c.r < 255 && c.g == 0 && c.b == 255) {
+      // blue to violet
+      ++c.r;
+    } else if (c.r == 255 && c.g == 0 && c.b > 0) {
+      // violet to red
+      --c.b;
+      if (c.b == 0) {
+        // we are done, please restart me
+        return;
+      }
+    }
+
+    // quadrant 1 & 2 play inverted
+    if (quadrant && quadrant < 3) {
+      if (frame == 0) {
+        ++quadrant;
+        quadrant %= 4;
+        if (quadrant < 3) {
+          frame = seqRows - 1;
+        }
+      } else {
+        --frame;
+      }
+    } else {
+      ++frame;
+      frame %= seqRows;
+      if (frame == 0) {
+        ++quadrant;
+        quadrant %= 4;
+        if (quadrant && quadrant < 3) {
+          frame = seqRows - 1;
+        }
+      }
+    }
+
     delay(stepDelay_ms);
   }
 }
