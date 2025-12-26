@@ -48,6 +48,17 @@ void matrixCometSweep(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixPinkSpiral(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixGalagaInvader(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixLightning(uint16_t runtime_ms);
+void matrixBlueLightning(uint16_t runtime_ms);
+void matrixFlowerBurst(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixAlpineStorm(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixCocktail(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixHeartbeatCalm(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixHeartbeatRelentless(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixPinkPlasmaBoom(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixPinkVelvet(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixBreathAndRush(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixFunkySchachBratz(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixRainbowWash(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixFlagsShow(uint16_t runtime_ms, uint16_t hold_ms);
 void matrixFlagsShowFade(uint16_t runtime_ms, uint16_t hold_ms, uint16_t fade_ms, uint8_t steps);
 void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col);
@@ -56,8 +67,13 @@ void matrixSunsetPickleSun(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixLarsonScannerDual(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixExplosion(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixDigitalRain(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixMonoBlink5s(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixDigitalRainAmber(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixWaterfall(uint16_t runtime_ms, uint16_t stepDelay_ms);
 static inline void matrixNightStreet2000(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixChristmasTreeAura(uint16_t runtime_ms, uint16_t stepDelay_ms, uint8_t sparkleMask);
+void matrixUniverseCreation(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixSpear(uint16_t runtime_ms, uint16_t stepDelay_ms);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Visuals Index and Guide
@@ -150,6 +166,8 @@ inline void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col)
         uint32_t c = dimColor(Wheel(yHue), mainLevel);
         matrixSet(col, y, c);
       }
+
+
       // Light adjacent columns with falloff for a wider, more interesting look
       if (col > 0) {
         uint8_t leftLevel = (uint8_t)(mainLevel / 3);
@@ -208,6 +226,1480 @@ inline void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col)
       if ((uint16_t)(millis() - start) >= runtime_ms) return;
     }
     bar++;
+  }
+}
+
+// Small rainbow planet that flies across with vertical wobble and trail
+inline void matrixRainbowPlanet(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+  uint8_t t = 0;
+
+  auto tri8 = [](uint8_t v) -> uint8_t {
+    return (v & 0x80) ? (uint8_t)(255 - ((v & 0x7F) << 1)) : (uint8_t)((v & 0x7F) << 1);
+  };
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Soft fade, aber etwas länger sichtbar
+    matrixFade(88);
+
+    uint8_t phase = t;
+
+    // Basiszentrum in der Mitte, etwas stärkere kreisförmige Wobble-Bewegung
+    int8_t baseX = (int8_t)(W / 2);      // 2 bei 5x4
+    int8_t baseY = (int8_t)(H / 2);      // 2 bei 5x4
+
+    uint8_t wobH = tri8((uint8_t)(phase * 2));        // 0..255
+    uint8_t wobV = tri8((uint8_t)(phase * 3 + 37));   // 0..255, phasenverschoben
+    int8_t cx = (int8_t)(baseX + (int8_t)((int16_t)(wobH - 128) / 90));  // ca. -2..+2
+    int8_t cy = (int8_t)(baseY + (int8_t)((int16_t)(wobV - 128) / 120)); // etwas kleinerer Hub
+    if (cx < 0) cx = 0; if (cx >= (int8_t)W) cx = (int8_t)W - 1;
+    if (cy < 0) cy = 0; if (cy >= (int8_t)H) cy = (int8_t)H - 1;
+
+    // Planetfarben: heller Kern, bunte Regenbogen-Bänder über der Kugel, deutlich rotierend
+    uint8_t bandPhase = (uint8_t)(phase * 2);   // schnellerer Band-Offset
+
+    for (int8_t dy = -1; dy <= 1; dy++) {
+      for (int8_t dx = -1; dx <= 1; dx++) {
+        int8_t px = (int8_t)cx + dx;
+        int8_t py = (int8_t)cy + dy;
+        if (px < 0 || py < 0 || px >= (int8_t)W || py >= (int8_t)H) continue;
+
+        int8_t adx = dx < 0 ? -dx : dx;
+        int8_t ady = dy < 0 ? -dy : dy;
+        uint8_t dist = (uint8_t)(adx + ady);
+        if (dist > 2) continue; // 3x3 Scheibe maximal
+
+        // Helligkeit radial: Mitte heller, Rand dunkler (Kugelgefühl)
+        uint8_t radLevel = (uint8_t)(2 - dist); // 2,1,0
+        uint8_t bright = (uint8_t)(180 + radLevel * 30); // 180..240
+
+        // Regenbogen-Bänder: abhängig von "Breiten"-Position (dx), Höhe (dy) und Bandphase
+        uint8_t band = (uint8_t)((dx + 1) * 40 + (dy + 1) * 16); // leichte Neigung über y
+        uint8_t hue = (uint8_t)(bandPhase * 4 + band);
+        uint32_t baseCol = Wheel(hue);
+        uint32_t shaded = dimColor(baseCol, bright);
+        matrixSet((uint8_t)px, (uint8_t)py, shaded);
+      }
+    }
+
+    // Occasional tiny star in the background
+    if ((t & 0x07) == 0) {
+      uint8_t sx = (uint8_t)(random(W));
+      uint8_t sy = (uint8_t)(random(H));
+      if (!(sx == cx && sy == cy)) {
+        matrixSet(sx, sy, dimColor(pixels.Color(200, 220, 255), 140));
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixMonoBlink5s
+   Every 5 seconds, blink exactly one random pixel briefly. All others remain off.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixMonoBlink5s(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  // Tiny LFSR for reproducible randomness
+  uint16_t lfsr = (uint16_t)(millis() ^ 0x5123);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  matrixFill(0);
+  pixels.show();
+
+  uint32_t nextAt = start + 5000UL;
+  bool lit = false;
+  uint32_t offAt = 0;
+  // Simple pentatonic scale (Hz)
+  const uint16_t scale[5] = {262, 294, 330, 392, 440};
+  uint8_t noteIdx = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint32_t now = millis();
+
+    if (!lit && now >= nextAt) {
+      matrixFill(0);
+      uint8_t x = (uint8_t)(nextL() % W);
+      uint8_t y = (uint8_t)(nextL() % H);
+      matrixSet(x, y, pixels.Color(255, 255, 255));
+      pixels.show();
+      lit = true;
+      offAt = now + 120UL;      // blink duration ~120ms
+      nextAt = now + 5000UL;    // schedule next blink
+      // Play tone for melody
+      uint16_t f = scale[noteIdx % 5];
+      // occasional octave up
+      if ((nextL() & 0x07) == 0 && f <= 600) f = (uint16_t)(f * 2);
+      playSound(f, (uint16_t)100);
+      noteIdx++;
+    }
+
+    if (lit && now >= offAt) {
+      matrixFill(0);
+      pixels.show();
+      lit = false;
+    }
+
+    delay(stepDelay_ms);
+  }
+}
+
+// Simple starry sky with twinkling stars on a dark background
+inline void matrixStarrySky(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+
+  // Per-pixel brightness 0..255
+  uint8_t bri[20];
+  for (uint8_t i = 0; i < W * H; i++) bri[i] = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Global gentle darkening
+    matrixFade(96);
+
+    // Randomly nudge brightness for each pixel
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint8_t idx = (uint8_t)(y * W + x);
+        uint8_t v = bri[idx];
+        // Occasionally spawn a brighter star
+        if (v == 0) {
+          if ((uint8_t)random(64) == 0) {
+            v = (uint8_t)(180 + (random(60))); // bright new star
+          }
+        } else {
+          // Small random walk up/down
+          int8_t delta = 0;
+          uint8_t r = (uint8_t)random(4);
+          if (r == 0) delta = 1;
+          else if (r == 1) delta = -1;
+          int16_t nv = (int16_t)v + delta;
+          if (nv < 0) nv = 0;
+          if (nv > 255) nv = 255;
+          v = (uint8_t)nv;
+          // Rarely let star fade out
+          if ((uint8_t)random(80) == 0 && v > 0) v = (uint8_t)(v / 2);
+        }
+        bri[idx] = v;
+
+        if (v > 0) {
+          // Slightly bluish-white tint
+          uint8_t b = v;
+          uint8_t g = (uint8_t)(v * 3 / 4);
+          uint8_t rch = (uint8_t)(v / 3);
+          matrixSet(x, y, pixels.Color(rch, g, b));
+        }
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixChristmasTreeAura
+   Small central green tree with a soft, slow color-changing "aura" of pixels
+   on the border around the tree. Tree stays mostly stable; edge pixels fade
+   in and out individually in warm/cool Christmas tones.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixChristmasTreeAura(uint16_t runtime_ms, uint16_t stepDelay_ms, uint8_t sparkleMask) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+
+  // 5x4 tree bitmap, row-major, 1 = tree, 2 = trunk
+  const uint8_t treeBmp[20] = {
+    // y = 0 (top)
+    0,0,1,0,0,
+    // y = 1
+    0,1,1,1,0,
+    // y = 2
+    1,1,1,1,1,
+    // y = 3 (bottom, trunk in center)
+    0,0,2,0,0
+  };
+
+  uint16_t lfsr = (uint16_t)(millis() ^ 0xC123);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  auto treeVal = [&](uint8_t x, uint8_t y) -> uint8_t {
+    if (x >= 5 || y >= 4) return 0;
+    return treeBmp[y * 5 + x];
+  };
+
+  auto isTree = [&](uint8_t x, uint8_t y) -> bool {
+    return treeVal(x, y) != 0;
+  };
+
+  auto isTreeEdge = [&](uint8_t x, uint8_t y) -> bool {
+    if (isTree(x, y)) return false;
+    // Any 4-neighbor that is tree -> considered edge pixel
+    if (x > 0      && isTree((uint8_t)(x - 1), y)) return true;
+    if (x + 1 < W  && isTree((uint8_t)(x + 1), y)) return true;
+    if (y > 0      && isTree(x, (uint8_t)(y - 1))) return true;
+    if (y + 1 < H  && isTree(x, (uint8_t)(y + 1))) return true;
+    return false;
+  };
+
+  matrixFill(0);
+  pixels.show();
+
+  // Frame counter for slow color breathing and motion; keep across calls.
+  // Use 16-bit so our derived 8-bit phase (via shifts) cycles smoothly.
+  static uint16_t tPhase = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Global fade: slightly stronger decay so sparkles do not linger too long
+    matrixFade(40);
+
+    // Draw the tree body fresh each frame so it stays solid
+    uint8_t breathPhase = (uint8_t)(tPhase >> 2); // slowish
+    // Simple triangle 0..255 from phase
+    uint8_t breath = (breathPhase & 0x80) ? (uint8_t)(255 - ((breathPhase & 0x7F) << 1))
+                                          : (uint8_t)((breathPhase & 0x7F) << 1);
+    uint8_t level = (uint8_t)(190 + (breath >> 3)); // 190..~221
+
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint8_t v = treeVal(x, y);
+        if (!v) continue;
+        if (v == 2) {
+          // Trunk: warm brown, mostly constant
+          uint32_t trunk = pixels.Color(120, 60, 10);
+          matrixSet(x, y, trunk);
+        } else {
+          // Needley color that shifts green <-> blue using a simple triangle wave
+          // with no discontinuity. We blend directly between two RGB colors.
+
+          // Slow phase for color motion
+          uint8_t phase = (uint8_t)(tPhase >> 3);  // slower = smoother
+
+          // Triangle wave 0..255: 0→255→0 with no jumps
+          // Up-slope for 0..127, down-slope for 128..255
+          uint8_t tri;
+          if (phase < 128) {
+            tri = (uint8_t)(phase << 1);             // 0..254
+          } else {
+            tri = (uint8_t)((255 - phase) << 1);     // 254..0
+          }
+
+          // Base colors for the tree: deep green and softer blue/teal
+          uint8_t gR = 10,  gG = 190, gB = 40;   // deep green
+          uint8_t bR = 25,  bG = 170, bB = 210;  // gentle blue/teal
+
+          // Blend green <-> blue using tri (0..255)
+          uint8_t r = (uint8_t)(((uint16_t)gR * (255 - tri) + (uint16_t)bR * tri) / 255);
+          uint8_t g = (uint8_t)(((uint16_t)gG * (255 - tri) + (uint16_t)bG * tri) / 255);
+          uint8_t b = (uint8_t)(((uint16_t)gB * (255 - tri) + (uint16_t)bB * tri) / 255);
+
+          // Apply breathing brightness level on top
+          uint32_t base = pixels.Color(r, g, b);
+          uint32_t col  = dimColor(base, level);
+          matrixSet(x, y, col);
+        }
+      }
+    }
+
+    // Occasionally spawn/refresh aura pixels on the tree edge.
+    // Single new sparkle per frame (if any), so they feel more independent.
+    if (sparkleMask && ((nextL() & sparkleMask) == 0)) {
+      for (uint8_t tries = 0; tries < 6; tries++) {  // fewer attempts per frame
+        uint8_t rx = (uint8_t)(nextL() % W);
+        uint8_t ry = (uint8_t)(nextL() % H);
+        if (!isTreeEdge(rx, ry)) continue;
+
+        // Christmas color palette: warm white, red, gold, icy blue
+        uint8_t pick = (uint8_t)(nextL() & 0x03);
+        uint32_t c;
+        switch (pick) {
+          default:
+          case 0: c = pixels.Color(255, 220, 180); break; // warm white
+          case 1: c = pixels.Color(255, 40, 40);    break; // red
+          case 2: c = pixels.Color(255, 200, 60);   break; // gold
+          case 3: c = pixels.Color(120, 200, 255);  break; // icy blue
+        }
+        // Slight random brightness so not all are equal
+        uint8_t bri = (uint8_t)(120 + (nextL() & 0x3F));
+        c = dimColor(c, bri);
+
+        // Fade-in more gently: blend new color with existing pixel instead of hard overwrite
+        int idx = matrixIndex(rx, ry);
+        uint32_t prev = pixels.getPixelColor(idx);
+        uint8_t pr = (prev >> 16) & 0xFF;
+        uint8_t pg = (prev >> 8) & 0xFF;
+        uint8_t pb = prev & 0xFF;
+        uint8_t tr = (c >> 16) & 0xFF;
+        uint8_t tg = (c >> 8) & 0xFF;
+        uint8_t tb = c & 0xFF;
+        // Low alpha so new sparkles ramp up over multiple frames
+        const uint8_t alpha = 50; // ~31% toward target
+        uint8_t r = (uint16_t)pr * (255 - alpha) / 255 + (uint16_t)tr * alpha / 255;
+        uint8_t g = (uint16_t)pg * (255 - alpha) / 255 + (uint16_t)tg * alpha / 255;
+        uint8_t b = (uint16_t)pb * (255 - alpha) / 255 + (uint16_t)tb * alpha / 255;
+        matrixSet(rx, ry, pixels.Color(r, g, b));
+        break; // only one new sparkle this frame
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    tPhase++;
+  }
+}
+
+
+// Tiled rainbow noise field inspired by Perlin_Tiled.cs
+inline void matrixRainbowTiledNoise(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+  uint8_t t = 0;
+
+  auto hash8 = [](int16_t x, int16_t y) -> uint8_t {
+    uint16_t h = (uint16_t)(x * 374761 + y * 668265);
+    h ^= (uint16_t)(h >> 7);
+    h *= 28921U;
+    h ^= (uint16_t)(h >> 9);
+    return (uint8_t)h;
+  };
+
+  auto lerp8 = [](uint8_t a, uint8_t b, uint8_t w) -> uint8_t {
+    return (uint8_t)(((uint16_t)a * (255 - w) + (uint16_t)b * w) / 255);
+  };
+
+  auto fade8 = [](uint8_t v) -> uint8_t {
+    uint16_t t16 = v;
+    uint16_t t2 = (uint16_t)((t16 * t16) >> 8);
+    uint16_t t3 = (uint16_t)((t2 * t16) >> 8);
+    uint16_t f = (uint16_t)(6 * t3 - 15 * t2 + 10 * t16);
+    return (uint8_t)(f > 255 ? 255 : f);
+  };
+
+  auto noise2 = [&](uint16_t x, uint16_t y) -> uint8_t {
+    // "Tile" by wrapping coordinates over a small grid
+    uint16_t sx = (uint16_t)((x >> 4) & 0x07); // 0..7
+    uint16_t sy = (uint16_t)((y >> 4) & 0x07);
+
+    uint8_t fx = (uint8_t)(x & 0x0F) * 17;
+    uint8_t fy = (uint8_t)(y & 0x0F) * 17;
+    uint8_t ux = fade8(fx);
+    uint8_t uy = fade8(fy);
+
+    uint8_t c00 = hash8((int16_t)sx, (int16_t)sy);
+    uint8_t c10 = hash8((int16_t)((sx + 1) & 0x07), (int16_t)sy);
+    uint8_t c01 = hash8((int16_t)sx, (int16_t)((sy + 1) & 0x07));
+    uint8_t c11 = hash8((int16_t)((sx + 1) & 0x07), (int16_t)((sy + 1) & 0x07));
+
+    uint8_t x0 = lerp8(c00, c10, ux);
+    uint8_t x1 = lerp8(c01, c11, ux);
+    return lerp8(x0, x1, uy);
+  };
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFill(0);
+
+    uint16_t scroll = (uint16_t)(t * 10);
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint16_t sx = (uint16_t)(x * 32 + (scroll & 0xFF));
+        uint16_t sy = (uint16_t)(y * 40 + ((scroll >> 1) & 0xFF));
+        uint8_t n = noise2(sx, sy); // 0..255
+
+        // Use noise as hue offset and brightness
+        uint8_t hue = (uint8_t)(n + t * 3);
+        uint8_t bri = (uint8_t)(160 + (uint16_t)n * 80 / 255); // 160..~240
+        uint32_t base = Wheel(hue);
+        uint32_t col = dimColor(base, bri);
+        matrixSet(x, y, col);
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+// Soft fog/cloud effect using a simple random-walk brightness field
+inline void matrixFogNoise(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+
+  // Per-pixel fog intensity 0..255
+  uint8_t bri[20];
+  for (uint8_t i = 0; i < W * H; i++) bri[i] = 120; // start mid-gray
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint8_t idx = (uint8_t)(y * W + x);
+        uint8_t v = bri[idx];
+
+        // Gentle drift: small random step up/down
+        int8_t delta = 0;
+        uint8_t r = (uint8_t)random(5);
+        if (r == 0) delta = 1;
+        else if (r == 1) delta = -1;
+
+        // Slight attraction toward average of neighbors for smoothness
+        uint16_t sum = v;
+        uint8_t cnt = 1;
+        if (x > 0)         { sum += bri[idx - 1];     cnt++; }
+        if (x + 1 < W)     { sum += bri[idx + 1];     cnt++; }
+        if (y > 0)         { sum += bri[idx - W];     cnt++; }
+        if (y + 1 < H)     { sum += bri[idx + W];     cnt++; }
+        uint8_t avg = (uint8_t)(sum / cnt);
+
+        int16_t nv = (int16_t)v + delta + (int16_t)((int8_t)(avg - v) / 6);
+        if (nv < 70) nv = 70;       // avoid full black
+        if (nv > 210) nv = 210;     // avoid full white
+        v = (uint8_t)nv;
+        bri[idx] = v;
+
+        // cool gray-blue fog color
+        uint8_t rch = (uint8_t)(v / 4);
+        uint8_t gch = (uint8_t)(v * 3 / 4);
+        uint8_t bch = v;
+        matrixSet(x, y, pixels.Color(rch, gch, bch));
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixDigitalRainAmber
+   Matrix-style code rain in warm amber/brown/yellow tones.
+   Same mechanics as matrixDigitalRain, with a warm palette and slightly softer trails.
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixDigitalRainAmber(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W;
+  const uint8_t H = MATRIX_H;
+
+  // Small LFSR for pseudo-randomness
+  uint16_t lfsr = (uint16_t)(millis() ^ 0x5A3C);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  uint8_t headY[8];
+  uint8_t speed[8];
+  uint8_t tick[8];
+  for (uint8_t x = 0; x < W; x++) {
+    headY[x] = 0xFF; // inactive
+    speed[x] = (uint8_t)(1 + (nextL() % 3));
+    tick[x] = 0;
+  }
+
+  matrixFill(0);
+  pixels.show();
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Slightly softer trails than green version
+    matrixFade(74);
+
+    for (uint8_t x = 0; x < W; x++) {
+      if (headY[x] == 0xFF) {
+        if ((nextL() & 0x07) == 0) { // ~1/8 chance per frame per column
+          headY[x] = 0; // top
+          speed[x] = (uint8_t)(1 + (nextL() % 3));
+          tick[x] = 0;
+        }
+      } else {
+        tick[x]++;
+        if ((tick[x] % speed[x]) == 0) {
+          if (headY[x] + 1 < H) headY[x]++;
+          else { headY[x] = 0xFF; continue; }
+        }
+
+        uint8_t y = headY[x];
+        uint32_t headCol = pixels.Color(255, 240, 120); // bright warm yellow
+        matrixSet(x, y, headCol);
+        if (y > 0) {
+          uint32_t bodyCol = pixels.Color(180, 110, 30); // brownish trail
+          matrixSet(x, (uint8_t)(y - 1), dimColor(bodyCol, 200));
+        }
+      }
+    }
+
+    // Rare glyph flicker in warm amber
+    if ((nextL() & 0x0F) == 0) {
+      uint8_t rx = (uint8_t)(nextL() % W);
+      uint8_t ry = (uint8_t)(nextL() % H);
+      matrixSet(rx, ry, pixels.Color(255, 210, 90));
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixBreathAndRush
+   Alternates between energetic, lively phases and calm, breathing phases.
+   - Rush: bright pink/orange pulses with sparkles and quick drift
+   - Calm: slow magenta breathing wash with soft fade
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixBreathAndRush(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint8_t t = 0;
+  uint16_t lfsr = (uint16_t)(millis() ^ 0x9B1E);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+  auto tri8 = [](uint8_t v) -> uint8_t { return (v & 0x80) ? (uint8_t)(255 - ((v & 0x7F) << 1)) : (uint8_t)((v & 0x7F) << 1); };
+
+  matrixFill(0);
+  pixels.show();
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint16_t e = (uint16_t)(millis() - start);
+    bool rush = (((uint16_t)(e / 4000U)) & 1U) == 0; // 4s Rush, 4s Calm alternating
+
+    if (rush) {
+      // Energetic: stronger fade (short trails), bright warm palette, quick drift
+      matrixFade(96);
+      uint8_t ox = (uint8_t)(t * 2);
+      uint8_t oy = (uint8_t)(t * 3);
+      for (uint8_t y = 0; y < H; y++) {
+        for (uint8_t x = 0; x < W; x++) {
+          uint8_t w = (uint8_t)((tri8((uint8_t)(x * 41 + ox)) + tri8((uint8_t)(y * 59 + oy))) >> 1);
+          // Warm punchy gradient: orange→pink
+          uint8_t r0 = 255, g0 = 120, b0 = 20;
+          uint8_t r1 = 255, g1 = 60,  b1 = 180;
+          uint8_t r = (uint8_t)(((uint16_t)r0 * (255 - w) + (uint16_t)r1 * w) / 255);
+          uint8_t g = (uint8_t)(((uint16_t)g0 * (255 - w) + (uint16_t)g1 * w) / 255);
+          uint8_t b = (uint8_t)(((uint16_t)b0 * (255 - w) + (uint16_t)b1 * w) / 255);
+          matrixSet(x, y, pixels.Color(r, g, b));
+        }
+      }
+      // Sparkles
+      if ((nextL() & 0x03) == 0) {
+        uint8_t sx = (uint8_t)(nextL() % W);
+        uint8_t sy = (uint8_t)(nextL() % H);
+        matrixSet(sx, sy, pixels.Color(255, 255, 255));
+      }
+    } else {
+      // Calm: softer fade (longer trails), breathing brightness
+      matrixFade(70);
+      uint8_t breath = tri8((uint8_t)(t)); // 0..255
+      uint8_t base = (uint8_t)(120 + (breath >> 2)); // 120..~183
+      for (uint8_t y = 0; y < H; y++) {
+        for (uint8_t x = 0; x < W; x++) {
+          // Deep magenta base, modulated by breath
+          uint32_t c = pixels.Color((uint8_t)(base + 80), (uint8_t)(breath >> 3), (uint8_t)(base / 2));
+          matrixSet(x, y, dimColor(c, (uint8_t)(160 + (breath >> 3))));
+        }
+      }
+      // Occasional soft twinkle in calm
+      if ((nextL() & 0x1F) == 0) {
+        uint8_t sx = (uint8_t)(nextL() % W);
+        uint8_t sy = (uint8_t)(nextL() % H);
+        matrixSet(sx, sy, dimColor(pixels.Color(255, 160, 220), 140));
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+ 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixPinkPlasmaBoom
+   Pink plasma field with gentle motion and occasional small explosion bursts.
+   Lightweight integer math, fits 5x4.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixPinkPlasmaBoom(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint8_t t = 0;
+  // Up to two concurrent small explosion bursts (minimal RAM)
+  bool active[2] = {false, false};
+  uint8_t bx[2] = {2, 3}, by[2] = {2, 1};
+  uint8_t rad[2] = {0, 0}, life[2] = {0, 0};
+  // Tiny LFSR for pseudo-randomness
+  uint16_t lfsr = (uint16_t)(millis() ^ 0xC0DE);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Base fade to leave trails
+    matrixFade(72);
+
+    // Pink palette endpoints
+    const uint32_t DARK = pixels.Color(60, 10, 30);
+    const uint32_t LITE = pixels.Color(255, 100, 200);
+
+    // Animate three integer phases for interference
+    uint8_t p1 = (uint8_t)(t * 5);
+    uint8_t p2 = (uint8_t)(t * 3 + 47);
+    uint8_t p3 = (uint8_t)(t * 2 + 99);
+
+    // Inline triangle function 0..255
+    auto tri8 = [](uint8_t v) -> uint8_t { return (v & 0x80) ? (uint8_t)(255 - ((v & 0x7F) << 1)) : (uint8_t)((v & 0x7F) << 1); };
+
+    // Draw plasma
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint8_t a = tri8((uint8_t)(x * 37 + p1));
+        uint8_t b = tri8((uint8_t)(y * 53 + p2));
+        uint8_t c = tri8((uint8_t)((x + y) * 29 + p3));
+        uint16_t mix = (uint16_t)a + (uint16_t)b + (uint16_t)c; // 0..(3*255)
+        uint8_t w = (uint8_t)(mix / 3); // 0..255
+        // Blend dark->light pink
+        uint8_t rD = (DARK >> 16) & 0xFF, gD = (DARK >> 8) & 0xFF, bD = DARK & 0xFF;
+        uint8_t rL = (LITE >> 16) & 0xFF, gL = (LITE >> 8) & 0xFF, bL = LITE & 0xFF;
+        uint8_t r = (uint16_t)rD * (255 - w) / 255 + (uint16_t)rL * w / 255;
+        uint8_t g = (uint16_t)gD * (255 - w) / 255 + (uint16_t)gL * w / 255;
+        uint8_t bch = (uint16_t)bD * (255 - w) / 255 + (uint16_t)bL * w / 255;
+        matrixSet(x, y, pixels.Color(r, g, bch));
+      }
+    }
+
+    // More frequent booms; try to spawn into a free slot (~1/32 chance per frame)
+    if ((nextL() & 0x1F) == 0) {
+      for (uint8_t i = 0; i < 2; i++) {
+        if (!active[i]) {
+          bx[i] = (uint8_t)(nextL() % W);
+          by[i] = (uint8_t)(nextL() % H);
+          rad[i] = 0; life[i] = 12; active[i] = true;
+          playSound((uint16_t)(190 + (nextL() & 0x3F)), (uint16_t)28);
+          break;
+        }
+      }
+    }
+
+    // Render boom rings and decay for all active slots
+    for (uint8_t i = 0; i < 2; i++) {
+      if (!active[i] || life[i] == 0) continue;
+      uint8_t r2 = (uint8_t)(rad[i] * rad[i]);
+      for (uint8_t y = 0; y < H; y++) {
+        for (uint8_t x = 0; x < W; x++) {
+          int8_t dx = (int8_t)x - (int8_t)bx[i];
+          int8_t dy = (int8_t)y - (int8_t)by[i];
+          uint16_t d2 = (uint16_t)((int16_t)dx * (int16_t)dx + (int16_t)dy * (int16_t)dy);
+          int16_t diff = (int16_t)d2 - (int16_t)r2;
+          if (diff < 0) diff = (int16_t)-diff;
+          if (diff <= 1) {
+            uint8_t heat = (uint8_t)(200 + (life[i] * 5));
+            if (heat > 255) heat = 255;
+            matrixSet(x, y, pixels.Color(255, heat, (uint8_t)(heat / 6)));
+          }
+        }
+      }
+      rad[i]++;
+      if (life[i] > 0) life[i]--; else active[i] = false;
+      if (life[i] == 0) active[i] = false;
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+// Soft velvet pink plasma with gentle shimmer
+inline void matrixPinkVelvet(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint8_t t = 0;
+  uint16_t lfsr = (uint16_t)(millis() ^ 0xA55A);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  auto tri8 = [](uint8_t v) -> uint8_t {
+    return (v & 0x80) ? (uint8_t)(255 - ((v & 0x7F) << 1)) : (uint8_t)((v & 0x7F) << 1);
+  };
+
+  matrixFill(0);
+  pixels.show();
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFade(78);
+    uint8_t p1 = (uint8_t)(t * 3);
+    uint8_t p2 = (uint8_t)(t * 2 + 37);
+
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint8_t a = tri8((uint8_t)(x * 40 + p1));
+        uint8_t b = tri8((uint8_t)(y * 58 + p2));
+        uint8_t w = (uint8_t)(((uint16_t)a * 3 + (uint16_t)b * 2) / 5);
+        uint8_t r0 = 80,  g0 = 0,   b0 = 40;   // deep magenta
+        uint8_t r1 = 255, g1 = 80,  b1 = 180;  // hot pink
+        uint8_t r = (uint8_t)(((uint16_t)r0 * (255 - w) + (uint16_t)r1 * w) / 255);
+        uint8_t g = (uint8_t)(((uint16_t)g0 * (255 - w) + (uint16_t)g1 * w) / 255);
+        uint8_t bl= (uint8_t)(((uint16_t)b0 * (255 - w) + (uint16_t)b1 * w) / 255);
+        matrixSet(x, y, pixels.Color(r, g, bl));
+      }
+    }
+
+    if ((nextL() & 0x0F) == 0) {
+      uint8_t sx = (uint8_t)(nextL() % W);
+      uint8_t sy = (uint8_t)(nextL() % H);
+      matrixSet(sx, sy, pixels.Color(255, 180, 220));
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+// Wobbling pink slime at the bottom with bright sprouts
+inline void matrixPinkSlimeSprouts(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+  uint8_t t = 0;
+
+  // Tiny LFSR for pseudo-random sprouts
+  uint16_t lfsr = (uint16_t)(millis() ^ 0xBEEF);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  // Per-column sprout age (0 = none)
+  uint8_t sprAge[5];
+  for (uint8_t i = 0; i < 5; i++) sprAge[i] = 0;
+
+  auto tri8 = [](uint8_t v) -> uint8_t {
+    return (v & 0x80) ? (uint8_t)(255 - ((v & 0x7F) << 1)) : (uint8_t)((v & 0x7F) << 1);
+  };
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Gentle fade so slime and sprouts smear a bit
+    matrixFade(80);
+
+    uint8_t baseY = (uint8_t)(H - 1); // bottom row
+
+    // Draw wobbling slime band at the bottom
+    for (uint8_t x = 0; x < W; x++) {
+      uint8_t ph = (uint8_t)(t * 4 + x * 40);
+      uint8_t w = tri8(ph); // 0..255
+      // Height 1 or 2 depending on wave
+      uint8_t h = (w > 140) ? 2 : 1;
+
+      for (uint8_t iy = 0; iy < h; iy++) {
+        int8_t yy = (int8_t)baseY - (int8_t)iy;
+        if (yy < 0) continue;
+        // Pink slime gradient: darker near bottom, lighter just above
+        uint8_t r0 = 120, g0 = 10,  b0 = 60;   // deep magenta
+        uint8_t r1 = 255, g1 = 80,  b1 = 200;  // hot pink
+        uint8_t mix = (uint8_t)(200 - iy * 40);
+        uint8_t r = (uint8_t)(((uint16_t)r0 * (255 - mix) + (uint16_t)r1 * mix) / 255);
+        uint8_t g = (uint8_t)(((uint16_t)g0 * (255 - mix) + (uint16_t)g1 * mix) / 255);
+        uint8_t bl= (uint8_t)(((uint16_t)b0 * (255 - mix) + (uint16_t)b1 * mix) / 255);
+        matrixSet(x, (uint8_t)yy, pixels.Color(r, g, bl));
+      }
+    }
+
+    // Update and render sprouts
+    for (uint8_t x = 0; x < W; x++) {
+      // Spawn new sprout occasionally if none active in this column
+      if (sprAge[x] == 0) {
+        if ((nextL() & 0x1F) == 0) {
+          sprAge[x] = 10; // lifespan in frames
+        }
+      }
+
+      if (sprAge[x] > 0) {
+        // Map age to vertical position: start near slime and grow upward
+        // Age 10 -> just above slime, Age 1 -> near top
+        uint8_t maxRise = (uint8_t)((H > 1) ? (H - 1) : 0);
+        uint8_t step = (uint8_t)((sprAge[x] > 0) ? (sprAge[x] - 1) : 0);
+        uint8_t rise = (uint8_t)((uint16_t)step * maxRise / 9); // 0..maxRise
+        int8_t yy = (int8_t)baseY - (int8_t)(1 + rise);
+        if (yy >= 0 && yy < (int8_t)H) {
+          // Bright pink/white sprout tip
+          uint8_t fade = (uint8_t)(200 + sprAge[x] * 5); // 200..250
+          if (fade > 255) fade = 255;
+          uint32_t tip = pixels.Color(255, 180, 240);
+          matrixSet(x, (uint8_t)yy, dimColor(tip, fade));
+        }
+        sprAge[x]--;
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+inline void matrixMilkySea(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+  uint8_t t = 0;
+
+  uint16_t lfsr = (uint16_t)(millis() ^ 0x1234);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  uint8_t dripAge[5];
+  for (uint8_t i = 0; i < 5; i++) dripAge[i] = 0;
+
+  auto tri8 = [](uint8_t v) -> uint8_t {
+    return (v & 0x80) ? (uint8_t)(255 - ((v & 0x7F) << 1)) : (uint8_t)((v & 0x7F) << 1);
+  };
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFade(90);
+
+    uint8_t baseY = (uint8_t)(H - 1);
+
+    for (uint8_t x = 0; x < W; x++) {
+      uint8_t ph = (uint8_t)(t * 3 + x * 32);
+      uint8_t w = tri8(ph);
+      uint8_t h = (w > 160) ? 2 : 1;
+
+      for (uint8_t iy = 0; iy < h; iy++) {
+        int8_t yy = (int8_t)baseY - (int8_t)iy;
+        if (yy < 0) continue;
+        uint8_t r0 = 220, g0 = 220, b0 = 235;
+        uint8_t r1 = 255, g1 = 255, b1 = 255;
+        uint8_t mix = (uint8_t)(210 - iy * 40);
+        uint8_t r = (uint8_t)(((uint16_t)r0 * (255 - mix) + (uint16_t)r1 * mix) / 255);
+        uint8_t g = (uint8_t)(((uint16_t)g0 * (255 - mix) + (uint16_t)g1 * mix) / 255);
+        uint8_t bl= (uint8_t)(((uint16_t)b0 * (255 - mix) + (uint16_t)b1 * mix) / 255);
+        matrixSet(x, (uint8_t)yy, pixels.Color(r, g, bl));
+      }
+    }
+
+    for (uint8_t x = 0; x < W; x++) {
+      if (dripAge[x] == 0) {
+        if ((nextL() & 0x1F) == 0) {
+          dripAge[x] = 8;
+        }
+      }
+
+      if (dripAge[x] > 0) {
+        uint8_t maxRise = (uint8_t)((H > 1) ? (H - 1) : 0);
+        uint8_t step = (uint8_t)(dripAge[x] - 1);
+        uint8_t rise = (uint8_t)((uint16_t)step * maxRise / 7);
+        int8_t yy = (int8_t)baseY - (int8_t)(1 + rise);
+        if (yy >= 0 && yy < (int8_t)H) {
+          uint8_t fade = (uint8_t)(210 + dripAge[x] * 5);
+          if (fade > 255) fade = 255;
+          uint32_t tip = pixels.Color(255, 255, 255);
+          matrixSet(x, (uint8_t)yy, dimColor(tip, fade));
+        }
+        dripAge[x]--;
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+// Rainbow half-donut that spins colors around the arc
+inline void matrixRainbowHalfDonut(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  uint8_t t = 0;
+
+  // Fixed geometry for a half-donut on 5x4:
+  // Outer arc:  (0,1) (1,0) (2,0) (3,0) (4,1)
+  // Inner arc:  (1,1) (2,1) (3,1)
+  const uint8_t outerCount = 5;
+  const uint8_t innerCount = 3;
+  const uint8_t outerX[5] = {0,1,2,3,4};
+  const uint8_t outerY[5] = {1,0,0,0,1};
+  const uint8_t innerX[3] = {1,2,3};
+  const uint8_t innerY[3] = {1,1,1};
+
+  auto tri8 = [](uint8_t v) -> uint8_t {
+    return (v & 0x80) ? (uint8_t)(255 - ((v & 0x7F) << 1)) : (uint8_t)((v & 0x7F) << 1);
+  };
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFill(0);
+
+    // Slower phase for calmer rotation
+    uint8_t phase = (uint8_t)(t >> 1); // half speed
+
+    // Outer ring: brighter, with stronger 3D depth via brightness
+    for (uint8_t i = 0; i < outerCount; i++) {
+      uint8_t idx = (uint8_t)((i + phase) % outerCount);
+      uint8_t x = outerX[idx];
+      uint8_t y = outerY[idx];
+      uint8_t hue = (uint8_t)(phase * 8 + i * 40);
+      uint32_t c = Wheel(hue);
+      // Depth: front of arc = brighter, back = dimmer
+      uint8_t depth = tri8((uint8_t)(i * 64 + phase * 6)); // 0..255
+      // Map depth to strong front/back contrast (~110..255)
+      uint8_t dim = (uint8_t)(110 + (depth * 145) / 255);
+      matrixSet(x, y, dimColor(c, dim));
+    }
+
+    // Inner ring: slightly dimmer than outer, also depth-shaded
+    for (uint8_t i = 0; i < innerCount; i++) {
+      uint8_t idx = (uint8_t)((i + phase / 2) % innerCount);
+      uint8_t x = innerX[idx];
+      uint8_t y = innerY[idx];
+      uint8_t hue = (uint8_t)(phase * 8 + 20 + i * 40);
+      uint32_t c = Wheel(hue);
+      uint8_t depth = tri8((uint8_t)(i * 80 + phase * 5));
+      // Inner ring range a bit lower (~80..210)
+      uint8_t dim = (uint8_t)(80 + (depth * 130) / 255);
+      matrixSet(x, y, dimColor(c, dim));
+    }
+
+    // Slight glow at the very top center as a subtle highlight
+    if (MATRIX_H >= 3) {
+      uint8_t hy = 0;
+      uint8_t hx = MATRIX_W / 2;
+      uint32_t hc = dimColor(Wheel((uint8_t)(phase * 8 + 160)), 120);
+      matrixSet(hx, hy, hc);
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+inline void matrixHeartbeatRelentless(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+  static const uint8_t PROGMEM HEART[20] = {
+    0,1,0,1,0,
+    1,1,1,1,1,
+    0,1,1,1,0,
+    0,0,1,0,0
+  };
+  uint16_t intervalMs = 480;
+  uint16_t dubGapMs = 140;
+  uint32_t nextBeatAt = millis();
+  uint32_t nextDubAt = 0;
+  uint32_t lastBeatAt = 0;
+  uint32_t lastDubAt = 0;
+  auto env = [&](uint32_t since) -> uint8_t {
+    if (since > 160U) return 0;
+    uint16_t s = (uint16_t)since;
+    uint16_t up = (s < 45U) ? (uint16_t)(s * 6U) : 270U;
+    uint16_t down = (s > 45U) ? (uint16_t)(270U - ((s - 45U) * 3U)) : up;
+    return (down > 255U) ? 255U : (uint8_t)down;
+  };
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint32_t now = millis();
+    if (now >= nextBeatAt) { lastBeatAt = now; nextBeatAt = now + intervalMs; nextDubAt = now + dubGapMs; }
+    if (nextDubAt && now >= nextDubAt) { lastDubAt = now; nextDubAt = 0; }
+    matrixFade(80);
+    uint8_t amp1 = (lastBeatAt ? env(now - lastBeatAt) : 0);
+    uint8_t amp2 = (lastDubAt  ? env(now - lastDubAt)  : 0);
+    uint8_t amp = (amp1 > amp2) ? amp1 : amp2;
+    uint8_t briCore = amp;
+    uint8_t briGlow = (uint8_t)(amp / 3);
+    uint32_t coreCol = dimColor(pixels.Color(255, 60, 80), (uint8_t)(160 + (briCore >> 2)));
+    uint32_t glowCol = dimColor(pixels.Color(255, 40, 60), (uint8_t)(80 + (briGlow >> 2)));
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint8_t v = pgm_read_byte(&HEART[y * 5 + x]);
+        if (v) {
+          matrixSet(x, y, coreCol);
+          if (x > 0) matrixSet((uint8_t)(x - 1), y, glowCol);
+          if (x + 1 < W) matrixSet((uint8_t)(x + 1), y, glowCol);
+          if (y > 0) matrixSet(x, (uint8_t)(y - 1), glowCol);
+          if (y + 1 < H) matrixSet(x, (uint8_t)(y + 1), glowCol);
+        }
+      }
+    }
+    if (amp1 > 220) { playSound((uint16_t)(150 + (random(20))), (uint16_t)8); }
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixFunkySchachBratz
+   Funky Checkerboard (Schachbrett) in frechen Bratz-Farben (Neon-Pink/Lila vs. Cyan/Lime),
+   mit driftender Verzerrung, Puls, gelegentlichem Invert-Glitch und Sparkles.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixFunkySchachBratz(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint8_t t = 0;
+  // LFSR für Glitches/Sparkles
+  uint16_t lfsr = (uint16_t)(millis() ^ 0xBADA);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  auto tri8 = [](uint8_t v) -> uint8_t { return (v & 0x80) ? (uint8_t)(255 - ((v & 0x7F) << 1)) : (uint8_t)((v & 0x7F) << 1); };
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // sanfte Nachleuchten (etwas stärker für weniger harte Kanten)
+    matrixFade(90);
+
+    // driftende Offsets und Puls
+    uint8_t ox = (uint8_t)(t >> 2);
+    uint8_t oy = (uint8_t)(t >> 3);
+    // flacherer Puls: kleinere Auslenkung
+    uint8_t pulse = (uint8_t)(178 + (tri8((uint8_t)(t * 5)) >> 3)); // ~178..210, etwas lebendiger
+    // zeitbasierte Funky-Palettenmorph (0..255)
+    uint8_t funkW = tri8((uint8_t)(t * 3));
+
+    // optionaler globaler Invert-Glitch
+    bool invert = ((nextL() & 0x7F) == 0); // seltener
+
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        // leicht verzerrter Checker mit Mikro-Wobble: füge eine kleine zeit-/positionsabhängige Welle hinzu
+        uint8_t wob = tri8((uint8_t)(x * 17 + t * 9));
+        uint8_t warp = (uint8_t)(((x * 5 + y * 7 + (int8_t)(x - y)) + ox + (oy >> 1) + (wob >> 6)) & 0xFF);
+        uint8_t cb = (uint8_t)(((x + y + ((warp >> 5) & 1) + ((wob >> 7) & 1)) & 1) ^ (invert ? 1 : 0));
+
+        // zwei kräftige Grund-Paletten und Morph zwischen Varianten für mehr Funk
+        uint32_t PAL_A1 = pixels.Color(255, 70, 180);   // pink
+        uint32_t PAL_A2 = pixels.Color(200, 60, 220);   // pink→lila
+        uint32_t PAL_B1 = pixels.Color(60, 230, 200);   // türkis
+        uint32_t PAL_B2 = pixels.Color(180, 255, 80);   // lime
+        // lineares Blend A1..A2, B1..B2 per funkW (8-bit, kanalweise)
+        auto blend = [&](uint32_t a, uint32_t b, uint8_t w){
+          uint8_t ar=(a>>16)&0xFF, ag=(a>>8)&0xFF, ab=a&0xFF;
+          uint8_t br=(b>>16)&0xFF, bg=(b>>8)&0xFF, bb=b&0xFF;
+          uint8_t r=(uint16_t)ar*(255-w)/255 + (uint16_t)br*w/255;
+          uint8_t g=(uint16_t)ag*(255-w)/255 + (uint16_t)bg*w/255;
+          uint8_t bl=(uint16_t)ab*(255-w)/255 + (uint16_t)bb*w/255;
+          return pixels.Color(r,g,bl);
+        };
+        uint32_t colA = dimColor(blend(PAL_A1, PAL_A2, funkW), pulse);
+        uint32_t colB = dimColor(blend(PAL_B1, PAL_B2, (uint8_t)(255 - funkW)), (uint8_t)(pulse - 18));
+        // leichte Variation pro Zelle
+        uint8_t jitter = (uint8_t)((x * 23 + y * 41 + t * 9) & 0x1F);
+        if (jitter < 8) {
+          // Lila Akzent
+          colA = dimColor(pixels.Color(180, 40, 200), (uint8_t)(pulse + 10));
+        } else if (jitter > 24) {
+          // Lime Akzent
+          colB = dimColor(pixels.Color(180, 255, 80), pulse);
+        }
+
+        // Zielfarbe und sanfte zeitliche Blendung gegen vorherigen Pixel
+        uint32_t target = cb ? colA : colB;
+        int idx = matrixIndex(x, y);
+        uint32_t prev = pixels.getPixelColor(idx);
+        // 8-bit Kanalweise-Blend
+        uint8_t tr = (target >> 16) & 0xFF, tg = (target >> 8) & 0xFF, tb = target & 0xFF;
+        uint8_t pr = (prev >> 16) & 0xFF, pg = (prev >> 8) & 0xFF, pb = prev & 0xFF;
+        uint8_t alpha = 88; // ~34% Richtung Ziel, noch etwas smoother
+        uint8_t r = (uint16_t)pr * (255 - alpha) / 255 + (uint16_t)tr * alpha / 255;
+        uint8_t g = (uint16_t)pg * (255 - alpha) / 255 + (uint16_t)tg * alpha / 255;
+        uint8_t b = (uint16_t)pb * (255 - alpha) / 255 + (uint16_t)tb * alpha / 255;
+        matrixSet(x, y, pixels.Color(r, g, b));
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixHeartbeatCalm
+   Heartbeat starts fast/intense (stress) with double-beat "lub-dub" pulses and slowly calms down
+   to a slower, softer heartbeat. On a 5x4 display using a tiny heart sprite in red shades.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixHeartbeatCalm(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H; // expected 5x4
+  uint32_t start = millis();
+  // Tiny 5x4 heart mask (1 = heart pixel)
+  static const uint8_t PROGMEM HEART[20] = {
+    0,1,0,1,0,
+    1,1,1,1,1,
+    0,1,1,1,0,
+    0,0,1,0,0
+  };
+
+  auto lerp16 = [](uint16_t a, uint16_t b, uint16_t t, uint16_t tmax) -> uint16_t {
+    // linear interpolate a..b with t in [0..tmax]
+    return (uint16_t)(a + ((uint32_t)(b - a) * t) / tmax);
+  };
+
+  uint32_t nextBeatAt = millis();
+  uint32_t nextDubAt  = 0;
+  uint32_t lastBeatAt = 0;
+  uint32_t lastDubAt  = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint32_t now = millis();
+    uint16_t elapsed = (uint16_t)(now - start);
+    // Progress 0..65535 for smooth mapping regardless of runtime
+    uint16_t prog = (uint16_t)((uint32_t)elapsed * 65535UL / (uint32_t)(runtime_ms ? runtime_ms : 1));
+
+    // Map heartbeat interval from fast (~380ms) to calm (~900ms)
+    uint16_t intervalMs = lerp16(380, 900, prog, 65535);
+    // Lub-dub gap ~1/3 of interval, capped
+    uint16_t dubGapMs = (uint16_t)((intervalMs < 90) ? 90 : (intervalMs / 3));
+
+    // Trigger main beat
+    if (now >= nextBeatAt) {
+      lastBeatAt = now;
+      nextBeatAt = now + intervalMs;
+      nextDubAt  = now + dubGapMs;
+    }
+    // Trigger dub
+    if (nextDubAt && now >= nextDubAt) {
+      lastDubAt = now;
+      nextDubAt = 0; // fire once per cycle
+    }
+
+    // Envelope: quick rise/decay per pulse
+    auto env = [&](uint32_t since) -> uint8_t {
+      if (since > 140U) return 0; // 140ms envelope window
+      // triangle shape 0..255: peak at ~40ms
+      uint16_t s = (uint16_t)since;
+      uint16_t up = (s < 40U) ? (uint16_t)(s * 6U) : 240U; // rise to 240 at 40ms
+      uint16_t down = (s > 40U) ? (uint16_t)(240U - ((s - 40U) * 3U)) : up; // decay
+      return (down > 255U) ? 0 : (uint8_t)down;
+    };
+
+    uint8_t amp1 = (lastBeatAt ? env(now - lastBeatAt) : 0);
+    uint8_t amp2 = (lastDubAt  ? env(now - lastDubAt)  : 0);
+    uint8_t amp  = (amp1 > amp2) ? amp1 : amp2;
+
+    // Overall intensity also eases down with time (stress -> calm)
+    uint8_t globalScale = (uint8_t)(255 - (prog >> 8)); // 255..0 over runtime
+    // Keep a minimum so it doesn't vanish
+    if (globalScale < 60) globalScale = 60;
+
+    // Slight jitter early on to simulate stress, fades out
+    int8_t jitter = (int8_t)((prog < 20000) ? 1 : (prog < 45000 ? 0 : 0));
+    int8_t jx = 0, jy = 0;
+    if (jitter) { jx = (random(3) - 1); jy = (random(3) - 1); }
+
+    // Background subtle dark red that also calms
+    matrixFade(80);
+
+    // Draw the heart with brightness = amp blended with globalScale
+    uint16_t mix = (uint16_t)((uint16_t)amp * (uint16_t)globalScale) / 255U; // 0..255
+    uint8_t briCore = (uint8_t)(mix);
+    uint8_t briGlow = (uint8_t)(mix / 3);
+    uint32_t coreCol = dimColor(pixels.Color(255, 60, 80), (uint8_t)(160 + (briCore >> 2))); // intense red
+    uint32_t glowCol = dimColor(pixels.Color(255, 40, 60), (uint8_t)(80 + (briGlow >> 2)));
+
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint8_t v = pgm_read_byte(&HEART[y * 5 + x]);
+        if (v) {
+          int8_t tx = (int8_t)x + jx;
+          int8_t ty = (int8_t)y + jy;
+          if (tx >= 0 && tx < (int8_t)W && ty >= 0 && ty < (int8_t)H)
+            matrixSet((uint8_t)tx, (uint8_t)ty, coreCol);
+          // soft halo around heart pixels
+          if (tx > 0)                 matrixSet((uint8_t)(tx - 1), (uint8_t)ty, glowCol);
+          if (tx + 1 < (int8_t)W)     matrixSet((uint8_t)(tx + 1), (uint8_t)ty, glowCol);
+          if (ty > 0)                 matrixSet((uint8_t)tx, (uint8_t)(ty - 1), glowCol);
+          if (ty + 1 < (int8_t)H)     matrixSet((uint8_t)tx, (uint8_t)(ty + 1), glowCol);
+        }
+      }
+    }
+
+    // Optional click on main beat, stronger at start
+    if (amp1 > 200 && (prog < 40000)) {
+      playSound((uint16_t)(140 + (random(30))), (uint16_t)10);
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixCocktail
+   A tiny cocktail: layered drink colors inside a small glass silhouette with rising bubbles
+   and a blinking garnish pixel. Fits 5x4.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixCocktail(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  // expected 5x4
+  // Glass inner area: x = 1..3, y = 1..3 (bottom at y=3)
+  // Layers: bottom (y=3) orange, mid (y=2) red, top (y=1) pink; foam highlight occasionally
+  uint8_t bubbleX[3] = {1, 2, 3};
+  int8_t  bubbleY[3] = {3, 2, 3};
+  uint8_t t = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFill(0);
+    // Glass rim and stem (simple hints)
+    matrixSet(1, 0, pixels.Color(200, 200, 220));
+    matrixSet(2, 0, pixels.Color(200, 200, 220));
+    matrixSet(3, 0, pixels.Color(200, 200, 220));
+    matrixSet(2, 3, pixels.Color(150, 150, 170)); // stem hint at base
+
+    // Drink layers inside (1..3, y=1..3)
+    for (uint8_t x = 1; x <= 3; x++) {
+      // top layer (y=1): pink
+      matrixSet(x, 1, dimColor(pixels.Color(255, 80, 160), 200));
+      // mid (y=2): red
+      matrixSet(x, 2, dimColor(pixels.Color(255, 40, 40), 220));
+      // bottom (y=3): orange
+      if (x != 2) matrixSet(x, 3, dimColor(pixels.Color(255, 140, 20), 230));
+      else        matrixSet(x, 3, dimColor(pixels.Color(255, 180, 40), 240));
+    }
+
+    // Rising bubbles within glass (columns 1..3)
+    for (uint8_t i = 0; i < 3; i++) {
+      if (bubbleY[i] >= 1 && bubbleY[i] <= 3) {
+        uint32_t bub = pixels.Color(255, 255, 255);
+        matrixSet((uint8_t)bubbleX[i], (uint8_t)bubbleY[i], bub);
+      }
+      // Move up slowly; when above the rim, respawn at random depth
+      if ((t & 0x01) == 0) {
+        bubbleY[i] -= 1;
+        if (bubbleY[i] < 1) {
+          bubbleX[i] = (uint8_t)(1 + (random(3))); // 1..3
+          bubbleY[i] = (int8_t)(2 + (random(2)));  // 2..3 start
+        }
+      }
+    }
+
+    // Garnish (umbrella/cherry) in a corner blinking
+    uint8_t blink = (uint8_t)((t >> 2) & 1);
+    matrixSet(4, 0, blink ? pixels.Color(255, 100, 100) : pixels.Color(120, 50, 160));
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixAlpineStorm
+   Tiny Alps with bad weather: dark sky, drifting storm clouds, diagonal wind-driven snow/rain,
+   occasional blue lightning, and white snow caps on the mountain peaks.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixAlpineStorm(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H; // 5x4 expected
+  // Mountain profile (height in cells from bottom). Clamp to H.
+  uint8_t mH[5] = { (uint8_t)(H>1?2:1), (uint8_t)(H>2?3:2), (uint8_t)(H>3?4:3), (uint8_t)(H>2?3:2), (uint8_t)(H>1?2:1) };
+  // Snow line: cap the top cell of each peak in white (blinking a bit)
+  uint8_t t = 0;
+  struct Drop { int8_t x, y; int8_t vx, vy; uint8_t kind; };
+  Drop drops[4];
+  for (uint8_t i=0;i<4;i++){ drops[i] = { (int8_t)random(W), (int8_t)random(H), (int8_t)-1, (int8_t)1, (uint8_t)(i&1) }; }
+  // Sparse drifting clouds positions (top rows)
+  uint8_t cloudMask = 0; // 5-bit mask for row 0..1 clusters
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Base sky
+    for (uint8_t y=0;y<H;y++){
+      for(uint8_t x=0;x<W;x++){
+        uint8_t shade = (uint8_t)(y==0 ? 70 : (y==1 ? 50 : 30));
+        uint32_t sky = pixels.Color(10, 20, (uint8_t)(40 + shade));
+        matrixSet(x, y, sky);
+      }
+    }
+    // Storm clouds drifting in top 2 rows
+    if ((t & 0x03)==0){ cloudMask = (uint8_t)((cloudMask<<1) | (random(2)&1)); }
+    for (uint8_t x=0;x<W;x++){
+      if (cloudMask & (1<< (x%5))) {
+        matrixSet(x, 0, pixels.Color(30, 40, 70));
+        if (H>1) matrixSet(x, 1, pixels.Color(20, 30, 60));
+      }
+    }
+    // Mountains (from bottom up), rock gray with subtle variation
+    for (uint8_t x=0;x<W;x++){
+      uint8_t h = mH[x < 5 ? x : 4]; if (h>H) h=H;
+      for (uint8_t k=0;k<h;k++){
+        uint8_t y = (uint8_t)(H-1-k);
+        uint8_t var = (uint8_t)((x*17 + y*11 + t*3) & 0x1F);
+        uint32_t rock = pixels.Color((uint8_t)(60+var), (uint8_t)(60+var), (uint8_t)(70+var));
+        matrixSet(x, y, rock);
+      }
+      // Snow cap on top cell (blink a bit with wind)
+      if (h>0){ uint8_t yTop = (uint8_t)(H - h); if ((t + x) & 0x04) matrixSet(x, yTop, pixels.Color(240, 240, 255)); }
+    }
+
+    // Alpenröti: slow warm glow on the peaks (fades in and out very gently)
+    {
+      static uint8_t agPhase = 0;               // persists across calls during runtime
+      if ((t & 0x03) == 0) agPhase += 1;        // very slow progression
+      // Local triangle wave 0..255 without depending on tri8_local
+      uint8_t a = agPhase;
+      uint8_t ag = (a & 0x80) ? (uint8_t)(255 - ((a & 0x7F) << 1)) : (uint8_t)((a & 0x7F) << 1);
+      uint8_t agLevel = (uint8_t)(ag / 6);      // keep subtle (0..42)
+      uint32_t warm = pixels.Color(255, 140, 60);
+      for (uint8_t x=0;x<W;x++){
+        uint8_t h = mH[x < 5 ? x : 4]; if (h==0 || h>H) continue;
+        uint8_t yTop = (uint8_t)(H - h);
+        // Tint the snow/top cell warmly
+        matrixSet(x, yTop, dimColor(warm, (uint8_t)(180 + agLevel)));
+        // Optionally tint the cell below the peak a bit weaker
+        if (yTop + 1 < H) matrixSet(x, (uint8_t)(yTop + 1), dimColor(warm, (uint8_t)(80 + (agLevel >> 1))));
+      }
+    }
+    // Wind-driven snow/rain (diagonal streaks)
+    for (uint8_t i=0;i<4;i++){
+      uint32_t col = (drops[i].kind==0) ? pixels.Color(200, 220, 255) : pixels.Color(120, 170, 240);
+      if (drops[i].x>=0 && drops[i].x<(int8_t)W && drops[i].y>=0 && drops[i].y<(int8_t)H){
+        matrixSet((uint8_t)drops[i].x, (uint8_t)drops[i].y, col);
+        if (drops[i].y>0 && drops[i].x+1 < (int8_t)W) matrixSet((uint8_t)(drops[i].x+1), (uint8_t)(drops[i].y-1), dimColor(col, 120));
+      }
+      drops[i].x += drops[i].vx; drops[i].y += drops[i].vy;
+      if (drops[i].x<0 || drops[i].y>= (int8_t)H) {
+        drops[i].x = (int8_t)(W-1); drops[i].y = (int8_t)random(H); drops[i].vx = -1; drops[i].vy = 1; drops[i].kind ^= 1;
+      }
+    }
+    // Occasional blue lightning flash along a column above peaks
+    if ((random(32)==0)){
+      uint8_t bx = (uint8_t)random(W); uint8_t by = 0;
+      uint8_t steps = (uint8_t)(H);
+      for (uint8_t s=0;s<steps;s++){
+        matrixSet(bx, by, pixels.Color(180, 220, 255));
+        if (bx>0) matrixSet((uint8_t)(bx-1), by, pixels.Color(50, 90, 200));
+        if (bx+1<W) matrixSet((uint8_t)(bx+1), by, pixels.Color(50, 90, 200));
+        pixels.show(); delay(12);
+        by++; if (by>=H) break;
+      }
+      // quick fade
+      for (uint8_t k=0;k<2;k++){ matrixFade(160); pixels.show(); delay(14); }
+      if (random(2)==0) playSound(90, 20);
+    }
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+inline void matrixFlowerBurst(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint16_t t = 0;
+  bool exploded = false;
+  struct P { int8_t x, y; int8_t vx, vy; uint8_t life; };
+  P parts[8]; uint8_t pc = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFill(0);
+    if (!exploded) {
+      uint8_t ph = (uint8_t)((t * 9) & 0xFF);
+      uint32_t petal = Wheel((uint8_t)(ph + 200));
+      uint32_t core  = Wheel((uint8_t)(ph + 20));
+      uint8_t pulse = (uint8_t)(180 + ((t & 0x0F) * 4));
+      uint8_t cx = W / 2; uint8_t cy = H / 2;
+      matrixSet(cx, cy, dimColor(core, 255));
+      if (W >= 3) { if (cx > 0) matrixSet((uint8_t)(cx - 1), cy, dimColor(petal, pulse)); if (cx + 1 < W) matrixSet((uint8_t)(cx + 1), cy, dimColor(petal, pulse)); }
+      if (H >= 3) { if (cy > 0) matrixSet(cx, (uint8_t)(cy - 1), dimColor(petal, pulse)); if (cy + 1 < H) matrixSet(cx, (uint8_t)(cy + 1), dimColor(petal, pulse)); }
+      if (cx > 0 && cy > 0) matrixSet((uint8_t)(cx - 1), (uint8_t)(cy - 1), dimColor(petal, (uint8_t)(pulse - 40)));
+      if (cx + 1 < W && cy > 0) matrixSet((uint8_t)(cx + 1), (uint8_t)(cy - 1), dimColor(petal, (uint8_t)(pulse - 40)));
+      if (cx > 0 && cy + 1 < H) matrixSet((uint8_t)(cx - 1), (uint8_t)(cy + 1), dimColor(petal, (uint8_t)(pulse - 40)));
+      if (cx + 1 < W && cy + 1 < H) matrixSet((uint8_t)(cx + 1), (uint8_t)(cy + 1), dimColor(petal, (uint8_t)(pulse - 40)));
+      if (t > 48) {
+        exploded = true;
+        pc = 0;
+        int8_t vx[8] = { 0, 1, 0, -1, 1, 1, -1, -1 };
+        int8_t vy[8] = { -1,0, 1,  0,-1, 1, -1,  1 };
+        for (uint8_t i = 0; i < 8 && i < (uint8_t)(W * H); i++) { parts[i].x = (int8_t)cx; parts[i].y = (int8_t)cy; parts[i].vx = vx[i]; parts[i].vy = vy[i]; parts[i].life = (uint8_t)(10 + (i & 3) * 3); pc++; }
+        playSound(220, 80);
+      }
+    } else {
+      for (uint8_t i = 0; i < pc; i++) {
+        if (parts[i].life == 0) continue;
+        uint8_t bri = (uint8_t)(parts[i].life * 20);
+        uint32_t col = dimColor(Wheel((uint8_t)((i * 36 + t * 7) & 0xFF)), bri);
+        if (parts[i].x >= 0 && parts[i].x < (int8_t)W && parts[i].y >= 0 && parts[i].y < (int8_t)H)
+          matrixSet((uint8_t)parts[i].x, (uint8_t)parts[i].y, col);
+        parts[i].x += parts[i].vx; parts[i].y += parts[i].vy;
+        if (parts[i].x < 0 || parts[i].x >= (int8_t)W) { parts[i].life = 0; }
+        if (parts[i].y < 0 || parts[i].y >= (int8_t)H) { parts[i].life = 0; }
+        if (parts[i].life > 0) parts[i].life--;
+      }
+      matrixFade(40);
+    }
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixBlueLightning
+   Colder blue lightning variant: blue-white bolt with soft blue halo and blue room flash.
+   Params: runtime_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixBlueLightning(uint16_t runtime_ms) {
+  uint32_t start = millis(); randomSeed(millis());
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  auto clampi = [](int v, int lo, int hi) -> int { return (v < lo) ? lo : (v > hi ? hi : v); };
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Dark pause before strike
+    matrixFill(0); pixels.show(); delay((uint16_t)(100 + random(260)));
+    uint8_t flashes = (uint8_t)(1 + random(3));
+    for (uint8_t f = 0; f < flashes; f++) {
+      int x = (int)random(W); int y = 0;
+      uint8_t steps = (uint8_t)(H + random(2));
+      matrixFill(0);
+      for (uint8_t s = 0; s < steps; s++) {
+        // Bolt head (blue-white) and surrounding halo (deep blue)
+        uint32_t head = pixels.Color(180, 220, 255);
+        uint32_t halo = pixels.Color(40, 90, 200);
+        matrixSet((uint8_t)x, (uint8_t)y, head);
+        for (int dy = -1; dy <= 1; dy++) {
+          for (int dx = -1; dx <= 1; dx++) {
+            if (dx == 0 && dy == 0) continue;
+            int nx = clampi(x + dx, 0, (int)W - 1);
+            int ny = clampi(y + dy, 0, (int)H - 1);
+            matrixSet((uint8_t)nx, (uint8_t)ny, dimColor(halo, 200));
+          }
+        }
+        // Occasional wide blue flash
+        if ((random(5) == 0)) {
+          for (uint8_t yy = 0; yy < H; yy++) {
+            for (uint8_t xx = 0; xx < W; xx++) {
+              if (!(xx == (uint8_t)x && yy == (uint8_t)y))
+                matrixSet(xx, yy, dimColor(halo, 120));
+            }
+          }
+        }
+        pixels.show(); delay((uint16_t)(10 + random(18)));
+        x += (int8_t)(random(3)) - 1; y += 1; if (y >= (int)H) y = (int)H - 1; x = clampi(x, 0, (int)W - 1);
+      }
+      // Blue flicker tail
+      for (uint8_t k = 0; k < 3; k++) { matrixFade(180); pixels.show(); delay(20 + random(20)); }
+      for (uint8_t d = 0; d < 4; d++) { matrixFade(120); pixels.show(); delay(18); }
+      if (random(4) == 0) { playSound((uint16_t)(90 + random(50)), (uint16_t)(20 + random(30))); }
+    }
   }
 }
 
@@ -294,7 +1786,7 @@ inline void matrixDigitalRain(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   pixels.show();
 
   while ((uint16_t)(millis() - start) < runtime_ms) {
-    // Trail fade: higher value = faster fade; keep trails visible a bit
+    // Trails fade: higher value = faster fade; keep trails visible a bit
     matrixFade(70);
 
     for (uint8_t x = 0; x < W; x++) {
@@ -1877,6 +3369,33 @@ inline void matrixRainbowWaves(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   }
 }
 
+// Smooth rainbow wash across the matrix with gentle fade and slight vertical shading
+inline void matrixRainbowWash(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  uint8_t t = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFade(86);
+    uint8_t base = (uint8_t)(t * 3);
+    for (uint8_t y = 0; y < MATRIX_H; y++) {
+      for (uint8_t x = 0; x < MATRIX_W; x++) {
+        uint8_t hue = (uint8_t)(base + x * 22 + y * 11);
+        uint8_t lvl = (uint8_t)(190 + ((uint8_t)(y * 12) & 0x2F));
+        matrixSet(x, y, dimColor(Wheel(hue), lvl));
+      }
+    }
+    // occasional soft accent column drifting across
+    if ((t & 0x07) == 0x00) {
+      uint8_t sx = (uint8_t)((t >> 1) % MATRIX_W);
+      for (uint8_t y = 0; y < MATRIX_H; y++) {
+        matrixSet(sx, y, dimColor(Wheel((uint8_t)(base + 128)), 160));
+      }
+    }
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
 // Map a heat value (0..255) to a fire-like color (black -> red -> yellow -> white)
 static inline uint32_t colorFromHeat(uint8_t heat) {
     uint8_t t192 = (uint16_t)heat * 191 / 255;   // 0..191
@@ -1951,6 +3470,152 @@ inline void matrixFire(uint16_t runtime_ms, uint8_t cooling, uint8_t sparking, u
         matrixSet(x, y, colorFromHeat(adj));
       }
     }
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixUniverseCreation
+   "My theory is, when a particle with super-light-speed zips around and hits another in the universe, then what? 
+    Then it hits itself. Then it hits itself and then a new universe is created."
+   Phase 1: Super-luminal particle zips around (fast random movement with trail).
+   Phase 2: Collision (White flash).
+   Phase 3: New Universe (Expanding swirling colors).
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixUniverseCreation(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  
+  // Phase timing
+  uint32_t collisionTime = runtime_ms / 3;
+  // collision lasts ~500ms
+  
+  // Particle state for Phase 1
+  float px = W / 2.0f;
+  float py = H / 2.0f;
+  float vx = 0.8f;
+  float vy = 0.5f;
+  
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint32_t elapsed = millis() - start;
+    
+    if (elapsed < collisionTime) {
+      // Phase 1: Super-luminal particle
+      matrixFade(100); // Fast fade for trail
+      
+      // Update position
+      px += vx;
+      py += vy;
+      
+      // Bounce
+      if (px < 0) { px = 0; vx = -vx; }
+      else if (px >= W) { px = W - 0.1f; vx = -vx; }
+      
+      if (py < 0) { py = 0; vy = -vy; }
+      else if (py >= H) { py = H - 0.1f; vy = -vy; }
+      
+      // Randomize velocity occasionally to simulate "super-luminal chaos"
+      if (random(5) == 0) {
+        vx = (float)(random(100) - 50) / 30.0f;
+        vy = (float)(random(100) - 50) / 30.0f;
+        // Ensure minimum speed
+        if (vx > -0.3f && vx < 0.3f) vx = (vx < 0) ? -0.5f : 0.5f;
+        if (vy > -0.3f && vy < 0.3f) vy = (vy < 0) ? -0.5f : 0.5f;
+      }
+      
+      matrixSet((uint8_t)px, (uint8_t)py, pixels.Color(200, 200, 255)); // Blue-white hot particle
+      
+    } else if (elapsed < collisionTime + 400) {
+      // Phase 2: The Collision / Singularity
+      // Flash center intensely
+      matrixFill(pixels.Color(255, 255, 255));
+      // playSound(1000 + random(2000), 10); // (Optional sound if speaker present)
+      
+    } else {
+      // Phase 3: New Universe (Expansion)
+      // Swirling galaxy/nebula colors
+      matrixFade(15); // Very slow fade for nebulous accumulation
+      
+      uint32_t universeAge = elapsed - (collisionTime + 400);
+      uint8_t baseHue = (uint8_t)((universeAge / 10) & 0xFF);
+      
+      // Random "matter creation" events
+      if (random(2) == 0) {
+        uint8_t rx = (uint8_t)random(W);
+        uint8_t ry = (uint8_t)random(H);
+        
+        // Calculate distance from center for color variation
+        int8_t cx = W / 2; 
+        int8_t cy = H / 2;
+        int dist = abs(rx - cx) + abs(ry - cy);
+        
+        // Hue shifts with distance and time
+        uint8_t h = baseHue + (dist * 15);
+        
+        // Brightness variation
+        uint8_t bri = 100 + random(155);
+        matrixSet(rx, ry, dimColor(Wheel(h), bri));
+      }
+    }
+    
+    pixels.show();
+    // Phase 1 is faster than the rest
+    uint16_t delayTime = (elapsed < collisionTime) ? (stepDelay_ms / 2) : stepDelay_ms;
+    delay(delayTime);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixSpear
+   "Bring me a spear!"
+   A spear is thrown across the matrix.
+   - It appears from one side and flies to the other.
+   - Has a sharp tip and a shaft.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixSpear(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  
+  int16_t spearPos = -4; // Start outside
+  uint8_t row = 0;
+  int8_t dir = 1; // 1 = right, -1 = left
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFade(60); // Clear trail
+
+    // Draw Spear
+    // Tip
+    int16_t tipX = spearPos;
+    if (dir == -1) tipX = spearPos; // Tip is leading
+    else tipX = spearPos + 2;
+    
+    // Shaft
+    for (int i = 0; i < 3; i++) {
+       int16_t px = spearPos + i;
+       if (px >= 0 && px < W) {
+         if ((dir == 1 && px == tipX) || (dir == -1 && px == spearPos)) {
+            // Tip: Silver/White
+            matrixSet(px, row, pixels.Color(200, 200, 255));
+         } else {
+            // Shaft: Brown
+            matrixSet(px, row, pixels.Color(139, 69, 19));
+         }
+       }
+    }
+
+    spearPos += dir;
+
+    // Reset if out of bounds
+    if ((dir == 1 && spearPos > W + 1) || (dir == -1 && spearPos < -4)) {
+      row = random(H);
+      dir = (random(2) == 0) ? 1 : -1;
+      spearPos = (dir == 1) ? -4 : W + 1;
+      // Randomize speed slightly via stepDelay? No, just keep constant for now.
+    }
+
     pixels.show();
     delay(stepDelay_ms);
   }

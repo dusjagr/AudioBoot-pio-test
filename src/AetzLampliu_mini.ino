@@ -258,8 +258,6 @@ void loop(void) {
     case 17: matrixCoteAzur(10000, 80);        break;
     case 18: matrixSunsetPickleSun(10000, 90); break;
     case 19: matrixLightning(10000);           break;
-
-    // Flags engine (IDs 20..21)
     case 20: matrixFlagsShow(10000, 900);              break;
     case 21: matrixFlagsShowFade(10000, 900, 300, 6); break;
     case 22: matrixDigitalRain(10000, 90);     break;
@@ -271,15 +269,25 @@ void loop(void) {
     case 28: matrixSnowWhite(10000, 90);        break;
     case 29: matrixBigBadWolf(10000, 90);       break;
     case 30: matrixTricksterPlasma(10000, 90);  break;
-    default: matrixSunsetPickleSun(10000, 90); break;
+    case 31: matrixPinkSlimeSprouts(10000, 80); break;
+    case 32: matrixMilkySea(10000, 60);         break;
+    case 33: matrixRainbowHalfDonut(10000, 80); break;
+    case 34: matrixRainbowPlanet(10000, 70);    break;
+    case 35: matrixStarrySky(10000, 80);        break;
+    case 36: matrixFogNoise(10000, 90);         break;
+    case 37: matrixRainbowTiledNoise(10000, 80); break;
+    case 38: matrixUniverseCreation(10000, 80); break;
+    case 39: matrixSpear(10000, 60); break;
+    case 40: matrixChristmasTreeAura(10000, 70, 0x0A); break;
+    default: matrixSpear(10000, 60); break;
   }
   return; // run one visual per loop iteration to keep behavior deterministic per WAV
 #endif
 
   // Default preview (uncomment one selection above to try others)
   //matrixCoteAzur(8000, 80);
-  //matrixSunsetPickleSun(18000, 90);
-  //matrixDigitalRain(12000, 90);
+  //matrixSunsetPickleSun(50000, 90);
+  //matrixFunkySchachBratz(12000, 70);
   //matrixNightStreet2000(12000, 90);
   //matrixLarsonScannerDual(12000, 90);
   //matrixWaterfall(12000, 90);
@@ -288,8 +296,32 @@ void loop(void) {
   //matrixLightning(10000); 
   //matrixPinkSpiral(12000, 60);
   //matrixLarsonScanner(12000, 160);
+  //matrixDigitalRain(30000, 90);
    //matrixBlueScreen(12000, 160);
    //matrixSnowWhite(12000, 90);
    //matrixBigBadWolf(12000, 90);
-   matrixTricksterPlasma(42000, 10);
+   //matrixAlpineStorm(12000, 90);
+   //matrixBlueLightning(42000);
+   //matrixFlowerBurst(1000, 1);
+   //matrixAlpineStorm(12000, 90);
+   //matrixCometSweep(22000, 90);
+   //matrixCocktail(12000, 90);
+   //matrixTricksterPlasma(60000, 23);
+   //matrixHeartbeatRelentless(12000, 60);
+   //matrixRainbowWash(12000, 60);
+   //matrixDigitalRainAmber(12000, 90);
+   //matrixPinkVelvet(12000, 90);
+   //matrixFire(102000, 160, 80, 80);
+   //matrixBreathAndRush(20000, 80);
+   //matrixMonoBlink5s(50000, 80);
+   //matrixChristmasTreeAura(65000, 70, 0x0A);
+   matrixUniverseCreation(20000, 80);
+   //matrixSpear(20000, 50);
+   //matrixPinkSlimeSprouts(60000, 80);
+   //matrixMilkySea(60000, 60);
+   //matrixRainbowHalfDonut(60000, 110);
+   //matrixRainbowPlanet(60000, 70);
+   //matrixRainbowTiledNoise(60000, 80);
+   //matrixFogNoise(60000, 90);
+  
 }

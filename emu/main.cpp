@@ -172,6 +172,14 @@ int main(int argc, char** argv) {
       case 28: matrixSnowWhite((uint16_t)runtime_ms, 90); break;
       case 29: matrixBigBadWolf((uint16_t)runtime_ms, 90); break;
       case 30: matrixTricksterPlasma((uint16_t)runtime_ms, 90); break;
+      case 31: matrixPinkSlimeSprouts((uint16_t)runtime_ms, 80); break;
+      case 32: matrixMilkySea((uint16_t)runtime_ms, 60);         break;
+      case 33: matrixRainbowHalfDonut((uint16_t)runtime_ms, 80); break;
+      case 34: matrixRainbowPlanet((uint16_t)runtime_ms, 70);    break;
+      case 35: matrixStarrySky((uint16_t)runtime_ms, 80);        break;
+      case 36: matrixFogNoise((uint16_t)runtime_ms, 90);         break;
+      case 37: matrixRainbowTiledNoise((uint16_t)runtime_ms, 80); break;
+      case 38: matrixChristmasTreeAura((uint16_t)runtime_ms, 20, 0x02); break;
       default: matrixSunsetPickleSun((uint16_t)runtime_ms, 70); break;
     }
   };

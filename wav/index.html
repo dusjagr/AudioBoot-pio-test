@@ -28,6 +28,11 @@
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; color: var(--link-hover); }
     img { background: #0b0e13; border: 1px solid var(--border); }
+    .btn-hip { display:inline-block; margin-right: .5rem; margin-top:.5rem; padding:.5rem .75rem; border-radius:8px; border:1px solid var(--border); background: linear-gradient(135deg,#2a2f3a,#1b1f29); color: var(--text); cursor:pointer; box-shadow: var(--shadow); }
+    .btn-hip:hover { filter: brightness(1.05); }
+    .hip-toast { position: fixed; left: 1rem; bottom: 1rem; background: #121620; border:1px solid var(--border); padding:.75rem 1rem; border-radius:10px; box-shadow: var(--shadow); color: var(--text); display:none; align-items:center; gap:.75rem; }
+    .hip-dot { width:10px; height:10px; border-radius:50%; background:#61d673; box-shadow:0 0 12px #61d673; display:inline-block; }
+    .btn-stop { padding:.35rem .6rem; border-radius:8px; border:1px solid var(--border); background:#2a2f3a; color:var(--text); cursor:pointer; }
   </style>
 </head>
 <body>
@@ -71,5 +76,52 @@
   <div class="footer">
     Tip: To get this page rendered on the web from the repo, enable GitHub Pages for this repository and set the source to the main branch (root). Then open <code>/wav/index.html</code> from your Pages site.
   </div>
+
+  <div id="hipToast" class="hip-toast">
+    <span class="hip-dot"></span>
+    <span id="hipMsg">Uploading to Hip-Device… Set your volume to max and hold the device steady.</span>
+    <button class="btn-stop" id="hipStop">Stop</button>
+  </div>
+
+  <script>
+    // Inject a hip upload button into every card
+    function uploadFromCard(card){
+      const audio = card.querySelector('audio');
+      if(!audio) return;
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.playbackRate = 1.0;
+        audio.volume = 1.0;
+        audio.play();
+        showHipToast('Uploading to Hip-Device… Set volume to MAX.');
+      } catch(e){
+        showHipToast('Could not auto-play. Click the play button on the audio control.');
+      }
+    }
+    function showHipToast(msg){
+      const t = document.getElementById('hipToast');
+      const m = document.getElementById('hipMsg');
+      m.textContent = msg;
+      t.style.display = 'flex';
+      clearTimeout(window.__hipToastTimer);
+      window.__hipToastTimer = setTimeout(()=>{ t.style.display='none'; }, 8000);
+    }
+    function stopAllAudio(){
+      document.querySelectorAll('audio').forEach(a=>{ try{ a.pause(); a.currentTime=0; }catch(e){} });
+      const t = document.getElementById('hipToast');
+      t.style.display='none';
+    }
+    document.getElementById('hipStop').addEventListener('click', stopAllAudio);
+    // Add buttons at load
+    document.querySelectorAll('.card').forEach(card => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-hip';
+      btn.innerText = 'Upload to Hip-Device';
+      btn.addEventListener('click', ()=>uploadFromCard(card));
+      const links = card.querySelector('.links');
+      if (links) links.prepend(btn); else card.appendChild(btn);
+    });
+  </script>
 </body>
 </html>
