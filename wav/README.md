@@ -165,6 +165,14 @@ Notes:
   Your browser does not support the audio element. Use the download link above.
 </audio>
 
+### 19 — Lightning
+<a href="visual-19-lightning.wav">Download</a>
+
+<audio controls>
+  <source src="visual-19-lightning.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
 ### 20 — Flags
 <a href="visual-20-flags.wav">Download</a>
 
@@ -178,6 +186,158 @@ Notes:
 
 <audio controls>
   <source src="visual-21-flags-fade.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 22 — Digital Rain
+<a href="visual-22-digital-rain.wav">Download</a>
+
+<audio controls>
+  <source src="visual-22-digital-rain.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 23 — Waterfall
+<a href="visual-23-waterfall.wav">Download</a>
+
+<audio controls>
+  <source src="visual-23-waterfall.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 24 — Larson Dual
+<a href="visual-24-larson-dual.wav">Download</a>
+
+<audio controls>
+  <source src="visual-24-larson-dual.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 25 — Night Street 2000
+<a href="visual-25-night-street-2000.wav">Download</a>
+
+<audio controls>
+  <source src="visual-25-night-street-2000.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 26 — Switch Toggle
+<a href="visual-26-switch-toggle.wav">Download</a>
+
+<audio controls>
+  <source src="visual-26-switch-toggle.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 27 — Blue Screen
+<a href="visual-27-blue-screen.wav">Download</a>
+
+<audio controls>
+  <source src="visual-27-blue-screen.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 28 — Snow White
+<a href="visual-28-snow-white.wav">Download</a>
+
+<audio controls>
+  <source src="visual-28-snow-white.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 29 — Big Bad Wolf
+<a href="visual-29-big-bad-wolf.wav">Download</a>
+
+<audio controls>
+  <source src="visual-29-big-bad-wolf.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 30 — Trickster Plasma
+<a href="visual-30-trickster-plasma.wav">Download</a>
+
+<audio controls>
+  <source src="visual-30-trickster-plasma.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 31 — Pink Slime Sprouts
+<a href="visual-31-pink-slime-sprouts.wav">Download</a>
+
+<audio controls>
+  <source src="visual-31-pink-slime-sprouts.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 32 — Milky Sea
+<a href="visual-32-milky-sea.wav">Download</a>
+
+<audio controls>
+  <source src="visual-32-milky-sea.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 33 — Rainbow Half Donut
+<a href="visual-33-rainbow-half-donut.wav">Download</a>
+
+<audio controls>
+  <source src="visual-33-rainbow-half-donut.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 34 — Rainbow Planet
+<a href="visual-34-rainbow-planet.wav">Download</a>
+
+<audio controls>
+  <source src="visual-34-rainbow-planet.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 35 — Starry Sky
+<a href="visual-35-starry-sky.wav">Download</a>
+
+<audio controls>
+  <source src="visual-35-starry-sky.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 36 — Fog Noise
+<a href="visual-36-fog-noise.wav">Download</a>
+
+<audio controls>
+  <source src="visual-36-fog-noise.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 37 — Rainbow Tiled Noise
+<a href="visual-37-rainbow-tiled-noise.wav">Download</a>
+
+<audio controls>
+  <source src="visual-37-rainbow-tiled-noise.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 38 — Universe Creation
+<a href="visual-38-universe-creation.wav">Download</a>
+
+<audio controls>
+  <source src="visual-38-universe-creation.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 39 — Spear
+<a href="visual-39-spear.wav">Download</a>
+
+<audio controls>
+  <source src="visual-39-spear.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 40 — Christmas Tree Aura
+<a href="visual-40-christmas-tree-aura.wav">Download</a>
+
+<audio controls>
+  <source src="visual-40-christmas-tree-aura.wav" type="audio/wav">
   Your browser does not support the audio element. Use the download link above.
 </audio>
 

@@ -162,7 +162,7 @@ def generate_html(entries):
 """
         # Add variant links
         # Order: Low, Med, High (Default)
-        for b_label, b_key in [("Low", "low"), ("Med", "med"), ("High", "high")]:
+        for b_label, b_key in [("Eco Mode", "low"), ("Med", "med"), ("High", "high")]:
             if b_key in vs:
                 fname = vs[b_key]
                 # We use a little JS to switch the source or just direct download links?
@@ -305,11 +305,15 @@ def generate_readme(entries):
     lines.append("## Playlist\n\n")
 
     for e in entries:
+        vs = e["variants"]
+        main_src = vs.get("default") or vs.get("high") or vs.get("med") or vs.get("low")
+        if not main_src: continue
+
         lines.append(f"### {e['id']} — {e['title']}\n")
-        lines.append(f"<a href=\"{e['rel']}\">Download</a>\n\n")
+        lines.append(f"<a href=\"{main_src}\">Download</a>\n\n")
         # Inline audio tag (may not render in all viewers, but works on GitHub web)
         lines.append("<audio controls>\n")
-        lines.append(f"  <source src=\"{e['rel']}\" type=\"audio/wav\">\n")
+        lines.append(f"  <source src=\"{main_src}\" type=\"audio/wav\">\n")
         lines.append("  Your browser does not support the audio element. Use the download link above.\n")
         lines.append("</audio>\n\n")
 

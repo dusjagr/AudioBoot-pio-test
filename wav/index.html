@@ -28,59 +28,687 @@
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; color: var(--link-hover); }
     img { background: #0b0e13; border: 1px solid var(--border); }
-    .btn-hip { display:inline-block; margin-right: .5rem; margin-top:.5rem; padding:.5rem .75rem; border-radius:8px; border:1px solid var(--border); background: linear-gradient(135deg,#2a2f3a,#1b1f29); color: var(--text); cursor:pointer; box-shadow: var(--shadow); }
+    .btn-hip { display:inline-block; margin-right: .5rem; margin-top:.5rem; padding:.5rem .75rem; border-radius:8px; border:1px solid var(--border); background: linear-gradient(135deg,#2a2f3a,#1b1f29); color: var(--text); cursor:pointer; box-shadow: var(--shadow); font-size: 0.9rem;}
     .btn-hip:hover { filter: brightness(1.05); }
-    .hip-toast { position: fixed; left: 1rem; bottom: 1rem; background: #121620; border:1px solid var(--border); padding:.75rem 1rem; border-radius:10px; box-shadow: var(--shadow); color: var(--text); display:none; align-items:center; gap:.75rem; }
+    .variant-links { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+    .btn-var { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; padding: 2px 8px; cursor: pointer; margin-right: 4px; }
+    .btn-var:hover { background: var(--border); }
+    .hip-toast { position: fixed; left: 1rem; bottom: 1rem; background: #121620; border:1px solid var(--border); padding:.75rem 1rem; border-radius:10px; box-shadow: var(--shadow); color: var(--text); display:none; align-items:center; gap:.75rem; z-index: 100;}
     .hip-dot { width:10px; height:10px; border-radius:50%; background:#61d673; box-shadow:0 0 12px #61d673; display:inline-block; }
     .btn-stop { padding:.35rem .6rem; border-radius:8px; border:1px solid var(--border); background:#2a2f3a; color:var(--text); cursor:pointer; }
   </style>
+  <script>
+    function setAudio(id, file) {
+      const audio = document.getElementById(id);
+      audio.src = file;
+      audio.load();
+      // update download link too
+      const link = document.getElementById(id.replace('audio-', 'link-'));
+      if(link) link.href = file;
+    }
+  </script>
 </head>
 <body>
   <h1>Visual WAV Library</h1>
-  <p class="lead">Inline players for all generated audio bootloader WAV files. Open this page via GitHub Pages or locally in a browser to play.</p>
+  <p class="lead">Inline players for all generated audio bootloader WAV files. Choose brightness level if available.</p>
 
   <div class="grid">
-    <div class="card"><div class="title">0 — Larson</div><a href="gifs/00_larson.gif" target="_blank"><img src="gifs/00_larson.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/00_larson.gif';" alt="Larson" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-00-larson.wav" type="audio/wav" /></audio><div class="links"><a href="visual-00-larson.wav">Open file</a></div></div>
-    <div class="card"><div class="title">1 — Bouncing Dot</div><a href="gifs/01_bouncing-dot.gif" target="_blank"><img src="gifs/01_bouncing-dot.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/01_bouncing-dot.gif';" alt="Bouncing Dot" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-01-bouncing-dot.wav" type="audio/wav" /></audio><div class="links"><a href="visual-01-bouncing-dot.wav">Open file</a></div></div>
-    <div class="card"><div class="title">2 — Rain</div><a href="gifs/02_rain.gif" target="_blank"><img src="gifs/02_rain.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/02_rain.gif';" alt="Rain" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-02-rain.wav" type="audio/wav" /></audio><div class="links"><a href="visual-02-rain.wav">Open file</a></div></div>
-    <div class="card"><div class="title">3 — Twinkle</div><a href="gifs/03_twinkle.gif" target="_blank"><img src="gifs/03_twinkle.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/03_twinkle.gif';" alt="Twinkle" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-03-twinkle.wav" type="audio/wav" /></audio><div class="links"><a href="visual-03-twinkle.wav">Open file</a></div></div>
-    <div class="card"><div class="title">4 — Wipe</div><a href="gifs/04_wipe.gif" target="_blank"><img src="gifs/04_wipe.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/04_wipe.gif';" alt="Wipe" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-04-wipe.wav" type="audio/wav" /></audio><div class="links"><a href="visual-04-wipe.wav">Open file</a></div></div>
-    <div class="card"><div class="title">5 — Spinner</div><a href="gifs/05_spinner.gif" target="_blank"><img src="gifs/05_spinner.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/05_spinner.gif';" alt="Spinner" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-05-spinner.wav" type="audio/wav" /></audio><div class="links"><a href="visual-05-spinner.wav">Open file</a></div></div>
-    <div class="card"><div class="title">6 — Fire</div><a href="gifs/06_fire.gif" target="_blank"><img src="gifs/06_fire.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/06_fire.gif';" alt="Fire" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-06-fire.wav" type="audio/wav" /></audio><div class="links"><a href="visual-06-fire.wav">Open file</a></div></div>
-    <div class="card"><div class="title">7 — Rainbow Zoom</div><a href="gifs/07_rainbow-zoom.gif" target="_blank"><img src="gifs/07_rainbow-zoom.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/07_rainbow-zoom.gif';" alt="Rainbow Zoom" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-07-rainbow-zoom.wav" type="audio/wav" /></audio><div class="links"><a href="visual-07-rainbow-zoom.wav">Open file</a></div></div>
-    <div class="card"><div class="title">8 — Pink Spiral</div><a href="gifs/08_pink-spiral.gif" target="_blank"><img src="gifs/08_pink-spiral.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/08_pink-spiral.gif';" alt="Pink Spiral" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-08-pink-spiral.wav" type="audio/wav" /></audio><div class="links"><a href="visual-08-pink-spiral.wav">Open file</a></div></div>
-    <div class="card"><div class="title">9 — Pong</div><a href="gifs/09_pong.gif" target="_blank"><img src="gifs/09_pong.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/09_pong.gif';" alt="Pong" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-09-pong.wav" type="audio/wav" /></audio><div class="links"><a href="visual-09-pong.wav">Open file</a></div></div>
-    <div class="card"><div class="title">10 — DnB Dancer</div><a href="gifs/10_dnb-dancer.gif" target="_blank"><img src="gifs/10_dnb-dancer.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/10_dnb-dancer.gif';" alt="DnB Dancer" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-10-dnb-dancer.wav" type="audio/wav" /></audio><div class="links"><a href="visual-10-dnb-dancer.wav">Open file</a></div></div>
-    <div class="card"><div class="title">11 — Kanji Scroll</div><a href="gifs/11_kanji-scroll.gif" target="_blank"><img src="gifs/11_kanji-scroll.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/11_kanji-scroll.gif';" alt="Kanji Scroll" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-11-kanji-scroll.wav" type="audio/wav" /></audio><div class="links"><a href="visual-11-kanji-scroll.wav">Open file</a></div></div>
-    <div class="card"><div class="title">12 — Explosion</div><a href="gifs/12_explosion.gif" target="_blank"><img src="gifs/12_explosion.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/12_explosion.gif';" alt="Explosion" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-12-explosion.wav" type="audio/wav" /></audio><div class="links"><a href="visual-12-explosion.wav">Open file</a></div></div>
-    <div class="card"><div class="title">13 — Shoggoth</div><a href="gifs/13_shoggoth.gif" target="_blank"><img src="gifs/13_shoggoth.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/13_shoggoth.gif';" alt="Shoggoth" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-13-shoggoth.wav" type="audio/wav" /></audio><div class="links"><a href="visual-13-shoggoth.wav">Open file</a></div></div>
-    <div class="card"><div class="title">14 — Rainbow Waves</div><a href="gifs/14_rainbow-waves.gif" target="_blank"><img src="gifs/14_rainbow-waves.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/14_rainbow-waves.gif';" alt="Rainbow Waves" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-14-rainbow-waves.wav" type="audio/wav" /></audio><div class="links"><a href="visual-14-rainbow-waves.wav">Open file</a></div></div>
-    <div class="card"><div class="title">15 — Tetris</div><a href="gifs/15_tetris.gif" target="_blank"><img src="gifs/15_tetris.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/15_tetris.gif';" alt="Tetris" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-15-tetris.wav" type="audio/wav" /></audio><div class="links"><a href="visual-15-tetris.wav">Open file</a></div></div>
-    <div class="card"><div class="title">16 — Five-Eight Seam</div><a href="gifs/16_five-eight-seam.gif" target="_blank"><img src="gifs/16_five-eight-seam.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/16_five-eight-seam.gif';" alt="Five-Eight Seam" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-16-five-eight-seam.wav" type="audio/wav" /></audio><div class="links"><a href="visual-16-five-eight-seam.wav">Open file</a></div></div>
-    <div class="card"><div class="title">17 — Côte d'Azur</div><a href="gifs/17_cote-azur.gif" target="_blank"><img src="gifs/17_cote-azur.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/17_cote-azur.gif';" alt="Cote d'Azur" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-17-cote-azur.wav" type="audio/wav" /></audio><div class="links"><a href="visual-17-cote-azur.wav">Open file</a></div></div>
-    <div class="card"><div class="title">18 — Sunset Pickle Sun</div><a href="gifs/18_sunset-pickle-sun.gif" target="_blank"><img src="gifs/18_sunset-pickle-sun.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/18_sunset-pickle-sun.gif';" alt="Sunset Pickle Sun" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-18-sunset-pickle-sun.wav" type="audio/wav" /></audio><div class="links"><a href="visual-18-sunset-pickle-sun.wav">Open file</a></div></div>
-    <div class="card"><div class="title">19 — Lightning</div><a href="gifs/19_lightning.gif" target="_blank"><img src="gifs/19_lightning.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/19_lightning.gif';" alt="Lightning" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-19-lightning.wav" type="audio/wav" /></audio><div class="links"><a href="visual-19-lightning.wav">Open file</a></div></div>
-    <div class="card"><div class="title">20 — Flags</div><a href="gifs/20_flags.gif" target="_blank"><img src="gifs/20_flags.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/20_flags.gif';" alt="Flags" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-20-flags.wav" type="audio/wav" /></audio><div class="links"><a href="visual-20-flags.wav">Open file</a></div></div>
-    <div class="card"><div class="title">21 — Flags Fade</div><a href="gifs/21_flags-fade.gif" target="_blank"><img src="gifs/21_flags-fade.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/21_flags-fade.gif';" alt="Flags Fade" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-21-flags-fade.wav" type="audio/wav" /></audio><div class="links"><a href="visual-21-flags-fade.wav">Open file</a></div></div>
-    <div class="card"><div class="title">22 — Digital Rain</div><a href="gifs/22_digital-rain.gif" target="_blank"><img src="gifs/22_digital-rain.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/22_digital-rain.gif';" alt="Digital Rain" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-22-digital-rain.wav" type="audio/wav" /></audio><div class="links"><a href="visual-22-digital-rain.wav">Open file</a></div></div>
-    <div class="card"><div class="title">23 — Waterfall</div><a href="gifs/23_waterfall.gif" target="_blank"><img src="gifs/23_waterfall.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/23_waterfall.gif';" alt="Waterfall" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-23-waterfall.wav" type="audio/wav" /></audio><div class="links"><a href="visual-23-waterfall.wav">Open file</a></div></div>
-    <div class="card"><div class="title">24 — Larson Scanner Dual</div><a href="gifs/24_larson-dual.gif" target="_blank"><img src="gifs/24_larson-dual.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/24_larson-dual.gif';" alt="Larson Scanner Dual" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-24-larson-dual.wav" type="audio/wav" /></audio><div class="links"><a href="visual-24-larson-dual.wav">Open file</a></div></div>
-    <div class="card"><div class="title">25 — NightStreet2000</div><a href="gifs/25_night-street-2000.gif" target="_blank"><img src="gifs/25_night-street-2000.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/25_night-street-2000.gif';" alt="NightStreet2000" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-25-night-street-2000.wav" type="audio/wav" /></audio><div class="links"><a href="visual-25-night-street-2000.wav">Open file</a></div></div>
-    <div class="card"><div class="title">26 — Switch Toggle</div><a href="gifs/26_switch-toggle.gif" target="_blank"><img src="gifs/26_switch-toggle.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/26_switch-toggle.gif';" alt="Switch Toggle" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-26-switch-toggle.wav" type="audio/wav" /></audio><div class="links"><a href="visual-26-switch-toggle.wav">Open file</a></div></div>
-    <div class="card"><div class="title">27 — Blue Screen</div><a href="gifs/27_blue-screen.gif" target="_blank"><img src="gifs/27_blue-screen.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/27_blue-screen.gif';" alt="Blue Screen" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-27-blue-screen.wav" type="audio/wav" /></audio><div class="links"><a href="visual-27-blue-screen.wav">Open file</a></div></div>
-    <div class="card"><div class="title">28 — Snow White</div><a href="gifs/28_snow-white.gif" target="_blank"><img src="gifs/28_snow-white.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/28_snow-white.gif';" alt="Snow White" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-28-snow-white.wav" type="audio/wav" /></audio><div class="links"><a href="visual-28-snow-white.wav">Open file</a></div></div>
-    <div class="card"><div class="title">29 — Big Bad Wolf</div><a href="gifs/29_big-bad-wolf.gif" target="_blank"><img src="gifs/29_big-bad-wolf.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/29_big-bad-wolf.gif';" alt="Big Bad Wolf" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-29-big-bad-wolf.wav" type="audio/wav" /></audio><div class="links"><a href="visual-29-big-bad-wolf.wav">Open file</a></div></div>
-    <div class="card"><div class="title">30 — Trickster Plasma</div><a href="gifs/30_trickster-plasma.gif" target="_blank"><img src="gifs/30_trickster-plasma.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/30_trickster-plasma.gif';" alt="Trickster Plasma" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-30-trickster-plasma.wav" type="audio/wav" /></audio><div class="links"><a href="visual-30-trickster-plasma.wav">Open file</a></div></div>
-    <div class="card"><div class="title">31 — Pink Slime Sprouts</div><a href="gifs/31_pink-slime-sprouts.gif" target="_blank"><img src="gifs/31_pink-slime-sprouts.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/31_pink-slime-sprouts.gif';" alt="Pink Slime Sprouts" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-31-pink-slime-sprouts.wav" type="audio/wav" /></audio><div class="links"><a href="visual-31-pink-slime-sprouts.wav">Open file</a></div></div>
-    <div class="card"><div class="title">32 — Milky Sea</div><a href="gifs/32_milky-sea.gif" target="_blank"><img src="gifs/32_milky-sea.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/32_milky-sea.gif';" alt="Milky Sea" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-32-milky-sea.wav" type="audio/wav" /></audio><div class="links"><a href="visual-32-milky-sea.wav">Open file</a></div></div>
-    <div class="card"><div class="title">33 — Rainbow Half Donut</div><a href="gifs/33_rainbow-half-donut.gif" target="_blank"><img src="gifs/33_rainbow-half-donut.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/33_rainbow-half-donut.gif';" alt="Rainbow Half Donut" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-33-rainbow-half-donut.wav" type="audio/wav" /></audio><div class="links"><a href="visual-33-rainbow-half-donut.wav">Open file</a></div></div>
-    <div class="card"><div class="title">34 — Rainbow Planet</div><a href="gifs/34_rainbow-planet.gif" target="_blank"><img src="gifs/34_rainbow-planet.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/34_rainbow-planet.gif';" alt="Rainbow Planet" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-34-rainbow-planet.wav" type="audio/wav" /></audio><div class="links"><a href="visual-34-rainbow-planet.wav">Open file</a></div></div>
-    <div class="card"><div class="title">35 — Starry Sky</div><a href="gifs/35_starry-sky.gif" target="_blank"><img src="gifs/35_starry-sky.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/35_starry-sky.gif';" alt="Starry Sky" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-35-starry-sky.wav" type="audio/wav" /></audio><div class="links"><a href="visual-35-starry-sky.wav">Open file</a></div></div>
-    <div class="card"><div class="title">36 — Fog Noise</div><a href="gifs/36_fog-noise.gif" target="_blank"><img src="gifs/36_fog-noise.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/36_fog-noise.gif';" alt="Fog Noise" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-36-fog-noise.wav" type="audio/wav" /></audio><div class="links"><a href="visual-36-fog-noise.wav">Open file</a></div></div>
-    <div class="card"><div class="title">37 — Rainbow Tiled Noise</div><a href="gifs/37_rainbow-tiled-noise.gif" target="_blank"><img src="gifs/37_rainbow-tiled-noise.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/37_rainbow-tiled-noise.gif';" alt="Rainbow Tiled Noise" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-37-rainbow-tiled-noise.wav" type="audio/wav" /></audio><div class="links"><a href="visual-37-rainbow-tiled-noise.wav">Open file</a></div></div>
-    <div class="card"><div class="title">38 — Universe Creation</div><a href="gifs/38_universe-creation.gif" target="_blank"><img src="gifs/38_universe-creation.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/38_universe-creation.gif';" alt="Universe Creation" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-38-universe-creation.wav" type="audio/wav" /></audio><div class="links"><a href="visual-38-universe-creation.wav">Open file</a></div></div>
-    <div class="card"><div class="title">39 — Spear</div><a href="gifs/39_spear.gif" target="_blank"><img src="gifs/39_spear.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/39_spear.gif';" alt="Spear" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-39-spear.wav" type="audio/wav" /></audio><div class="links"><a href="visual-39-spear.wav">Open file</a></div></div>
-    <div class="card"><div class="title">40 — Christmas Tree Aura</div><a href="gifs/40_christmas-tree-aura.gif" target="_blank"><img src="gifs/40_christmas-tree-aura.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/40_christmas-tree-aura.gif';" alt="Christmas Tree Aura" loading="lazy" style="width:100%;border-radius:6px"/></a><audio controls preload="none"><source src="visual-40-christmas-tree-aura.wav" type="audio/wav" /></audio><div class="links"><a href="visual-40-christmas-tree-aura.wav">Open file</a></div></div>
+    <div class="card">
+      <div class="title">0 — Larson</div>
+      <a href="gifs/00_larson.gif" target="_blank">
+        <img src="gifs/00_larson.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/00_larson.gif';" alt="Larson" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-0">
+        <source src="visual-00-larson.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-0', 'visual-00-larson-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-0', 'visual-00-larson-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-0', 'visual-00-larson-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-00-larson.wav" id="link-0">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">1 — Bouncing Dot</div>
+      <a href="gifs/01_bouncing-dot.gif" target="_blank">
+        <img src="gifs/01_bouncing-dot.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/01_bouncing-dot.gif';" alt="Bouncing Dot" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-1">
+        <source src="visual-01-bouncing-dot.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-01-bouncing-dot.wav" id="link-1">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">2 — Rain</div>
+      <a href="gifs/02_rain.gif" target="_blank">
+        <img src="gifs/02_rain.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/02_rain.gif';" alt="Rain" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-2">
+        <source src="visual-02-rain.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-2', 'visual-02-rain-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-2', 'visual-02-rain-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-2', 'visual-02-rain-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-02-rain.wav" id="link-2">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">3 — Twinkle</div>
+      <a href="gifs/03_twinkle.gif" target="_blank">
+        <img src="gifs/03_twinkle.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/03_twinkle.gif';" alt="Twinkle" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-3">
+        <source src="visual-03-twinkle.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-3', 'visual-03-twinkle-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-3', 'visual-03-twinkle-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-3', 'visual-03-twinkle-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-03-twinkle.wav" id="link-3">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">4 — Wipe</div>
+      <a href="gifs/04_wipe.gif" target="_blank">
+        <img src="gifs/04_wipe.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/04_wipe.gif';" alt="Wipe" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-4">
+        <source src="visual-04-wipe.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-4', 'visual-04-wipe-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-4', 'visual-04-wipe-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-4', 'visual-04-wipe-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-04-wipe.wav" id="link-4">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">5 — Spinner</div>
+      <a href="gifs/05_spinner.gif" target="_blank">
+        <img src="gifs/05_spinner.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/05_spinner.gif';" alt="Spinner" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-5">
+        <source src="visual-05-spinner.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-5', 'visual-05-spinner-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-5', 'visual-05-spinner-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-5', 'visual-05-spinner-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-05-spinner.wav" id="link-5">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">6 — Fire</div>
+      <a href="gifs/06_fire.gif" target="_blank">
+        <img src="gifs/06_fire.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/06_fire.gif';" alt="Fire" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-6">
+        <source src="visual-06-fire.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-6', 'visual-06-fire-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-6', 'visual-06-fire-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-6', 'visual-06-fire-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-06-fire.wav" id="link-6">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">7 — Rainbow Zoom</div>
+      <a href="gifs/07_rainbow-zoom.gif" target="_blank">
+        <img src="gifs/07_rainbow-zoom.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/07_rainbow-zoom.gif';" alt="Rainbow Zoom" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-7">
+        <source src="visual-07-rainbow-zoom.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-07-rainbow-zoom.wav" id="link-7">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">8 — Pink Spiral</div>
+      <a href="gifs/08_pink-spiral.gif" target="_blank">
+        <img src="gifs/08_pink-spiral.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/08_pink-spiral.gif';" alt="Pink Spiral" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-8">
+        <source src="visual-08-pink-spiral.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-8', 'visual-08-pink-spiral-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-8', 'visual-08-pink-spiral-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-8', 'visual-08-pink-spiral-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-08-pink-spiral.wav" id="link-8">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">9 — Pong</div>
+      <a href="gifs/09_pong.gif" target="_blank">
+        <img src="gifs/09_pong.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/09_pong.gif';" alt="Pong" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-9">
+        <source src="visual-09-pong.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-9', 'visual-09-pong-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-9', 'visual-09-pong-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-9', 'visual-09-pong-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-09-pong.wav" id="link-9">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">10 — DnB Dancer</div>
+      <a href="gifs/10_dnb-dancer.gif" target="_blank">
+        <img src="gifs/10_dnb-dancer.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/10_dnb-dancer.gif';" alt="DnB Dancer" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-10">
+        <source src="visual-10-dnb-dancer.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-10-dnb-dancer.wav" id="link-10">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">11 — Kanji Scroll</div>
+      <a href="gifs/11_kanji-scroll.gif" target="_blank">
+        <img src="gifs/11_kanji-scroll.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/11_kanji-scroll.gif';" alt="Kanji Scroll" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-11">
+        <source src="visual-11-kanji-scroll.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-11-kanji-scroll.wav" id="link-11">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">12 — Explosion</div>
+      <a href="gifs/12_explosion.gif" target="_blank">
+        <img src="gifs/12_explosion.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/12_explosion.gif';" alt="Explosion" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-12">
+        <source src="visual-12-explosion.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-12', 'visual-12-explosion-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-12', 'visual-12-explosion-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-12', 'visual-12-explosion-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-12-explosion.wav" id="link-12">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">13 — Shoggoth</div>
+      <a href="gifs/13_shoggoth.gif" target="_blank">
+        <img src="gifs/13_shoggoth.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/13_shoggoth.gif';" alt="Shoggoth" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-13">
+        <source src="visual-13-shoggoth.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-13', 'visual-13-shoggoth-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-13', 'visual-13-shoggoth-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-13', 'visual-13-shoggoth-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-13-shoggoth.wav" id="link-13">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">14 — Rainbow Waves</div>
+      <a href="gifs/14_rainbow-waves.gif" target="_blank">
+        <img src="gifs/14_rainbow-waves.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/14_rainbow-waves.gif';" alt="Rainbow Waves" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-14">
+        <source src="visual-14-rainbow-waves.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-14-rainbow-waves.wav" id="link-14">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">15 — Tetris</div>
+      <a href="gifs/15_tetris.gif" target="_blank">
+        <img src="gifs/15_tetris.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/15_tetris.gif';" alt="Tetris" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-15">
+        <source src="visual-15-tetris.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-15', 'visual-15-tetris-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-15', 'visual-15-tetris-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-15', 'visual-15-tetris-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-15-tetris.wav" id="link-15">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">16 — Five Eight Seam</div>
+      <a href="gifs/16_five-eight-seam.gif" target="_blank">
+        <img src="gifs/16_five-eight-seam.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/16_five-eight-seam.gif';" alt="Five Eight Seam" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-16">
+        <source src="visual-16-five-eight-seam.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-16-five-eight-seam.wav" id="link-16">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">17 — Côte d’Azur</div>
+      <a href="gifs/17_cote-azur.gif" target="_blank">
+        <img src="gifs/17_cote-azur.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/17_cote-azur.gif';" alt="Côte d’Azur" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-17">
+        <source src="visual-17-cote-azur.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-17', 'visual-17-cote-azur-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-17', 'visual-17-cote-azur-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-17', 'visual-17-cote-azur-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-17-cote-azur.wav" id="link-17">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">18 — Sunset Pickle Sun</div>
+      <a href="gifs/18_sunset-pickle-sun.gif" target="_blank">
+        <img src="gifs/18_sunset-pickle-sun.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/18_sunset-pickle-sun.gif';" alt="Sunset Pickle Sun" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-18">
+        <source src="visual-18-sunset-pickle-sun.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-18-sunset-pickle-sun.wav" id="link-18">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">19 — Lightning</div>
+      <a href="gifs/19_lightning.gif" target="_blank">
+        <img src="gifs/19_lightning.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/19_lightning.gif';" alt="Lightning" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-19">
+        <source src="visual-19-lightning.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-19', 'visual-19-lightning-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-19', 'visual-19-lightning-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-19', 'visual-19-lightning-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-19-lightning.wav" id="link-19">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">20 — Flags</div>
+      <a href="gifs/20_flags.gif" target="_blank">
+        <img src="gifs/20_flags.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/20_flags.gif';" alt="Flags" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-20">
+        <source src="visual-20-flags.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-20', 'visual-20-flags-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-20', 'visual-20-flags-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-20', 'visual-20-flags-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-20-flags.wav" id="link-20">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">21 — Flags Fade</div>
+      <a href="gifs/21_flags-fade.gif" target="_blank">
+        <img src="gifs/21_flags-fade.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/21_flags-fade.gif';" alt="Flags Fade" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-21">
+        <source src="visual-21-flags-fade.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-21', 'visual-21-flags-fade-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-21', 'visual-21-flags-fade-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-21', 'visual-21-flags-fade-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-21-flags-fade.wav" id="link-21">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">22 — Digital Rain</div>
+      <a href="gifs/22_digital-rain.gif" target="_blank">
+        <img src="gifs/22_digital-rain.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/22_digital-rain.gif';" alt="Digital Rain" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-22">
+        <source src="visual-22-digital-rain.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-22', 'visual-22-digital-rain-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-22', 'visual-22-digital-rain-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-22', 'visual-22-digital-rain-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-22-digital-rain.wav" id="link-22">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">23 — Waterfall</div>
+      <a href="gifs/23_waterfall.gif" target="_blank">
+        <img src="gifs/23_waterfall.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/23_waterfall.gif';" alt="Waterfall" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-23">
+        <source src="visual-23-waterfall.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-23', 'visual-23-waterfall-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-23', 'visual-23-waterfall-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-23', 'visual-23-waterfall-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-23-waterfall.wav" id="link-23">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">24 — Larson Dual</div>
+      <a href="gifs/24_larson-dual.gif" target="_blank">
+        <img src="gifs/24_larson-dual.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/24_larson-dual.gif';" alt="Larson Dual" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-24">
+        <source src="visual-24-larson-dual.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-24', 'visual-24-larson-dual-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-24', 'visual-24-larson-dual-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-24', 'visual-24-larson-dual-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-24-larson-dual.wav" id="link-24">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">25 — Night Street 2000</div>
+      <a href="gifs/25_night-street-2000.gif" target="_blank">
+        <img src="gifs/25_night-street-2000.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/25_night-street-2000.gif';" alt="Night Street 2000" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-25">
+        <source src="visual-25-night-street-2000.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-25', 'visual-25-night-street-2000-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-25', 'visual-25-night-street-2000-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-25', 'visual-25-night-street-2000-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-25-night-street-2000.wav" id="link-25">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">26 — Switch Toggle</div>
+      <a href="gifs/26_switch-toggle.gif" target="_blank">
+        <img src="gifs/26_switch-toggle.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/26_switch-toggle.gif';" alt="Switch Toggle" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-26">
+        <source src="visual-26-switch-toggle.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-26', 'visual-26-switch-toggle-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-26', 'visual-26-switch-toggle-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-26', 'visual-26-switch-toggle-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-26-switch-toggle.wav" id="link-26">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">27 — Blue Screen</div>
+      <a href="gifs/27_blue-screen.gif" target="_blank">
+        <img src="gifs/27_blue-screen.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/27_blue-screen.gif';" alt="Blue Screen" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-27">
+        <source src="visual-27-blue-screen.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-27', 'visual-27-blue-screen-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-27', 'visual-27-blue-screen-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-27', 'visual-27-blue-screen-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-27-blue-screen.wav" id="link-27">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">28 — Snow White</div>
+      <a href="gifs/28_snow-white.gif" target="_blank">
+        <img src="gifs/28_snow-white.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/28_snow-white.gif';" alt="Snow White" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-28">
+        <source src="visual-28-snow-white.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-28', 'visual-28-snow-white-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-28', 'visual-28-snow-white-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-28', 'visual-28-snow-white-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-28-snow-white.wav" id="link-28">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">29 — Big Bad Wolf</div>
+      <a href="gifs/29_big-bad-wolf.gif" target="_blank">
+        <img src="gifs/29_big-bad-wolf.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/29_big-bad-wolf.gif';" alt="Big Bad Wolf" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-29">
+        <source src="visual-29-big-bad-wolf.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-29-big-bad-wolf.wav" id="link-29">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">30 — Trickster Plasma</div>
+      <a href="gifs/30_trickster-plasma.gif" target="_blank">
+        <img src="gifs/30_trickster-plasma.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/30_trickster-plasma.gif';" alt="Trickster Plasma" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-30">
+        <source src="visual-30-trickster-plasma.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-30-trickster-plasma.wav" id="link-30">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">31 — Pink Slime Sprouts</div>
+      <a href="gifs/31_pink-slime-sprouts.gif" target="_blank">
+        <img src="gifs/31_pink-slime-sprouts.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/31_pink-slime-sprouts.gif';" alt="Pink Slime Sprouts" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-31">
+        <source src="visual-31-pink-slime-sprouts.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-31-pink-slime-sprouts.wav" id="link-31">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">32 — Milky Sea</div>
+      <a href="gifs/32_milky-sea.gif" target="_blank">
+        <img src="gifs/32_milky-sea.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/32_milky-sea.gif';" alt="Milky Sea" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-32">
+        <source src="visual-32-milky-sea.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-32', 'visual-32-milky-sea-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-32', 'visual-32-milky-sea-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-32', 'visual-32-milky-sea-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-32-milky-sea.wav" id="link-32">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">33 — Rainbow Half Donut</div>
+      <a href="gifs/33_rainbow-half-donut.gif" target="_blank">
+        <img src="gifs/33_rainbow-half-donut.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/33_rainbow-half-donut.gif';" alt="Rainbow Half Donut" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-33">
+        <source src="visual-33-rainbow-half-donut.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-33-rainbow-half-donut.wav" id="link-33">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">34 — Rainbow Planet</div>
+      <a href="gifs/34_rainbow-planet.gif" target="_blank">
+        <img src="gifs/34_rainbow-planet.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/34_rainbow-planet.gif';" alt="Rainbow Planet" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-34">
+        <source src="visual-34-rainbow-planet.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-34-rainbow-planet.wav" id="link-34">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">35 — Starry Sky</div>
+      <a href="gifs/35_starry-sky.gif" target="_blank">
+        <img src="gifs/35_starry-sky.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/35_starry-sky.gif';" alt="Starry Sky" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-35">
+        <source src="visual-35-starry-sky.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-35', 'visual-35-starry-sky-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-35', 'visual-35-starry-sky-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-35', 'visual-35-starry-sky-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-35-starry-sky.wav" id="link-35">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">36 — Fog Noise</div>
+      <a href="gifs/36_fog-noise.gif" target="_blank">
+        <img src="gifs/36_fog-noise.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/36_fog-noise.gif';" alt="Fog Noise" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-36">
+        <source src="visual-36-fog-noise.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-36', 'visual-36-fog-noise-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-36', 'visual-36-fog-noise-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-36', 'visual-36-fog-noise-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-36-fog-noise.wav" id="link-36">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">37 — Rainbow Tiled Noise</div>
+      <a href="gifs/37_rainbow-tiled-noise.gif" target="_blank">
+        <img src="gifs/37_rainbow-tiled-noise.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/37_rainbow-tiled-noise.gif';" alt="Rainbow Tiled Noise" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-37">
+        <source src="visual-37-rainbow-tiled-noise.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-37-rainbow-tiled-noise.wav" id="link-37">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">38 — Universe Creation</div>
+      <a href="gifs/38_universe-creation.gif" target="_blank">
+        <img src="gifs/38_universe-creation.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/38_universe-creation.gif';" alt="Universe Creation" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-38">
+        <source src="visual-38-universe-creation.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-38', 'visual-38-universe-creation-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-38', 'visual-38-universe-creation-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-38', 'visual-38-universe-creation-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-38-universe-creation.wav" id="link-38">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">39 — Spear</div>
+      <a href="gifs/39_spear.gif" target="_blank">
+        <img src="gifs/39_spear.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/39_spear.gif';" alt="Spear" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-39">
+        <source src="visual-39-spear.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-39', 'visual-39-spear-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-39', 'visual-39-spear-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-39', 'visual-39-spear-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-39-spear.wav" id="link-39">Download WAV</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">40 — Christmas Tree Aura</div>
+      <a href="gifs/40_christmas-tree-aura.gif" target="_blank">
+        <img src="gifs/40_christmas-tree-aura.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/40_christmas-tree-aura.gif';" alt="Christmas Tree Aura" loading="lazy" style="width:100%;border-radius:6px"/>
+      </a>
+      <audio controls preload="none" id="audio-40">
+        <source src="visual-40-christmas-tree-aura.wav" type="audio/wav" />
+      </audio>
+      <div class="variant-links">
+        Brightness: 
+<button class="btn-var" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-high.wav')">High</button> 
+      </div>
+      <div class="links">
+        <a href="visual-40-christmas-tree-aura.wav" id="link-40">Download WAV</a>
+      </div>
+    </div>
   </div>
 
   <div class="footer">
@@ -127,7 +755,7 @@
     document.querySelectorAll('.card').forEach(card => {
       const btn = document.createElement('button');
       btn.className = 'btn-hip';
-      btn.innerText = 'Upload to Hip-Device';
+      btn.innerText = 'Upload';
       btn.addEventListener('click', ()=>uploadFromCard(card));
       const links = card.querySelector('.links');
       if (links) links.prepend(btn); else card.appendChild(btn);
