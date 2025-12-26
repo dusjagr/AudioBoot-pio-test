@@ -67,6 +67,13 @@ VISUALS = [
     (40, "christmas-tree-aura"),
 ]
 
+# Brightness levels to generate
+BRIGHTNESS_LEVELS = [
+    ("low", 20),
+    ("med", 80),
+    ("high", 255),
+]
+
 
 def run(cmd, cwd=None):
     print("[genwavs] $ " + " ".join(cmd))
@@ -80,8 +87,8 @@ def ensure_dirs():
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def build_one(vid: int, slug: str) -> Path:
-    """Build with VISUAL_ID=vid and return path to produced wav in build dir."""
+def build_one(vid: int, slug: str, brightness_val: int) -> Path:
+    """Build with VISUAL_ID=vid and GLOBAL_BRIGHTNESS=brightness_val, return path to produced wav."""
     # Compose a temporary platformio.ini by patching the existing env section
     base_ini = (PROJECT_ROOT / "platformio.ini").read_text()
     lines = base_ini.splitlines()
@@ -107,12 +114,12 @@ def build_one(vid: int, slug: str) -> Path:
                 out_lines.append("custom_hex2wav_auto_play = no")
                 inserted_custom_autoplay = True
                 continue
-            # Append -DVISUAL_ID to build_flags (preserve existing flags)
+            # Append -DVISUAL_ID and -DGLOBAL_BRIGHTNESS to build_flags (preserve existing flags)
             if stripped.lower().startswith("build_flags"):
                 # Keep everything after '=' and append our define
                 try:
                     key, val = line.split('=', 1)
-                    val = val.rstrip() + f" -DVISUAL_ID={vid}"
+                    val = val.rstrip() + f" -DVISUAL_ID={vid} -DGLOBAL_BRIGHTNESS={brightness_val}"
                     out_lines.append(f"{key}={val}")
                 except ValueError:
                     out_lines.append(line)
@@ -130,7 +137,7 @@ def build_one(vid: int, slug: str) -> Path:
             if stripped.startswith('[') and stripped.endswith(']'):
                 # Before starting a new section, if we're leaving env and didn't add build_flags yet, add it
                 if in_env:
-                    patched.append(f"build_flags = -DVISUAL_ID={vid}")
+                    patched.append(f"build_flags = -DVISUAL_ID={vid} -DGLOBAL_BRIGHTNESS={brightness_val}")
                     if not inserted_custom_autoplay:
                         patched.append("custom_hex2wav_auto_play = no")
                 in_env = (stripped.lower() == "[env:attiny85]")
@@ -139,7 +146,7 @@ def build_one(vid: int, slug: str) -> Path:
                 patched.append(line)
         # If file ended while still in env
         if in_env:
-            patched.append(f"build_flags = -DVISUAL_ID={vid}")
+            patched.append(f"build_flags = -DVISUAL_ID={vid} -DGLOBAL_BRIGHTNESS={brightness_val}")
             if not inserted_custom_autoplay:
                 patched.append("custom_hex2wav_auto_play = no")
         out_text = "\n".join(patched) + "\n"
@@ -157,7 +164,7 @@ def build_one(vid: int, slug: str) -> Path:
         ]
         rc = run(cmd, cwd=str(PROJECT_ROOT))
         if rc != 0:
-            raise RuntimeError(f"Build failed for VISUAL_ID={vid}")
+            raise RuntimeError(f"Build failed for VISUAL_ID={vid} Brightness={brightness_val}")
     # Convert HEX -> WAV directly using local tools
     hex_path = BUILD_DIR / "firmware.hex"
     if not hex_path.exists():
@@ -200,15 +207,27 @@ def main():
     for vid, slug in VISUALS:
         if include is not None and vid not in include:
             continue
-        try:
-            built_wav = build_one(vid, slug)
-            out_name = f"visual-{vid:02d}-{slug}.wav"
-            out_path = WAV_DIR / out_name
-            shutil.copy2(built_wav, out_path)
-            print(f"[genwavs] Saved: {out_path}")
-        except Exception as e:
-            print(f"[genwavs] ERROR for {vid}:{slug} -> {e}")
-            failures.append((vid, slug, str(e)))
+
+        # Build for each brightness level
+        for b_name, b_val in BRIGHTNESS_LEVELS:
+            try:
+                print(f"[genwavs] Building ID={vid} ({slug}) Brightness={b_name} ({b_val})...")
+                built_wav = build_one(vid, slug, b_val)
+                out_name = f"visual-{vid:02d}-{slug}-{b_name}.wav"
+                out_path = WAV_DIR / out_name
+                shutil.copy2(built_wav, out_path)
+                print(f"[genwavs] Saved: {out_path}")
+
+                # If high brightness, also save as default name for backward compatibility
+                if b_name == "high":
+                    default_name = f"visual-{vid:02d}-{slug}.wav"
+                    default_path = WAV_DIR / default_name
+                    shutil.copy2(built_wav, default_path)
+                    print(f"[genwavs] Saved default: {default_path}")
+
+            except Exception as e:
+                print(f"[genwavs] ERROR for {vid}:{slug} -> {e}")
+                failures.append((vid, slug, str(e)))
     if failures:
         print("\n[genwavs] Completed with errors:")
         for vid, slug, err in failures:

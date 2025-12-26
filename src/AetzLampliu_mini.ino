@@ -11,6 +11,10 @@
 #define VISUAL_ID -1
 #endif
 
+#ifndef GLOBAL_BRIGHTNESS
+#define GLOBAL_BRIGHTNESS 255
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Left-overs from measuring temperature and play family mart tune
 ========================================================================================================================
@@ -154,7 +158,7 @@ void playMart(int notes[])
 void setup(void) {
 
   pinMode(SPEAKERPIN, OUTPUT);
-  uint8_t brightness = hell;
+  uint8_t brightness = GLOBAL_BRIGHTNESS;
   neobegin();
   pixels.setBrightness(brightness);
   // Quick splash screen on boot
