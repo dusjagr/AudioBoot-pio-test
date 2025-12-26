@@ -55,6 +55,16 @@ VISUALS = [
     (28, "snow-white"),
     (29, "big-bad-wolf"),
     (30, "trickster-plasma"),
+    (31, "pink-slime-sprouts"),
+    (32, "milky-sea"),
+    (33, "rainbow-half-donut"),
+    (34, "rainbow-planet"),
+    (35, "starry-sky"),
+    (36, "fog-noise"),
+    (37, "rainbow-tiled-noise"),
+    (38, "universe-creation"),
+    (39, "spear"),
+    (40, "christmas-tree-aura"),
 ]
 
 
