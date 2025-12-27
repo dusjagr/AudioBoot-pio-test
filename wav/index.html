@@ -33,18 +33,26 @@
     .variant-links { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
     .btn-var { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; padding: 2px 8px; cursor: pointer; margin-right: 4px; }
     .btn-var:hover { background: var(--border); }
+    .btn-var.active { background: var(--link); color: #000; border-color: var(--link); font-weight: bold; }
     .hip-toast { position: fixed; left: 1rem; bottom: 1rem; background: #121620; border:1px solid var(--border); padding:.75rem 1rem; border-radius:10px; box-shadow: var(--shadow); color: var(--text); display:none; align-items:center; gap:.75rem; z-index: 100;}
     .hip-dot { width:10px; height:10px; border-radius:50%; background:#61d673; box-shadow:0 0 12px #61d673; display:inline-block; }
     .btn-stop { padding:.35rem .6rem; border-radius:8px; border:1px solid var(--border); background:#2a2f3a; color:var(--text); cursor:pointer; }
   </style>
   <script>
-    function setAudio(id, file) {
+    function setAudio(id, file, btn) {
       const audio = document.getElementById(id);
       audio.src = file;
       audio.load();
       // update download link too
       const link = document.getElementById(id.replace('audio-', 'link-'));
       if(link) link.href = file;
+      
+      // Update active state
+      if(btn) {
+        const container = btn.parentElement;
+        container.querySelectorAll('.btn-var').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
     }
   </script>
 </head>
@@ -63,7 +71,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-0', 'visual-00-larson-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-0', 'visual-00-larson-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-0', 'visual-00-larson-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-0', 'visual-00-larson-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-0', 'visual-00-larson-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-0', 'visual-00-larson-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-00-larson.wav" id="link-0">Download WAV</a>
@@ -79,7 +87,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-1', 'visual-01-bouncing-dot-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-01-bouncing-dot.wav" id="link-1">Download WAV</a>
@@ -95,7 +103,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-2', 'visual-02-rain-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-2', 'visual-02-rain-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-2', 'visual-02-rain-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-2', 'visual-02-rain-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-2', 'visual-02-rain-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-2', 'visual-02-rain-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-02-rain.wav" id="link-2">Download WAV</a>
@@ -111,7 +119,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-3', 'visual-03-twinkle-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-3', 'visual-03-twinkle-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-3', 'visual-03-twinkle-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-3', 'visual-03-twinkle-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-3', 'visual-03-twinkle-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-3', 'visual-03-twinkle-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-03-twinkle.wav" id="link-3">Download WAV</a>
@@ -127,7 +135,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-4', 'visual-04-wipe-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-4', 'visual-04-wipe-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-4', 'visual-04-wipe-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-4', 'visual-04-wipe-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-4', 'visual-04-wipe-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-4', 'visual-04-wipe-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-04-wipe.wav" id="link-4">Download WAV</a>
@@ -143,7 +151,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-5', 'visual-05-spinner-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-5', 'visual-05-spinner-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-5', 'visual-05-spinner-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-5', 'visual-05-spinner-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-5', 'visual-05-spinner-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-5', 'visual-05-spinner-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-05-spinner.wav" id="link-5">Download WAV</a>
@@ -159,7 +167,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-6', 'visual-06-fire-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-6', 'visual-06-fire-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-6', 'visual-06-fire-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-6', 'visual-06-fire-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-6', 'visual-06-fire-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-6', 'visual-06-fire-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-06-fire.wav" id="link-6">Download WAV</a>
@@ -175,7 +183,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-7', 'visual-07-rainbow-zoom-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-07-rainbow-zoom.wav" id="link-7">Download WAV</a>
@@ -191,7 +199,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-8', 'visual-08-pink-spiral-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-8', 'visual-08-pink-spiral-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-8', 'visual-08-pink-spiral-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-8', 'visual-08-pink-spiral-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-8', 'visual-08-pink-spiral-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-8', 'visual-08-pink-spiral-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-08-pink-spiral.wav" id="link-8">Download WAV</a>
@@ -207,7 +215,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-9', 'visual-09-pong-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-9', 'visual-09-pong-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-9', 'visual-09-pong-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-9', 'visual-09-pong-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-9', 'visual-09-pong-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-9', 'visual-09-pong-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-09-pong.wav" id="link-9">Download WAV</a>
@@ -223,7 +231,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-10', 'visual-10-dnb-dancer-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-10-dnb-dancer.wav" id="link-10">Download WAV</a>
@@ -239,7 +247,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-11', 'visual-11-kanji-scroll-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-11-kanji-scroll.wav" id="link-11">Download WAV</a>
@@ -255,7 +263,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-12', 'visual-12-explosion-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-12', 'visual-12-explosion-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-12', 'visual-12-explosion-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-12', 'visual-12-explosion-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-12', 'visual-12-explosion-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-12', 'visual-12-explosion-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-12-explosion.wav" id="link-12">Download WAV</a>
@@ -271,7 +279,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-13', 'visual-13-shoggoth-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-13', 'visual-13-shoggoth-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-13', 'visual-13-shoggoth-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-13', 'visual-13-shoggoth-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-13', 'visual-13-shoggoth-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-13', 'visual-13-shoggoth-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-13-shoggoth.wav" id="link-13">Download WAV</a>
@@ -287,7 +295,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-14', 'visual-14-rainbow-waves-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-14-rainbow-waves.wav" id="link-14">Download WAV</a>
@@ -303,7 +311,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-15', 'visual-15-tetris-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-15', 'visual-15-tetris-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-15', 'visual-15-tetris-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-15', 'visual-15-tetris-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-15', 'visual-15-tetris-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-15', 'visual-15-tetris-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-15-tetris.wav" id="link-15">Download WAV</a>
@@ -319,7 +327,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-16', 'visual-16-five-eight-seam-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-16-five-eight-seam.wav" id="link-16">Download WAV</a>
@@ -335,7 +343,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-17', 'visual-17-cote-azur-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-17', 'visual-17-cote-azur-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-17', 'visual-17-cote-azur-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-17', 'visual-17-cote-azur-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-17', 'visual-17-cote-azur-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-17', 'visual-17-cote-azur-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-17-cote-azur.wav" id="link-17">Download WAV</a>
@@ -351,7 +359,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-18', 'visual-18-sunset-pickle-sun-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-18-sunset-pickle-sun.wav" id="link-18">Download WAV</a>
@@ -367,7 +375,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-19', 'visual-19-lightning-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-19', 'visual-19-lightning-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-19', 'visual-19-lightning-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-19', 'visual-19-lightning-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-19', 'visual-19-lightning-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-19', 'visual-19-lightning-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-19-lightning.wav" id="link-19">Download WAV</a>
@@ -383,7 +391,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-20', 'visual-20-flags-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-20', 'visual-20-flags-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-20', 'visual-20-flags-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-20', 'visual-20-flags-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-20', 'visual-20-flags-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-20', 'visual-20-flags-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-20-flags.wav" id="link-20">Download WAV</a>
@@ -399,7 +407,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-21', 'visual-21-flags-fade-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-21', 'visual-21-flags-fade-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-21', 'visual-21-flags-fade-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-21', 'visual-21-flags-fade-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-21', 'visual-21-flags-fade-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-21', 'visual-21-flags-fade-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-21-flags-fade.wav" id="link-21">Download WAV</a>
@@ -415,7 +423,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-22', 'visual-22-digital-rain-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-22', 'visual-22-digital-rain-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-22', 'visual-22-digital-rain-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-22', 'visual-22-digital-rain-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-22', 'visual-22-digital-rain-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-22', 'visual-22-digital-rain-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-22-digital-rain.wav" id="link-22">Download WAV</a>
@@ -431,7 +439,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-23', 'visual-23-waterfall-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-23', 'visual-23-waterfall-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-23', 'visual-23-waterfall-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-23', 'visual-23-waterfall-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-23', 'visual-23-waterfall-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-23', 'visual-23-waterfall-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-23-waterfall.wav" id="link-23">Download WAV</a>
@@ -447,7 +455,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-24', 'visual-24-larson-dual-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-24', 'visual-24-larson-dual-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-24', 'visual-24-larson-dual-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-24', 'visual-24-larson-dual-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-24', 'visual-24-larson-dual-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-24', 'visual-24-larson-dual-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-24-larson-dual.wav" id="link-24">Download WAV</a>
@@ -463,7 +471,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-25', 'visual-25-night-street-2000-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-25', 'visual-25-night-street-2000-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-25', 'visual-25-night-street-2000-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-25', 'visual-25-night-street-2000-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-25', 'visual-25-night-street-2000-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-25', 'visual-25-night-street-2000-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-25-night-street-2000.wav" id="link-25">Download WAV</a>
@@ -479,7 +487,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-26', 'visual-26-switch-toggle-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-26', 'visual-26-switch-toggle-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-26', 'visual-26-switch-toggle-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-26', 'visual-26-switch-toggle-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-26', 'visual-26-switch-toggle-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-26', 'visual-26-switch-toggle-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-26-switch-toggle.wav" id="link-26">Download WAV</a>
@@ -495,7 +503,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-27', 'visual-27-blue-screen-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-27', 'visual-27-blue-screen-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-27', 'visual-27-blue-screen-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-27', 'visual-27-blue-screen-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-27', 'visual-27-blue-screen-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-27', 'visual-27-blue-screen-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-27-blue-screen.wav" id="link-27">Download WAV</a>
@@ -511,7 +519,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-28', 'visual-28-snow-white-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-28', 'visual-28-snow-white-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-28', 'visual-28-snow-white-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-28', 'visual-28-snow-white-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-28', 'visual-28-snow-white-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-28', 'visual-28-snow-white-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-28-snow-white.wav" id="link-28">Download WAV</a>
@@ -527,7 +535,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-29', 'visual-29-big-bad-wolf-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-29-big-bad-wolf.wav" id="link-29">Download WAV</a>
@@ -543,7 +551,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-30', 'visual-30-trickster-plasma-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-30-trickster-plasma.wav" id="link-30">Download WAV</a>
@@ -559,7 +567,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-31', 'visual-31-pink-slime-sprouts-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-31-pink-slime-sprouts.wav" id="link-31">Download WAV</a>
@@ -575,7 +583,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-32', 'visual-32-milky-sea-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-32', 'visual-32-milky-sea-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-32', 'visual-32-milky-sea-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-32', 'visual-32-milky-sea-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-32', 'visual-32-milky-sea-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-32', 'visual-32-milky-sea-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-32-milky-sea.wav" id="link-32">Download WAV</a>
@@ -591,7 +599,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-33', 'visual-33-rainbow-half-donut-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-33-rainbow-half-donut.wav" id="link-33">Download WAV</a>
@@ -607,7 +615,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-34', 'visual-34-rainbow-planet-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-34-rainbow-planet.wav" id="link-34">Download WAV</a>
@@ -623,7 +631,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-35', 'visual-35-starry-sky-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-35', 'visual-35-starry-sky-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-35', 'visual-35-starry-sky-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-35', 'visual-35-starry-sky-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-35', 'visual-35-starry-sky-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-35', 'visual-35-starry-sky-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-35-starry-sky.wav" id="link-35">Download WAV</a>
@@ -639,7 +647,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-36', 'visual-36-fog-noise-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-36', 'visual-36-fog-noise-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-36', 'visual-36-fog-noise-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-36', 'visual-36-fog-noise-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-36', 'visual-36-fog-noise-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-36', 'visual-36-fog-noise-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-36-fog-noise.wav" id="link-36">Download WAV</a>
@@ -655,7 +663,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-37', 'visual-37-rainbow-tiled-noise-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-37-rainbow-tiled-noise.wav" id="link-37">Download WAV</a>
@@ -671,7 +679,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-38', 'visual-38-universe-creation-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-38', 'visual-38-universe-creation-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-38', 'visual-38-universe-creation-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-38', 'visual-38-universe-creation-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-38', 'visual-38-universe-creation-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-38', 'visual-38-universe-creation-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-38-universe-creation.wav" id="link-38">Download WAV</a>
@@ -687,7 +695,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-39', 'visual-39-spear-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-39', 'visual-39-spear-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-39', 'visual-39-spear-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-39', 'visual-39-spear-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-39', 'visual-39-spear-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-39', 'visual-39-spear-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-39-spear.wav" id="link-39">Download WAV</a>
@@ -703,7 +711,7 @@
       </audio>
       <div class="variant-links">
         Brightness: 
-<button class="btn-var" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-low.wav')">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-med.wav')">Med</button> <button class="btn-var" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-high.wav')">High</button> 
+<button class="btn-var" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-low.wav', this)">Eco Mode</button> <button class="btn-var" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-med.wav', this)">Med</button> <button class="btn-var active" onclick="setAudio('audio-40', 'visual-40-christmas-tree-aura-high.wav', this)">High</button> 
       </div>
       <div class="links">
         <a href="visual-40-christmas-tree-aura.wav" id="link-40">Download WAV</a>

@@ -165,10 +165,15 @@ def generate_html(entries):
         for b_label, b_key in [("Eco Mode", "low"), ("Med", "med"), ("High", "high")]:
             if b_key in vs:
                 fname = vs[b_key]
-                # We use a little JS to switch the source or just direct download links?
-                # "Option of uploading different compiled wavs" -> implying playing them or downloading.
-                # Let's provide links that switch the audio player source AND download links.
-                card_html += f'<button class="btn-var" onclick="setAudio(\'audio-{e["id"]}\', \'{fname}\')">{b_label}</button> '
+                is_active = (fname == main_src)
+                
+                # If main_src is the default file, it corresponds to High.
+                # So if this button is High, and main_src is default, mark it active.
+                if not is_active and b_key == "high" and vs.get("default") == main_src:
+                    is_active = True
+
+                active_class = " active" if is_active else ""
+                card_html += f'<button class="btn-var{active_class}" onclick="setAudio(\'audio-{e["id"]}\', \'{fname}\', this)">{b_label}</button> '
         
         card_html += f"""
       </div>
@@ -213,18 +218,26 @@ def generate_html(entries):
     .variant-links { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
     .btn-var { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; padding: 2px 8px; cursor: pointer; margin-right: 4px; }
     .btn-var:hover { background: var(--border); }
+    .btn-var.active { background: var(--link); color: #000; border-color: var(--link); font-weight: bold; }
     .hip-toast { position: fixed; left: 1rem; bottom: 1rem; background: #121620; border:1px solid var(--border); padding:.75rem 1rem; border-radius:10px; box-shadow: var(--shadow); color: var(--text); display:none; align-items:center; gap:.75rem; z-index: 100;}
     .hip-dot { width:10px; height:10px; border-radius:50%; background:#61d673; box-shadow:0 0 12px #61d673; display:inline-block; }
     .btn-stop { padding:.35rem .6rem; border-radius:8px; border:1px solid var(--border); background:#2a2f3a; color:var(--text); cursor:pointer; }
   </style>
   <script>
-    function setAudio(id, file) {
+    function setAudio(id, file, btn) {
       const audio = document.getElementById(id);
       audio.src = file;
       audio.load();
       // update download link too
       const link = document.getElementById(id.replace('audio-', 'link-'));
       if(link) link.href = file;
+      
+      // Update active state
+      if(btn) {
+        const container = btn.parentElement;
+        container.querySelectorAll('.btn-var').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
     }
   </script>
 </head>

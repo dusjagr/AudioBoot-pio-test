@@ -4,6 +4,7 @@
 #include <Adafruit_NeoPixel.h>
 #include "matrix_helpers.h"
 #include <math.h>
+#include <string.h>
 
 // [Note for contributors]
 // Implementations of visuals are placed below in the "===== Implementations =====" section.
@@ -74,6 +75,7 @@ static inline void matrixNightStreet2000(uint16_t runtime_ms, uint16_t stepDelay
 void matrixChristmasTreeAura(uint16_t runtime_ms, uint16_t stepDelay_ms, uint8_t sparkleMask);
 void matrixUniverseCreation(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixSpear(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Visuals Index and Guide
@@ -3618,5 +3620,97 @@ inline void matrixSpear(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 
     pixels.show();
     delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixCCCRocket
+   "Mega Blinker-Rakete!" - A tribute to the Chaos Computer Club.
+   Launches a rocket with a blinking engine and a fairy dust trail.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  
+  // Rocket state
+  float ry = H + 2;  // Start below screen
+  float speed = 0.0; // Vertical speed
+  uint8_t rx = W / 2; // Horizontal center
+  
+  // Trail particles (simple brightness decay)
+  uint8_t trail[20]; // 5x4
+  memset(trail, 0, sizeof(trail));
+  
+  uint16_t frame = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Fade trail
+    for(uint8_t i=0; i<W*H; i++) {
+        if(trail[i] > 10) trail[i] -= 10; else trail[i] = 0;
+    }
+
+    // Launch logic
+    if (ry < -4) { // Reset if flown out
+      ry = H + 2;
+      rx = random(W);
+      speed = 0.0;
+      // Randomize color or style?
+    }
+    
+    // Accelerate
+    if (ry > -5) {
+        speed += 0.05;
+        if(speed > 0.8) speed = 0.8; // Terminal velocity
+        ry -= speed;
+    }
+    
+    // Draw trail at rocket position
+    int16_t iy = (int16_t)ry;
+    if (iy >= 0 && iy < H) {
+        // Rocket body position
+    }
+    // Emitter at bottom of rocket
+    int16_t fy = (int16_t)(ry + 2); // Fire position relative to tip
+    if (fy >= 0 && fy < H) {
+        // Add heat to trail
+        trail[fy * W + rx] = 255;
+    }
+    
+    matrixFill(0);
+
+    // Draw Trail
+    for(uint8_t y=0; y<H; y++) {
+        for(uint8_t x=0; x<W; x++) {
+             uint8_t heat = trail[y*W + x];
+             if(heat > 0) {
+                 // Fire color: White -> Yellow -> Red -> Dark
+                 // Simple mapping
+                 uint32_t c;
+                 if(heat > 200) c = pixels.Color(255, 255, (heat-200)*4);
+                 else if(heat > 100) c = pixels.Color(255, (heat-100)*2, 0);
+                 else c = pixels.Color(heat*2, 0, 0);
+                 matrixSet(x, y, c);
+             }
+        }
+    }
+
+    // Draw Rocket
+    // Tip
+    int16_t ty = (int16_t)ry;
+    if (ty >= 0 && ty < H) matrixSet(rx, ty, pixels.Color(200, 200, 200)); // Silver tip
+    
+    // Body
+    int16_t by = (int16_t)(ry + 1);
+    if (by >= 0 && by < H) {
+        // Blinker led on the body
+        bool blink = (frame / 2) % 2 == 0; // Fast blink
+        if (blink) matrixSet(rx, by, pixels.Color(0, 255, 0)); // Green blinker
+        else matrixSet(rx, by, pixels.Color(100, 100, 100)); // Grey body
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    frame++;
   }
 }
