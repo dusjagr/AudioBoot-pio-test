@@ -182,6 +182,10 @@ int main(int argc, char** argv) {
       case 38: matrixUniverseCreation((uint16_t)runtime_ms, 80); break;
       case 39: matrixSpear((uint16_t)runtime_ms, 60); break;
       case 40: matrixChristmasTreeAura((uint16_t)runtime_ms, 70, 0x0A); break;
+      case 41: matrixCCCRocket((uint16_t)runtime_ms, 60); break;
+      case 42: matrixBeachWave((uint16_t)runtime_ms, 80); break;
+      case 43: matrixAntifaFlag((uint16_t)runtime_ms, 80); break;
+      case 44: matrixTricksterPlasma((uint16_t)runtime_ms, 90); break; // reuse finite plasma for GIFs
       default: matrixSunsetPickleSun((uint16_t)runtime_ms, 70); break;
     }
   };

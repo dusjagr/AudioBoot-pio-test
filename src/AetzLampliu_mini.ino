@@ -284,6 +284,9 @@ void loop(void) {
     case 39: matrixSpear(10000, 60); break;
     case 40: matrixChristmasTreeAura(10000, 70, 0x0A); break;
     case 41: matrixCCCRocket(10000, 60); break;
+    case 42: matrixBeachWave(10000, 80); break;
+    case 43: matrixAntifaFlag(10000, 80); break;
+    case 44: matrixTricksterPlasmaLoop(23); break;
     default: matrixCCCRocket(10000, 60); break;
   }
   return; // run one visual per loop iteration to keep behavior deterministic per WAV
@@ -328,6 +331,9 @@ void loop(void) {
    //matrixRainbowPlanet(60000, 70);
    //matrixRainbowTiledNoise(60000, 80);
    //matrixFogNoise(60000, 90);
-   matrixCCCRocket(20000, 60);
+   //matrixCCCRocket(20000, 60);
+   //matrixFlagsShowFade(10000, 900, 300, 6);
+   //matrixAntifaFlag(20000, 80);
+   matrixTricksterPlasmaLoop(23);
   
 }

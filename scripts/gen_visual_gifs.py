@@ -63,6 +63,10 @@ VISUALS = [
     (38, "universe-creation"),
     (39, "spear"),
     (40, "christmas-tree-aura"),
+    (41, "ccc-rocket"),
+    (42, "beach-wave"),
+    (43, "antifa-flag"),
+    (44, "trickster-plasma"),
 ]
 
 

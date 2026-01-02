@@ -58,6 +58,8 @@ void matrixHeartbeatRelentless(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixPinkPlasmaBoom(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixPinkVelvet(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixBreathAndRush(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixTricksterPlasma(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixTricksterPlasmaLoop(uint16_t stepDelay_ms);
 void matrixFunkySchachBratz(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixRainbowWash(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixFlagsShow(uint16_t runtime_ms, uint16_t hold_ms);
@@ -73,6 +75,9 @@ void matrixDigitalRainAmber(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixWaterfall(uint16_t runtime_ms, uint16_t stepDelay_ms);
 static inline void matrixNightStreet2000(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixChristmasTreeAura(uint16_t runtime_ms, uint16_t stepDelay_ms, uint8_t sparkleMask);
+void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixAntifaFlag(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixBeachWave(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixUniverseCreation(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixSpear(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms);
@@ -2846,8 +2851,16 @@ static const uint32_t FLAG_NL[20] PROGMEM = {
   COL_BLUE, COL_BLUE, COL_BLUE, COL_BLUE, COL_BLUE
 };
 
+// Simple pirate flag: black field with a small white skull-like symbol
+static const uint32_t FLAG_PIRATE[20] PROGMEM = {
+  COL_BLACK, COL_WHITE, COL_BLACK, COL_WHITE, COL_BLACK,
+  COL_WHITE, COL_WHITE, COL_WHITE, COL_WHITE, COL_WHITE,
+  COL_BLACK, COL_WHITE, COL_WHITE, COL_WHITE, COL_BLACK,
+  COL_BLACK, COL_WHITE, COL_BLACK, COL_WHITE, COL_BLACK
+};
+
 inline void matrixFlagsShow(uint16_t runtime_ms, uint16_t hold_ms) {
-  const uint8_t N = 8; const uint32_t* flags[N] = { FLAG_DE, FLAG_FR, FLAG_IT, FLAG_CH, FLAG_SE, FLAG_UA, FLAG_PL, FLAG_NL };
+  const uint8_t N = 9; const uint32_t* flags[N] = { FLAG_DE, FLAG_FR, FLAG_IT, FLAG_CH, FLAG_SE, FLAG_UA, FLAG_PL, FLAG_NL, FLAG_PIRATE };
   uint32_t start = millis(); uint8_t idx = 0; while ((uint16_t)(millis() - start) < runtime_ms) { displayFlag(flags[idx]); delay(hold_ms); idx = (idx + 1) % N; }
 }
 
@@ -2868,7 +2881,7 @@ inline void fadeFlags(const uint32_t* a, const uint32_t* b, uint16_t fade_ms, ui
 }
 
 inline void matrixFlagsShowFade(uint16_t runtime_ms, uint16_t hold_ms, uint16_t fade_ms, uint8_t steps) {
-  const uint8_t N = 8; const uint32_t* flags[N] = { FLAG_DE, FLAG_FR, FLAG_IT, FLAG_CH, FLAG_SE, FLAG_UA, FLAG_PL, FLAG_NL };
+  const uint8_t N = 9; const uint32_t* flags[N] = { FLAG_DE, FLAG_FR, FLAG_IT, FLAG_CH, FLAG_SE, FLAG_UA, FLAG_PL, FLAG_NL, FLAG_PIRATE };
   uint32_t start = millis(); uint8_t idx = 0;
   while ((uint16_t)(millis() - start) < runtime_ms) {
     const uint32_t* cur = flags[idx]; const uint32_t* nxt = flags[(idx + 1) % N];
@@ -3637,6 +3650,9 @@ inline void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   float ry = H + 2;  // Start below screen
   float speed = 0.0; // Vertical speed
   uint8_t rx = W / 2; // Horizontal center
+  bool exploded = false;
+  int16_t ex = rx, ey = 0;   // explosion center
+  uint8_t explosionTicks = 0;
   
   // Trail particles (simple brightness decay)
   uint8_t trail[20]; // 5x4
@@ -3645,68 +3661,317 @@ inline void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   uint16_t frame = 0;
 
   while ((uint16_t)(millis() - start) < runtime_ms) {
-    // Fade trail
-    for(uint8_t i=0; i<W*H; i++) {
-        if(trail[i] > 10) trail[i] -= 10; else trail[i] = 0;
+    // Fade trail every frame
+    for (uint8_t i = 0; i < W * H; i++) {
+      if (trail[i] > 12) trail[i] = (uint8_t)(trail[i] - 12);
+      else trail[i] = 0;
     }
 
-    // Launch logic
-    if (ry < -4) { // Reset if flown out
-      ry = H + 2;
-      rx = random(W);
-      speed = 0.0;
-      // Randomize color or style?
+    if (!exploded) {
+      // Reset if rocket is far above
+      if (ry < -4) {
+        ry = H + 2;
+        rx = (uint8_t)random(W);
+        speed = 0.0;
+      }
+
+      // Accelerate upwards
+      speed += 0.05f;
+      if (speed > 0.8f) speed = 0.8f;
+      ry -= speed;
+
+      int16_t ty = (int16_t)ry;       // rocket tip
+      int16_t fy = (int16_t)(ry + 2); // engine flame
+
+      // When getting near the top, trigger explosion instead of just disappearing
+      if (ty <= 0) {
+        exploded = true;
+        ex = rx;
+        ey = (ty < 0) ? 0 : ty;
+        explosionTicks = 0;
+      } else {
+        // Feed trail from engine
+        if (fy >= 0 && fy < (int16_t)H) {
+          uint8_t idx = (uint8_t)(fy * W + rx);
+          trail[idx] = 255;
+        }
+
+        matrixFill(0);
+
+        // Draw trail as hot fire
+        for (uint8_t y = 0; y < H; y++) {
+          for (uint8_t x = 0; x < W; x++) {
+            uint8_t heat = trail[y * W + x];
+            if (!heat) continue;
+            uint32_t c;
+            if (heat > 200)      c = pixels.Color(255, 255, 200);          // white-hot
+            else if (heat > 100) c = pixels.Color(255, 200, 60);           // yellow
+            else                 c = pixels.Color(heat * 2, 0, 0);         // red
+            matrixSet(x, y, c);
+          }
+        }
+
+        // Draw rocket tip (silver)
+        if (ty >= 0 && ty < (int16_t)H) {
+          matrixSet(rx, ty, pixels.Color(220, 220, 220));
+        }
+
+        // Body with fast blinking pink engine light
+        int16_t by = (int16_t)(ry + 1);
+        if (by >= 0 && by < (int16_t)H) {
+          bool blink = ((frame >> 1) & 0x01) == 0; // fast blink
+          if (blink) {
+            // Pink rocket body
+            matrixSet(rx, by, pixels.Color(255, 80, 160));
+          } else {
+            // Dim grey between blinks
+            matrixSet(rx, by, pixels.Color(80, 80, 80));
+          }
+        }
+      }
+    } else {
+      // Explosion phase: brief colorful burst around (ex, ey)
+      matrixFade(80); // let old sparks die quickly
+
+      // Spawn a few new sparks each frame
+      for (uint8_t i = 0; i < 4; i++) {
+        int8_t dx = (int8_t)((random(3)) - 1); // -1,0,1
+        int8_t dy = (int8_t)((random(3)) - 1);
+        int16_t sx = ex + dx;
+        int16_t sy = ey + dy;
+        if (sx < 0 || sx >= (int16_t)W || sy < 0 || sy >= (int16_t)H) continue;
+
+        uint8_t pick = (uint8_t)(random(4));
+        uint32_t c;
+        switch (pick) {
+          default:
+          case 0: c = pixels.Color(255, 120, 200); break; // bright pink
+          case 1: c = pixels.Color(255, 220, 180); break; // warm white
+          case 2: c = pixels.Color(255, 180, 60);  break; // gold
+          case 3: c = pixels.Color(120, 200, 255); break; // icy blue
+        }
+        matrixSet((uint8_t)sx, (uint8_t)sy, c);
+      }
+
+      explosionTicks++;
+      if (explosionTicks > 14) {
+        // Reset to launch next rocket
+        exploded = false;
+        ry = H + 2;
+        rx = (uint8_t)random(W);
+        speed = 0.0f;
+        memset(trail, 0, sizeof(trail));
+      }
     }
-    
-    // Accelerate
-    if (ry > -5) {
-        speed += 0.05;
-        if(speed > 0.8) speed = 0.8; // Terminal velocity
-        ry -= speed;
-    }
-    
-    // Draw trail at rocket position
-    int16_t iy = (int16_t)ry;
-    if (iy >= 0 && iy < H) {
-        // Rocket body position
-    }
-    // Emitter at bottom of rocket
-    int16_t fy = (int16_t)(ry + 2); // Fire position relative to tip
-    if (fy >= 0 && fy < H) {
-        // Add heat to trail
-        trail[fy * W + rx] = 255;
-    }
-    
+
+    pixels.show();
+    delay(stepDelay_ms);
+    frame++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixBeachWave
+   Simple Strand-Welle: unten Sand, darüber blaues Wasser mit einer weißen Wellenkante,
+   die langsam seitlich hin- und herwandert. Oben ein ruhiger Himmel.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixBeachWave(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+  uint8_t t = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
     matrixFill(0);
 
-    // Draw Trail
-    for(uint8_t y=0; y<H; y++) {
-        for(uint8_t x=0; x<W; x++) {
-             uint8_t heat = trail[y*W + x];
-             if(heat > 0) {
-                 // Fire color: White -> Yellow -> Red -> Dark
-                 // Simple mapping
-                 uint32_t c;
-                 if(heat > 200) c = pixels.Color(255, 255, (heat-200)*4);
-                 else if(heat > 100) c = pixels.Color(255, (heat-100)*2, 0);
-                 else c = pixels.Color(heat*2, 0, 0);
-                 matrixSet(x, y, c);
-             }
+    // y=0: Himmel, y=1-2: Wasser, y=3: Sand
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint32_t c = 0;
+        if (y == H - 1) {
+          // Sand: warm gelb
+          c = pixels.Color(220, 180, 80);
+        } else if (y == 0) {
+          // Himmel: dezentes Blau
+          c = pixels.Color(40, 80, 160);
+        } else {
+          // Wasser: Grundfarbe türkis / blau
+          c = pixels.Color(20, 100, 200);
         }
+        matrixSet(x, y, c);
+      }
     }
 
-    // Draw Rocket
-    // Tip
-    int16_t ty = (int16_t)ry;
-    if (ty >= 0 && ty < H) matrixSet(rx, ty, pixels.Color(200, 200, 200)); // Silver tip
-    
-    // Body
-    int16_t by = (int16_t)(ry + 1);
-    if (by >= 0 && by < H) {
-        // Blinker led on the body
-        bool blink = (frame / 2) % 2 == 0; // Fast blink
-        if (blink) matrixSet(rx, by, pixels.Color(0, 255, 0)); // Green blinker
-        else matrixSet(rx, by, pixels.Color(100, 100, 100)); // Grey body
+    // Wellenposition (crest) bewegt sich hin und her
+    uint8_t phase = t;
+    uint8_t tri;
+    if (phase < 128) tri = (uint8_t)(phase << 1);           // 0..254
+    else             tri = (uint8_t)((255 - phase) << 1);   // 254..0
+    uint8_t crestX = (uint8_t)((uint16_t)tri * (W - 1) / 255); // 0..W-1
+
+    // Weiße Schaumkrone im Wasserbereich bei crestX
+    for (uint8_t y = 1; y < H - 1; y++) { // nur Wasserzeilen
+      for (uint8_t x = 0; x < W; x++) {
+        int16_t dx = (int16_t)x - (int16_t)crestX;
+        if (dx < 0) dx = -dx;
+        uint8_t dist = (uint8_t)dx;
+
+        if (dist == 0) {
+          // exakte Kante: helles Weiß
+          matrixSet(x, y, pixels.Color(255, 255, 230));
+        } else if (dist == 1) {
+          // direkt daneben: helleres Wasser / Schaum
+          matrixSet(x, y, pixels.Color(120, 200, 255));
+        } else if (dist == 2) {
+          // leicht aufgehelltes Wasser
+          matrixSet(x, y, pixels.Color(40, 130, 220));
+        }
+      }
+    }
+
+    // Optional: kleines Funkeln auf der Wasseroberfläche
+    if ((t & 0x03) == 0) {
+      uint8_t sx = (uint8_t)random(W);
+      uint8_t sy = (uint8_t)(1 + (random(H - 2))); // nur Wasserzeilen
+      uint32_t prev = pixels.getPixelColor(matrixIndex(sx, sy));
+      uint8_t pr = (prev >> 16) & 0xFF;
+      uint8_t pg = (prev >> 8) & 0xFF;
+      uint8_t pb = prev & 0xFF;
+      // leichtes Aufhellen mit explizitem Clamp (ohne std::min / Arduino-min)
+      uint16_t tmp;
+      tmp = (uint16_t)pr + 40; if (tmp > 255) tmp = 255; pr = (uint8_t)tmp;
+      tmp = (uint16_t)pg + 40; if (tmp > 255) tmp = 255; pg = (uint8_t)tmp;
+      tmp = (uint16_t)pb + 40; if (tmp > 255) tmp = 255; pb = (uint8_t)tmp;
+      matrixSet(sx, sy, pixels.Color(pr, pg, pb));
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t++;
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixTricksterPlasmaLoop
+   Endless version of matrixTricksterPlasma: same plasma, but no runtime limit.
+   This blocks forever (until reset) and advances motion phases continuously.
+   Params: stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixTricksterPlasmaLoop(uint16_t stepDelay_ms) {
+  // Brown→Yellow palette endpoints (same as matrixTricksterPlasma)
+  const uint32_t COL_DARK   = pixels.Color(30, 15, 0);
+  const uint32_t COL_BRIGHT = pixels.Color(255, 220, 60);
+
+  auto lerpCol = [&](uint8_t a) {
+    uint8_t dr = (uint8_t)((COL_DARK   >> 16) & 0xFF);
+    uint8_t dg = (uint8_t)((COL_DARK   >>  8) & 0xFF);
+    uint8_t db = (uint8_t)( COL_DARK         & 0xFF);
+    uint8_t br = (uint8_t)((COL_BRIGHT >> 16) & 0xFF);
+    uint8_t bg = (uint8_t)((COL_BRIGHT >>  8) & 0xFF);
+    uint8_t bb = (uint8_t)( COL_BRIGHT       & 0xFF);
+    uint8_t r = (uint8_t)(dr + ((uint16_t)(br - dr) * a >> 8));
+    uint8_t g = (uint8_t)(dg + ((uint16_t)(bg - dg) * a >> 8));
+    uint8_t b = (uint8_t)(db + ((uint16_t)(bb - db) * a >> 8));
+    return pixels.Color(r, g, b);
+  };
+
+  float p1 = 0.f, p2 = 0.f, p3 = 0.f;
+
+  for (;;) {
+    p1 += 0.18f;
+    p2 += 0.11f;
+    p3 += 0.08f;
+
+    for (uint8_t y = 0; y < MATRIX_H; ++y) {
+      for (uint8_t x = 0; x < MATRIX_W; ++x) {
+        float v = 0.0f;
+        v += sin((x + p1) * 0.8f);
+        v += cos((y - p2) * 1.1f);
+        v += sin(((int)x + (int)y + p3) * 0.6f);
+        v += 0.6f * sin((x * 0.5f - y * 0.7f) + p2 * 0.9f);
+
+        v = (v * (1.0f / 7.2f)) + 0.5f; // normalize ~[-3.6,3.6] to ~[0,1]
+        if (v < 0.f) v = 0.f;
+        if (v > 1.f) v = 1.f;
+
+        float pulse = (sin(p1 * 0.25f) * 0.15f);
+        float vv = v + pulse;
+        if (vv < 0.f) vv = 0.f;
+        if (vv > 1.f) vv = 1.f;
+
+        vv = vv * 1.05f;
+        if (vv > 1.f) vv = 1.f;
+        if (vv < 0.f) vv = 0.f;
+        vv = pow(vv, 2.4f);
+        if (vv < 0.06f) vv = 0.f;
+
+        uint8_t a = (uint8_t)(vv * 255.0f + 0.5f);
+        uint32_t c = lerpCol(a);
+        matrixSet(x, y, c);
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+inline void matrixAntifaFlag(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+
+  // Zwei Frames der Flagge (0 = Hintergrund, 1 = Rot, 2 = Schwarz, 3 = Weiß)
+  static const uint8_t PROGMEM F0[20] = {
+    1,1,1,1,0,
+    1,3,3,1,0,
+    2,3,3,2,0,
+    2,2,2,2,0
+  };
+  static const uint8_t PROGMEM F1[20] = {
+    0,1,1,1,1,
+    0,1,3,3,1,
+    0,2,3,3,2,
+    0,2,2,2,2
+  };
+
+  auto drawFrame = [&](const uint8_t* frame) {
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint8_t v = pgm_read_byte(&frame[y * W + x]);
+        uint32_t c = 0;
+        switch (v) {
+          case 1: c = pixels.Color(220, 30, 30);   break; // Rot
+          case 2: c = pixels.Color(0, 0, 0);       break; // Schwarz
+          case 3: c = pixels.Color(255, 255, 255); break; // Weißes Emblem
+          default: c = 0;                           break;
+        }
+        matrixSet(x, y, c);
+      }
+    }
+  };
+
+  uint16_t frame = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // leichtes Ausfaden für weichere Kanten
+    matrixFade(40);
+
+    const uint8_t* f = (frame & 0x01) ? F1 : F0;
+    drawFrame(f);
+
+    // globale Helligkeits-Modulation für „Wehen“
+    uint8_t breath = (uint8_t)((frame * 5) & 0xFF);
+    uint8_t tri = (breath & 0x80)
+                    ? (uint8_t)(255 - ((breath & 0x7F) << 1))
+                    : (uint8_t)((breath & 0x7F) << 1);
+    uint8_t level = (uint8_t)(200 + tri / 8); // 200..~231
+
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        int idx = matrixIndex(x, y);
+        uint32_t c = pixels.getPixelColor(idx);
+        pixels.setPixelColor(idx, dimColor(c, level));
+      }
     }
 
     pixels.show();
