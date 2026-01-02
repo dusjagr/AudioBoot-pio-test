@@ -98,7 +98,7 @@ uint16_t analogReadScaled(uint8_t channel)
 
 uint16_t getPoti(uint8_t channel)
 {
-  analogReadScaled(channel);
+  return analogReadScaled(channel);
 }
 
 /*

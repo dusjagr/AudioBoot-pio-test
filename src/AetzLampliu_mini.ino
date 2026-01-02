@@ -16,49 +16,6 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* Left-overs from measuring temperature and play family mart tune
-========================================================================================================================
-   _________            _                 _            
-  |  mode  |   utils  | |__   __ _  __ _| |_ ___  _ __
-  |  o___o |          | '_ \ / _` |/ _` | __/ _ \| '__|
-  |__/___\_|          | | | | (_| | (_| | || (_) | |   
-                      |_| |_|\__,_|\__,_|\__\___/|_|   
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-
-// OneWire DS18S20, DS18B20, DS1822 Temperature Example
-//
-// http://www.pjrc.com/teensy/td_libs_OneWire.html
-//
-// The DallasTemperature library can do all this work for you!
-// http://milesburton.com/Dallas_Temperature_Control_Library
-
-#include <OneWire.h>
-#include "pitches.h"
-#define ONEWIREPIN   PB4
-
-#define hell          255 // Brightness
-#define lowTemp       10
-#define maxTemp       55
-#define warnTemp      15
-#define warnAlarm     12 // How often it beeps when below warnTemp
-
-  int updateSpeed = 1000; // maybe 750ms is enough, maybe not
-  uint8_t warnCount = 0;
-  uint8_t statusLED = (maxTemp-10) * 3;
-  uint8_t tempColor = 0;
-  uint8_t showPixel = 0;
-
-  byte i;
-  byte present = 0;
-  byte type_s;
-  byte data[12];
-  byte addr[8];
-  float celsius;
-  int16_t raw;
-
-OneWire  ds(ONEWIREPIN);  // on pin 10 (a 4.7K resistor is necessary)
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Button-driven effect switching (using neolib's buttons)
 ========================================================================================================================
    _________            _                 _            
@@ -78,72 +35,6 @@ void changeMode(int8_t delta) {
   g_mode = (uint8_t)m;
 }
 
-void runCurrentEffect() {
-  // Keep runtimes short so button presses are handled quickly
-  switch (g_mode) {
-    case 0: matrixLarsonScanner(600, 120); break;
-    case 1: matrixBouncingDot(600, 50);   break;
-    case 2: matrixRain(600, 50);          break;
-    case 3: matrixTwinkle(600, 40);       break;
-    case 4: matrixWipe(600, 10);          break;
-    case 5: matrixSpinner(600, 30);       break;
-    case 6: matrixFire(900, 60, 80, 35);  break; // new effect
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* Left-overs from measuring temperature and play family mart tune
-========================================================================================================================
-   _________            _                 _            
-  |  mode  |   utils  | |__   __ _  __ _| |_ ___  _ __
-  |  o___o |          | '_ \ / _` |/ _` | __/ _ \| '__|
-  |__/___\_|          | | | | (_| | (_| | || (_) | |   
-                      |_| |_|\__,_|\__,_|\__\___/|_|   
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-
-// fast pin access
-#define AUDIOPIN (1<<SPEAKERPIN)
-#define PINLOW (PORTB&=~AUDIOPIN)
-#define PINHIGH (PORTB|=AUDIOPIN)
-
-int c[] = {
-  NOTE_B4, NOTE_G4, NOTE_D4, NOTE_G4, NOTE_A4, NOTE_D5, PAUSE, NOTE_A4, NOTE_B4, NOTE_A4, NOTE_D4, NOTE_G4 
-};
-
-int pauseBetweenNotes = 80;
-int noteDuration_ms = 150;
-
-// Provide playSound() implementation for device builds
-void playSound(uint16_t freq, uint16_t dur) {
-  if (freq == 0 || dur == 0) {
-    delay(dur);
-    return;
-  }
-  tone(SPEAKERPIN, freq, dur);
-  // Ensure duration elapses before returning; tone() is non-blocking
-  delay(dur);
-  noTone(SPEAKERPIN);
-}
-
-void playMart(int notes[])
-{
-
-  // iterate over the notes of the melody:
-  for (int thisNote = 0; thisNote <= 11; thisNote++) {
-
-    displayBinaryValue(notes[thisNote],pixels.Color(50,0,50));
-    pixels.show(); // This sends the updated pixel color to the hardware.
-    playSound( notes[thisNote], noteDuration_ms);
-    setColorAllPixel(0); // pixels off (neolib)
-    // to distinguish the notes, set a minimum time between them.
-    // the note's duration + 30% seems to work well:
-    delay(pauseBetweenNotes);
-        
-  }
-  
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* the setup routine runs once when you start the tape or press reset
 ========================================================================================================================
@@ -161,13 +52,9 @@ void setup(void) {
   uint8_t brightness = GLOBAL_BRIGHTNESS;
   neobegin();
   pixels.setBrightness(brightness);
-  // Quick splash screen on boot
-  //matrixDemoSmiley();
-  //delay(6000);
   matrixFill(0);
   pixels.show();
-  
-  //rainbowCycle(3,20,20);
+
   
 }
 
@@ -293,47 +180,7 @@ void loop(void) {
 #endif
 
   // Default preview (uncomment one selection above to try others)
-  //matrixCoteAzur(8000, 80);
-  //matrixSunsetPickleSun(50000, 90);
-  //matrixFunkySchachBratz(12000, 70);
-  //matrixNightStreet2000(12000, 90);
-  //matrixLarsonScannerDual(12000, 90);
-  //matrixWaterfall(12000, 90);
-  //matrixExplosion(20000, 80);
-  //matrixTetris(10000, 250);
-  //matrixLightning(10000); 
-  //matrixPinkSpiral(12000, 60);
-  //matrixLarsonScanner(12000, 160);
-  //matrixDigitalRain(30000, 90);
-   //matrixBlueScreen(12000, 160);
-   //matrixSnowWhite(12000, 90);
-   //matrixBigBadWolf(12000, 90);
-   //matrixAlpineStorm(12000, 90);
-   //matrixBlueLightning(42000);
-   //matrixFlowerBurst(1000, 1);
-   //matrixAlpineStorm(12000, 90);
-   //matrixCometSweep(22000, 90);
-   //matrixCocktail(12000, 90);
-   //matrixTricksterPlasma(60000, 23);
-   //matrixHeartbeatRelentless(12000, 60);
-   //matrixRainbowWash(12000, 60);
-   //matrixDigitalRainAmber(12000, 90);
-   //matrixPinkVelvet(12000, 90);
-   //matrixFire(102000, 160, 80, 80);
-   //matrixBreathAndRush(20000, 80);
-   //matrixMonoBlink5s(50000, 80);
-   //matrixChristmasTreeAura(65000, 70, 0x0A);
-   //matrixUniverseCreation(20000, 80);
-   //matrixSpear(20000, 50);
-   //matrixPinkSlimeSprouts(60000, 80);
-   //matrixMilkySea(60000, 60);
-   //matrixRainbowHalfDonut(60000, 110);
-   //matrixRainbowPlanet(60000, 70);
-   //matrixRainbowTiledNoise(60000, 80);
-   //matrixFogNoise(60000, 90);
-   //matrixCCCRocket(20000, 60);
-   //matrixFlagsShowFade(10000, 900, 300, 6);
-   //matrixAntifaFlag(20000, 80);
+
    matrixTricksterPlasmaLoop(23);
   
 }
