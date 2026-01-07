@@ -181,6 +181,13 @@ void loop(void) {
 
   // Default preview (uncomment one selection above to try others)
 
-   matrixTricksterPlasmaLoop(23);
+  // matrixTricksterPlasmaLoop(23);
+
+//matrixBurningSauna(15000, 80);
+//matrixMagentaMiniSnake(15000, 80);  // 15 s magenta mini snake
+matrixMagentaMiniSnake(15000, 80);
+//matrixCounter1to9(15000, 120);  // 15 s Zähler, 120 ms pro Frame
+
+   
   
 }

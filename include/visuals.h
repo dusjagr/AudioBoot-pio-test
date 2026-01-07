@@ -78,6 +78,9 @@ void matrixChristmasTreeAura(uint16_t runtime_ms, uint16_t stepDelay_ms, uint8_t
 void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixAntifaFlag(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixBeachWave(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixBurningSauna(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixMagentaMiniSnake(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixCounter1to9(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixUniverseCreation(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixSpear(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms);
@@ -3848,6 +3851,307 @@ inline void matrixBeachWave(uint16_t runtime_ms, uint16_t stepDelay_ms) {
     pixels.show();
     delay(stepDelay_ms);
     t++;
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixBurningSauna
+   Kleine brennende Sauna auf dunklem Eisfeld:
+   - Hintergrund: kaltes, dunkles Blau (Eis / Nacht)
+   - Sauna: warmes Holzrechteck links unten mit Schornstein
+   - Feuer: flackerndes, oranges/rotes Leuchten im Inneren, plus Rauchpixel oben
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixBurningSauna(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+
+  // Position der Hütte (links unten)
+  const uint8_t hutX0 = 0;
+  const uint8_t hutWidth = (W >= 4) ? 3 : (W - 1);
+  const uint8_t hutRoofY = (H >= 4) ? (H - 4) : 0;
+  const uint8_t hutBodyY = (H >= 3) ? (H - 3) : 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Dunkles, kaltes Eisfeld / Nacht-Hintergrund
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        // dezentes Vignette-artiges Blau
+        uint8_t dim = (y > 0) ? (uint8_t)(40 + y * 5) : 30;
+        uint8_t r = 0;
+        uint8_t g = (uint8_t)(dim / 3);
+        uint8_t b = (uint8_t)(dim);
+        matrixSet(x, y, pixels.Color(r, g, b));
+      }
+    }
+
+    // Eislinie am unteren Rand (helleres Blau)
+    if (H > 0) {
+      uint8_t yIce = H - 1;
+      for (uint8_t x = 0; x < W; x++) {
+        matrixSet(x, yIce, pixels.Color(40, 80, 180));
+      }
+    }
+
+    // Holzhütte (rechteckiger Körper)
+    uint32_t woodCol = pixels.Color(150, 90, 40);
+    for (uint8_t y = hutBodyY; y < H - 1; y++) { // bis knapp vor Eislinie
+      for (uint8_t x = hutX0; x < (uint8_t)(hutX0 + hutWidth) && x < W; x++) {
+        matrixSet(x, y, woodCol);
+      }
+    }
+
+    // Dach (etwas dunkleres Holz / rot-braun)
+    uint32_t roofCol = pixels.Color(110, 60, 30);
+    if (hutRoofY < H) {
+      for (uint8_t x = hutX0; x < (uint8_t)(hutX0 + hutWidth) && x < W; x++) {
+        matrixSet(x, hutRoofY, roofCol);
+      }
+    }
+
+    // Schornstein auf dem Dach (kleiner dunkler Block rechts auf der Hütte)
+    if (hutRoofY > 0 && (uint8_t)(hutX0 + hutWidth - 1) < W) {
+      uint8_t cx = (uint8_t)(hutX0 + hutWidth - 1);
+      uint8_t cy = (uint8_t)(hutRoofY - 1);
+      matrixSet(cx, hutRoofY, pixels.Color(80, 50, 30));
+      matrixSet(cx, cy, pixels.Color(70, 40, 25));
+    }
+
+    // Feuer im Inneren: flackernd, gelb/rot/orange
+    // Wir nehmen ein bis zwei Pixel im unteren Hüttenteil und variieren Helligkeit/Farbe.
+    uint8_t flameBaseY = (H >= 2) ? (H - 2) : 0;
+    uint8_t fx0 = (uint8_t)(hutX0 + 1);
+    if (fx0 >= W) fx0 = hutX0;
+    uint8_t fx1 = (uint8_t)(fx0 + 1 < W ? fx0 + 1 : fx0);
+
+    auto drawFlame = [&](uint8_t x, uint8_t y){
+      uint8_t flicker = (uint8_t)random(120, 255); // Helligkeit
+      uint8_t red   = (uint8_t)flicker;
+      uint8_t green = (uint8_t)(flicker * 3 / 4);
+      uint8_t blue  = (uint8_t)(flicker / 8);
+      matrixSet(x, y, pixels.Color(red, green, blue));
+      if (y > 0) {
+        // etwas Glut nach oben auslaufen lassen
+        uint8_t red2   = (uint8_t)(red * 3 / 4);
+        uint8_t green2 = (uint8_t)(green * 2 / 3);
+        uint8_t blue2  = (uint8_t)(blue + 5);
+        matrixSet(x, (uint8_t)(y - 1), pixels.Color(red2, green2, blue2));
+      }
+    };
+
+    drawFlame(fx0, flameBaseY);
+    if (fx1 != fx0) drawFlame(fx1, flameBaseY);
+
+    // Rauch aus dem Schornstein: seltene, graue Pixel, die langsam nach links/rechts wabern
+    if (random(4) == 0) {
+      uint8_t sx = (uint8_t)(hutX0 + hutWidth - 1);
+      uint8_t sy = (hutRoofY > 0) ? (uint8_t)(hutRoofY - 2) : 0;
+      if (sy < H) {
+        int8_t dx = (int8_t)(random(3)) - 1; // -1,0,1
+        int8_t nx = (int8_t)sx + dx;
+        if (nx < 0) nx = 0;
+        if (nx >= (int8_t)W) nx = (int8_t)W - 1;
+        uint8_t gray = (uint8_t)random(80, 160);
+        matrixSet((uint8_t)nx, sy, pixels.Color(gray, gray, gray));
+      }
+    }
+
+    // Leichte Gesamt-Fade, um Wabern auf dem Eis zu erlauben
+    matrixFade(5);
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixMagentaMiniSnake
+   Kleine magentafarbene Schlange, die über das dunkle Feld kriecht:
+   - Hintergrund: dunkles Blau/Violett
+   - Schlange: kurzer Körper (3-5 Segmente) in Magenta, Kopf etwas heller
+   - Bewegung: zufälliges Winden mit Richtungswechseln, leichte Spur per matrixFade
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixMagentaMiniSnake(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+
+  // Fester Body-Puffer (max 6 Segmente)
+  const uint8_t MAX_LEN = 6;
+  uint8_t len = 4;
+  int8_t sx[MAX_LEN];
+  int8_t sy[MAX_LEN];
+
+  // Start mittig
+  int8_t hx = (int8_t)(W / 2);
+  int8_t hy = (int8_t)(H / 2);
+  for (uint8_t i = 0; i < len; i++) {
+    sx[i] = hx;
+    sy[i] = hy;
+  }
+
+  int8_t dx = 1, dy = 0; // Startbewegung nach rechts
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Leichtes Fading für die Spur
+    matrixFade(40);
+
+    // Hintergrund minimal abdunkeln, falls komplett schwarz
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        uint32_t c = pixels.getPixelColor(matrixIndex(x, y));
+        if (c == 0) {
+          matrixSet(x, y, pixels.Color(2, 0, 5));
+        }
+      }
+    }
+
+    // Gelegentliche Richtungswechsel, aber keine 180° Wendung
+    if (random(4) == 0) {
+      int8_t ndx = dx;
+      int8_t ndy = dy;
+      if (dx != 0) { // wir gehen horizontal, Wechsel auf vertikal
+        ndx = 0;
+        ndy = (random(2) == 0) ? 1 : -1;
+      } else {       // wir gehen vertikal, Wechsel auf horizontal
+        ndy = 0;
+        ndx = (random(2) == 0) ? 1 : -1;
+      }
+      dx = ndx;
+      dy = ndy;
+    }
+
+    // Kopfposition aktualisieren
+    hx += dx;
+    hy += dy;
+
+    // Wrap-around an den Rändern
+    if (hx < 0)        hx = (int8_t)(W - 1);
+    else if (hx >= (int8_t)W) hx = 0;
+    if (hy < 0)        hy = (int8_t)(H - 1);
+    else if (hy >= (int8_t)H) hy = 0;
+
+    // Body nachziehen: von hinten nach vorne schieben
+    for (int8_t i = (int8_t)(len - 1); i > 0; i--) {
+      sx[i] = sx[i - 1];
+      sy[i] = sy[i - 1];
+    }
+    sx[0] = hx;
+    sy[0] = hy;
+
+    // Schlange zeichnen: Kopf heller, Körper dunkleres Magenta
+    for (uint8_t i = 0; i < len; i++) {
+      uint8_t ix = (uint8_t)sx[i];
+      uint8_t iy = (uint8_t)sy[i];
+      uint8_t br = (uint8_t)(255 - i * 30); // Helligkeit entlang des Körpers
+      uint8_t r = br;
+      uint8_t g = 0;
+      uint8_t b = (uint8_t)(br * 3 / 4);
+      matrixSet(ix, iy, pixels.Color(r, g, b));
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixCounter1to9
+   Zeigt nacheinander die Ziffern 1 bis 9 auf komplett schwarzem Hintergrund.
+   Jede Ziffer wird kurz eingeblendet, dann geht es weiter zur nächsten.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixCounter1to9(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+
+  // 5x4 Schrift (W x H): wir nutzen das komplette Feld als Ziffern-Canvas.
+  // Bits sind zeilenweise (y 0..3), innerhalb jeder Zeile x 0..4 (MSB links).
+  static const uint8_t PROGMEM DIGITS[9][4] = {
+    // 1
+    { 0b00100,
+      0b01100,
+      0b00100,
+      0b01110 },
+    // 2
+    { 0b01110,
+      0b00010,
+      0b01110,
+      0b01000 },
+    // 3
+    { 0b01110,
+      0b00010,
+      0b00110,
+      0b01100 },
+    // 4
+    { 0b01010,
+      0b01010,
+      0b01110,
+      0b00010 },
+    // 5
+    { 0b01110,
+      0b01000,
+      0b01110,
+      0b00010 },
+    // 6
+    { 0b00110,
+      0b01000,
+      0b01110,
+      0b01010 },
+    // 7
+    { 0b01110,
+      0b00010,
+      0b00100,
+      0b00100 },
+    // 8
+    { 0b01110,
+      0b01010,
+      0b01110,
+      0b01010 },
+    // 9
+    { 0b01110,
+      0b01010,
+      0b01110,
+      0b00010 },
+  };
+
+  uint8_t current = 0; // Index 0..8 -> Ziffern 1..9
+  uint32_t lastSwitch = start;
+  const uint16_t DIGIT_DURATION = (uint16_t)(stepDelay_ms * 8); // ca. 8 Frames pro Ziffer
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint32_t now = millis();
+    if ((uint16_t)(now - lastSwitch) >= DIGIT_DURATION) {
+      lastSwitch = now;
+      current = (uint8_t)((current + 1) % 9);
+    }
+
+    // Hintergrund komplett schwarz
+    matrixFill(0);
+
+    // Ziffer zeichnen und dabei 90° im Uhrzeigersinn drehen
+    // Font-Koordinaten (fx, fy) -> Matrix-Koordinaten (mx, my)
+    // Rotation 90° CW: mx = H-1 - fy, my = fx
+    for (uint8_t fy = 0; fy < 4 && fy < H; fy++) {
+      uint8_t row = pgm_read_byte(&DIGITS[current][fy]);
+      for (uint8_t fx = 0; fx < 5 && fx < W; fx++) {
+        bool on = (row & (1 << (4 - fx))) != 0;
+        if (on) {
+          uint8_t mx = (uint8_t)(H - 1 - fy);
+          uint8_t my = fx;
+          if (mx < W && my < H) {
+            // Helles Weiß für klare Lesbarkeit
+            matrixSet(mx, my, pixels.Color(255, 255, 255));
+          }
+        }
+      }
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
   }
 }
 
