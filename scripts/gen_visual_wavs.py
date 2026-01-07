@@ -69,6 +69,7 @@ VISUALS = [
     (42, "beach-wave"),
     (43, "antifa-flag"),
     (44, "trickster-plasma"),
+    (45, "chaotic-pink"),
 ]
 
 # Brightness levels to generate

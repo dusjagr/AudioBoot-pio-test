@@ -186,6 +186,7 @@ int main(int argc, char** argv) {
       case 42: matrixBeachWave((uint16_t)runtime_ms, 80); break;
       case 43: matrixAntifaFlag((uint16_t)runtime_ms, 80); break;
       case 44: matrixTricksterPlasma((uint16_t)runtime_ms, 90); break; // reuse finite plasma for GIFs
+      case 45: matrixChaoticPink((uint16_t)runtime_ms, 80); break;
       default: matrixSunsetPickleSun((uint16_t)runtime_ms, 70); break;
     }
   };

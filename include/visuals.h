@@ -84,6 +84,7 @@ void matrixCounter1to9(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixUniverseCreation(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixSpear(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixChaoticPink(uint16_t runtime_ms, uint16_t stepDelay_ms);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Visuals Index and Guide
@@ -4281,5 +4282,57 @@ inline void matrixAntifaFlag(uint16_t runtime_ms, uint16_t stepDelay_ms) {
     pixels.show();
     delay(stepDelay_ms);
     frame++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixChaoticPink
+   Emulator version of the audio-reactive chaotic pink visual.
+   Simulates audio intensity using a sine wave + noise.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixChaoticPink(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  float t = 0;
+  
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Simulate intensity: 0..255
+    // Use a combination of slow wave and fast noise to simulate music
+    uint8_t wave = (uint8_t)(128 + 127 * sin(t * 0.1));
+    uint8_t noise = (uint8_t)random(60);
+    int val = wave + noise - 30;
+    if (val < 0) val = 0;
+    if (val > 255) val = 255;
+    uint8_t intensity = (uint8_t)val;
+
+    // --- Original Logic adapted for matrix coordinates ---
+    int num_updates = 2 + (intensity >> 5); // 2 to 9 pixels
+  
+    for(int i=0; i<num_updates; i++) {
+        int pixel = random(20);
+        uint8_t x = pixel % MATRIX_W;
+        uint8_t y = pixel / MATRIX_W;
+        
+        uint8_t r = intensity; 
+        uint8_t g = (intensity > 220) ? (intensity - 220) * 2 : 0; 
+        uint8_t b = 60 + (random(100)); 
+        
+        matrixSet(x, y, pixels.Color(r, g, b));
+    }
+    
+    int clear_chance = (intensity < 100) ? 2 : 4; 
+    for(int i=0; i<5; i++) {
+        if ((random(clear_chance)) == 0) {
+           int p = random(20);
+           uint8_t x = p % MATRIX_W;
+           uint8_t y = p / MATRIX_W;
+           matrixSet(x, y, 0);
+        }
+    }
+    // --- End Original Logic ---
+
+    pixels.show();
+    delay(stepDelay_ms);
+    t += 0.5;
   }
 }

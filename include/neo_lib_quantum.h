@@ -1,11 +1,7 @@
 // HARDWARE CALIBRATION
-#define Vbutton_releaseLevel  100
-#define Vbutton_left          90
-#define Vbutton_right         70
-#define Vbutton_both          60
 #define Vbutton_pressedLevel  Vbutton_left
 
-#define Vcc                    37 // 3.7 V for LiPo
+#define Vcc  37 // 3.7 V for LiPo
 #define Vdiv 26 // measure max Voltage on Analog In
 
 //CONSTANTS

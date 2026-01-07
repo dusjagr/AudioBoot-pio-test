@@ -29,14 +29,14 @@
     IN THE SOFTWARE.
 */
 
-#define LEDCount 8
-#define outputPin 3
-
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <avr/power.h>
 #include <Adafruit_NeoPixel.h>
+#include "matrix_helpers.h"
+#include "visuals.h"
+#include <neolib.h>
 #include "neo_lib_quantum.h"
 
 #ifdef PROGMEM
@@ -120,7 +120,6 @@ volatile uint8_t adc3 = _BV(ADLAR) | _BV(MUX0) | _BV(MUX1); //PB3-ADC3 pot3
 #define ENTER_CRIT()    {byte volatile saved_sreg = SREG; cli()
 #define LEAVE_CRIT()    SREG = saved_sreg;}
 
-
 #define SLOWDOWN( len ) \
   { volatile char d = 0; for( volatile int dd = 0; dd < ( len ); dd++ ) d++; }
 
@@ -173,36 +172,70 @@ void adc_start()
 {
   ADCSRA |= _BV(ADSC); //start adc conversion
 }
+
+void chaoticPinkVisual(uint8_t intensity) {
+  // Update pixels based on audio intensity
+  // More updates and brighter colors for higher intensity
+  int num_updates = 2 + (intensity >> 5); // 2 to 9 pixels
+  
+  for(int i=0; i<num_updates; i++) {
+      int pixel = rand() % 20;
+      
+      // Color reaction:
+      // High intensity -> Bright Pink/Red/White
+      // Low intensity -> Deep Blue/Purple
+      uint8_t r = intensity; 
+      uint8_t g = (intensity > 220) ? (intensity - 220) * 2 : 0; // Add green (to make white) only at high peaks
+      uint8_t b = 60 + (rand() % 100); 
+      
+      pixels.setPixelColor(pixel, pixels.Color(r, g, b));
+  }
+  
+  // Clear pixels to create blinking
+  // Clear more often if intensity is low
+  int clear_chance = (intensity < 100) ? 2 : 4; 
+  for(int i=0; i<5; i++) {
+      if ((rand() % clear_chance) == 0) {
+         pixels.setPixelColor(rand() % 20, 0);
+      }
+  }
+  
+  pixels.show();
+}
+
 int main()
 {
   unsigned int stream = 0;
   unsigned int stream2 = 0;
   unsigned int emotion_counter = 0;
 
-    clock_prescale_set(clock_div_16); //1MHZ LOFI
+  clock_prescale_set(clock_div_1); // 16MHz for NeoPixels
   adc_init();
   sei(); //enable global interrupt
   adc_start(); //start adc conversion
 
-  //#ifdef CLOCK_PRESCALER
-  //  CLKPR = 1 << CLKPCE;
-  //  CLKPR = CLOCK_PRESCALER;
-  //#endif
+  // Initialize NeoPixels
+  pixels.begin();
+  pixels.setBrightness(255); // Full brightness
 
-  DDRB = 1 << output_bit_offset; //Set Port B output bits
-  PORTB = 0x00; //Turn all output pins on Port B off
+  DDRB |= (1 << output_bit_offset); // Set Port B output bit for audio, preserving NeoPixels
+  PORTB &= ~(1 << output_bit_offset); // Turn off audio output pin
   //  PORTB |= OPTION1_BIT | OPTION2_BIT; //Enable Pull-up resistors for the input pins
-  int btn_timer = 0;
+  int btn_timer = 0;  
   int opt_btn = 0;
-int ledRefresh = 0;
-uint8_t fq = 1;
-pinMode(0, OUTPUT);
-
-
+  int ledRefresh = 0;
+  uint8_t fq = 4; // Start at 1MHz (clock_div_16)
 
   while ( 1 )
   {
-    digitalWrite(0, HIGH);
+    // Switch to 16MHz for reliable NeoPixel communication
+    clock_prescale_set(clock_div_1);
+    chaoticPinkVisual(stream & 255); // React to audio stream
+    // Restore the user-selected clock speed for the audio engine
+    CLKPR = 1 << CLKPCE;
+    CLKPR = fq;
+    
+    //digitalWrite(0, HIGH); // Don't interfere with NeoPixel pin (0)
     btn_timer++;
 
 //    if (btn_timer > 500)
