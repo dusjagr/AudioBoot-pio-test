@@ -1,0 +1,166 @@
+#include <Arduino.h>
+#include <avr/pgmspace.h>
+#include <avr/interrupt.h>
+#include "neolib.h"
+#include "matrix_helpers.h"
+
+// --- Sine Wavetable ---
+const byte sine256[] PROGMEM = {
+  0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 4, 5, 5, 6, 7, 9, 10, 11, 12, 14, 15, 17, 18, 20, 21, 23, 25, 27, 29, 31, 33, 35, 37, 40, 42, 44, 47, 49, 52, 54, 57, 59, 62, 65, 67, 70, 73, 76, 79, 82, 85, 88, 90, 93, 97, 100, 103, 106, 109, 112, 115, 118, 121, 124, 128,
+  128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 162, 165, 167, 170, 173, 176, 179, 182, 185, 188, 190, 193, 196, 198, 201, 203, 206, 208, 211, 213, 215, 218, 220, 222, 224, 226, 228, 230, 232, 234, 235, 237, 238, 240, 241, 243, 244, 245, 246,
+  248, 249, 250, 250, 251, 252, 253, 253, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 253, 253, 252, 251, 250, 250, 249, 248, 246, 245, 244, 243, 241, 240, 238, 237, 235, 234, 232, 230, 228, 226, 224, 222, 220, 218, 215, 213, 211,
+  208, 206, 203, 201, 198, 196, 193, 190, 188, 185, 182, 179, 176, 173, 170, 167, 165, 162, 158, 155, 152, 149, 146, 143, 140, 137, 134, 131, 128, 124, 121, 118, 115, 112, 109, 106, 103, 100, 97, 93, 90, 88, 85, 82, 79, 76, 73, 70, 67, 65,
+  62, 59, 57, 54, 52, 49, 47, 44, 42, 40, 37, 35, 33, 31, 29, 27, 25, 23, 21, 20, 18, 17, 15, 14, 12, 11, 10, 9, 7, 6, 5, 5, 4, 3, 2, 2, 1, 1, 1, 0
+};
+
+// --- Synthesis Variables ---
+volatile uint16_t phase = 0;
+volatile uint16_t phase_increment = 0;
+volatile uint8_t amplitude = 0;
+volatile bool trigger_kick = false;
+volatile uint16_t ticks = 0;
+
+// Parameters for the kick drum
+volatile uint16_t kick_start_freq = 1500;
+volatile uint16_t kick_end_freq = 350;
+volatile uint8_t  kick_pitch_decay = 2;
+volatile uint8_t  kick_amp_decay = 8;
+
+// Sequencer Speed
+const uint16_t BPM = 112;
+const uint16_t STEP_MS = (60000 / BPM) / 4; // 16th notes (125ms at 120 BPM)
+const uint16_t FLASH_MS = 50;               // LED Flash duration
+
+struct Step {
+  bool active;
+  uint16_t start_freq;
+  uint16_t end_freq;
+  uint8_t pitch_decay;
+  uint8_t amp_decay;
+};
+
+Step pattern[16];
+uint8_t current_step = 0;
+
+extern "C" void setup() {
+  OSCCAL += 3; // Oscillator calibration
+
+  // Enable 64 MHz PLL and use as source for Timer1
+  PLLCSR = 1 << PCKE | 1 << PLLE;
+
+  // Set up Timer/Counter1 for PWM output
+  TIMSK = 0;                                          
+  TCCR1 = 1 << PWM1A | 2 << COM1A0 | 1 << CS10;       
+  pinMode(1, OUTPUT);                                 
+
+  // Set up Timer/Counter0 for interrupt (10kHz)
+  TCCR0A = 3 << WGM00;                                
+  TCCR0B = 1 << WGM02 | 2 << CS00;                    
+  TIMSK = 1 << OCIE0A;                                
+  OCR0A = 199;                                         
+  pinMode(0, OUTPUT);
+  
+  neobegin(); 
+  pixels.setBrightness(255);
+  randomSeed(analogRead(A1));
+
+  // Generate random 16-step pattern
+  for (int i = 0; i < 16; i++) {
+    // 50% chance of kick, but ensure downbeat (step 0) is always active
+    pattern[i].active = (i == 0) || (random(0, 2) == 0); 
+    
+    pattern[i].start_freq = random(800, 1000);
+    pattern[i].end_freq = random(100, 200);
+    pattern[i].pitch_decay = random(6, 10);
+    pattern[i].amp_decay = random(7, 15);
+  }
+}
+
+// Custom delay using ISR ticks (10kHz) because standard delay() is broken by Timer0 usage
+void my_delay(uint16_t ms) {
+    uint16_t duration = ms * 10;
+    uint16_t start;
+    uint8_t sreg = SREG; cli(); start = ticks; SREG = sreg;
+    
+    while (1) {
+        uint16_t current;
+        sreg = SREG; cli(); current = ticks; SREG = sreg;
+        if ((uint16_t)(current - start) >= duration) break;
+    }
+}
+
+void loop() {
+  Step &s = pattern[current_step];
+
+  if (s.active) {
+    // Set parameters from stored pattern
+    kick_start_freq = s.start_freq;
+    kick_end_freq = s.end_freq;
+    kick_pitch_decay = s.pitch_decay;
+    kick_amp_decay = s.amp_decay;
+
+    trigger_kick = true;
+    
+    // Visualize bass qualities
+    // Map Frequency to Color
+    uint8_t color_pos = map(kick_start_freq, 800, 2000, 0, 255);
+    uint32_t color = colorWheel(color_pos);
+    
+    // Map Decay to Number of Pixels (1 to 20)
+    uint8_t num_pixels = map(kick_amp_decay, 4, 15, 1, 20);
+    if (num_pixels > 20) num_pixels = 20;
+
+    // Draw
+    setColorAllPixel(0); // Clear
+    for (uint8_t i = 0; i < num_pixels; i++) {
+      pixels.setPixelColor(i, color);
+    }
+    pixels.show();
+    
+    my_delay(FLASH_MS); // Flash duration
+    
+    setColorAllPixel(0); // Off
+    pixels.show();
+    
+    my_delay(STEP_MS - FLASH_MS); // Rest of step
+  } else {
+    // Silent step
+    setColorAllPixel(0);
+    // Optional: visualize cursor?
+    // pixels.setPixelColor(current_step, 5, 5, 5); // Dim white cursor
+    pixels.show();
+    my_delay(STEP_MS);
+  }
+
+  current_step = (current_step + 1) % 16;
+}
+
+ISR(TIMER0_COMPA_vect) {
+  ticks++;
+
+  if (trigger_kick) {
+    phase_increment = kick_start_freq;
+    amplitude = 255;
+    trigger_kick = false;
+  }
+
+  if (amplitude > 0) {
+    phase += phase_increment;
+    if (phase_increment > kick_end_freq) {
+      phase_increment -= kick_pitch_decay;
+    }
+    
+    static uint8_t decay_counter = 0;
+    decay_counter++;
+    if (decay_counter >= kick_amp_decay) {
+        if (amplitude > 0) amplitude--;
+        decay_counter = 0;
+    }
+
+    uint8_t sample = pgm_read_byte(&sine256[phase >> 8]);
+    uint16_t out = (sample * amplitude) >> 8;
+    OCR1A = out;
+  } else {
+    OCR1A = 0;
+  }
+}
