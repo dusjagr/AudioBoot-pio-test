@@ -1,8 +1,68 @@
 #include <Arduino.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
-#include "neolib.h"
-#include "matrix_helpers.h"
+#include <avr/power.h>
+#include <Adafruit_NeoPixel.h>
+
+// --- Hardware Definitions ---
+#define NUMPIXELS 20
+#define NEOPIXELPIN 0
+#define SPEAKERPIN 1
+
+// --- Matrix Definitions ---
+#define MATRIX_W 5
+#define MATRIX_H 4
+#define MATRIX_SERPENTINE 0   // 1 = serpentine wiring per row, 0 = progressive
+#define MATRIX_ORIGIN_TOPLEFT 1 // assume pixel 0 is top-left
+
+// --- NeoPixel Object ---
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
+
+// --- Helpers ---
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85) {
+    return pixels.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if (WheelPos < 170) {
+    WheelPos -= 85;
+    return pixels.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return pixels.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+uint32_t colorWheel(uint8_t colorNumber) {
+   return Wheel(colorNumber);
+}
+
+void setColorAllPixel(uint32_t color) {
+  for (uint8_t n = 0; n < NUMPIXELS; n++) {
+    pixels.setPixelColor(n, color);
+  }
+}
+
+int matrixIndex(uint8_t x, uint8_t y) {
+  if (x >= MATRIX_W || y >= MATRIX_H) return -1;
+  uint8_t row = y;
+  uint8_t col = x;
+  if (!MATRIX_ORIGIN_TOPLEFT) {
+    row = (MATRIX_H - 1) - y;
+  }
+  if (MATRIX_SERPENTINE) {
+    if (row % 2 == 0) return row * MATRIX_W + col;
+    else return row * MATRIX_W + (MATRIX_W - 1 - col);
+  } else {
+    return row * MATRIX_W + col;
+  }
+}
+
+void matrixSet(uint8_t x, uint8_t y, uint32_t color) {
+  int idx = matrixIndex(x, y);
+  if (idx >= 0 && idx < NUMPIXELS) {
+    pixels.setPixelColor(idx, color);
+  }
+}
 
 // --- Sine Wavetable ---
 const byte sine256[] PROGMEM = {
@@ -42,7 +102,11 @@ struct Step {
 Step pattern[16];
 uint8_t current_step = 0;
 
-extern "C" void setup() {
+void setup() {
+  #if defined (__AVR_ATtiny85__)
+  if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
+  #endif
+
   OSCCAL += 3; // Oscillator calibration
 
   // Enable 64 MHz PLL and use as source for Timer1
@@ -51,17 +115,17 @@ extern "C" void setup() {
   // Set up Timer/Counter1 for PWM output
   TIMSK = 0;                                          
   TCCR1 = 1 << PWM1A | 2 << COM1A0 | 1 << CS10;       
-  pinMode(1, OUTPUT);                                 
+  pinMode(SPEAKERPIN, OUTPUT);                                 
 
   // Set up Timer/Counter0 for interrupt (10kHz)
   TCCR0A = 3 << WGM00;                                
   TCCR0B = 1 << WGM02 | 2 << CS00;                    
   TIMSK = 1 << OCIE0A;                                
   OCR0A = 199;                                         
-  pinMode(0, OUTPUT);
+  pinMode(NEOPIXELPIN, OUTPUT);
   
-  neobegin(); 
-  pixels.setBrightness(255);
+  pixels.begin();
+  pixels.setBrightness(155);
   randomSeed(analogRead(A1));
 
   // Generate random 16-step pattern
@@ -102,19 +166,47 @@ void loop() {
     trigger_kick = true;
     
     // Visualize bass qualities
-    // Map Frequency to Color
-    uint8_t color_pos = map(kick_start_freq, 800, 2000, 0, 255);
-    uint32_t color = colorWheel(color_pos);
+    // Map Frequency to Pink/Purple Range (190-220)
+    // 170=Blue, 212=Magenta, 255=Red
+    uint8_t color_pos = map(kick_start_freq, 800, 1000, 190, 220);
+    uint32_t color_center = colorWheel(color_pos);
+    uint32_t color_mid    = colorWheel(color_pos + 20);
+    uint32_t color_outer  = colorWheel(color_pos + 40);
     
-    // Map Decay to Number of Pixels (1 to 20)
-    uint8_t num_pixels = map(kick_amp_decay, 4, 15, 1, 20);
+    // Map Decay to Expansion Level (4 to 20 pixels total)
+    // 4 center + 8 mid + 8 outer
+    uint8_t num_pixels = map(kick_amp_decay, 7, 15, 4, 20);
     if (num_pixels > 20) num_pixels = 20;
 
-    // Draw
+    // Draw Center-Out
     setColorAllPixel(0); // Clear
-    for (uint8_t i = 0; i < num_pixels; i++) {
-      pixels.setPixelColor(i, color);
+
+    // 1. Fill Center Column (2) - 4 pixels
+    for (int y = 0; y < 4; y++) {
+      if (num_pixels > 0) {
+        matrixSet(2, 3 - y, color_center); // Fill from bottom up
+        num_pixels--;
+      }
     }
+
+    // 2. Fill Mid Columns (1 & 3) - 8 pixels (4 pairs)
+    for (int y = 0; y < 4; y++) {
+      if (num_pixels >= 2) {
+        matrixSet(1, 3 - y, color_mid);
+        matrixSet(3, 3 - y, color_mid);
+        num_pixels -= 2;
+      }
+    }
+
+    // 3. Fill Outer Columns (0 & 4) - 8 pixels (4 pairs)
+    for (int y = 0; y < 4; y++) {
+      if (num_pixels >= 2) {
+        matrixSet(0, 3 - y, color_outer);
+        matrixSet(4, 3 - y, color_outer);
+        num_pixels -= 2;
+      }
+    }
+
     pixels.show();
     
     my_delay(FLASH_MS); // Flash duration
