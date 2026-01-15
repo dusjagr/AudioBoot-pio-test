@@ -4,6 +4,10 @@
 #include <avr/power.h>
 #include <Adafruit_NeoPixel.h>
 
+// --- Configuration ---
+// Uncomment the following line to use Square Wave, comment out for Sine Wave
+#define USE_SQUARE_WAVE 1 
+
 // --- Hardware Definitions ---
 #define NUMPIXELS 20
 #define NEOPIXELPIN 0
@@ -65,6 +69,7 @@ void matrixSet(uint8_t x, uint8_t y, uint32_t color) {
 }
 
 // --- Sine Wavetable ---
+#ifndef USE_SQUARE_WAVE
 const byte sine256[] PROGMEM = {
   0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 4, 5, 5, 6, 7, 9, 10, 11, 12, 14, 15, 17, 18, 20, 21, 23, 25, 27, 29, 31, 33, 35, 37, 40, 42, 44, 47, 49, 52, 54, 57, 59, 62, 65, 67, 70, 73, 76, 79, 82, 85, 88, 90, 93, 97, 100, 103, 106, 109, 112, 115, 118, 121, 124, 128,
   128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 162, 165, 167, 170, 173, 176, 179, 182, 185, 188, 190, 193, 196, 198, 201, 203, 206, 208, 211, 213, 215, 218, 220, 222, 224, 226, 228, 230, 232, 234, 235, 237, 238, 240, 241, 243, 244, 245, 246,
@@ -72,6 +77,7 @@ const byte sine256[] PROGMEM = {
   208, 206, 203, 201, 198, 196, 193, 190, 188, 185, 182, 179, 176, 173, 170, 167, 165, 162, 158, 155, 152, 149, 146, 143, 140, 137, 134, 131, 128, 124, 121, 118, 115, 112, 109, 106, 103, 100, 97, 93, 90, 88, 85, 82, 79, 76, 73, 70, 67, 65,
   62, 59, 57, 54, 52, 49, 47, 44, 42, 40, 37, 35, 33, 31, 29, 27, 25, 23, 21, 20, 18, 17, 15, 14, 12, 11, 10, 9, 7, 6, 5, 5, 4, 3, 2, 2, 1, 1, 1, 0
 };
+#endif
 
 // --- Synthesis Variables ---
 volatile uint16_t phase = 0;
@@ -87,7 +93,7 @@ volatile uint8_t  kick_pitch_decay = 2;
 volatile uint8_t  kick_amp_decay = 8;
 
 // Sequencer Speed
-const uint16_t BPM = 112;
+const uint16_t BPM = 120;
 const uint16_t STEP_MS = (60000 / BPM) / 4; // 16th notes (125ms at 120 BPM)
 const uint16_t FLASH_MS = 50;               // LED Flash duration
 
@@ -125,7 +131,7 @@ void setup() {
   pinMode(NEOPIXELPIN, OUTPUT);
   
   pixels.begin();
-  pixels.setBrightness(155);
+  pixels.setBrightness(255);
   randomSeed(analogRead(A1));
 
   // Generate random 16-step pattern
@@ -249,9 +255,20 @@ ISR(TIMER0_COMPA_vect) {
         decay_counter = 0;
     }
 
-    uint8_t sample = pgm_read_byte(&sine256[phase >> 8]);
-    uint16_t out = (sample * amplitude) >> 8;
-    OCR1A = out;
+    #ifdef USE_SQUARE_WAVE
+      // Square Wave Generation
+      if (phase & 0x8000) { 
+          OCR1A = amplitude; 
+      } else {
+          OCR1A = 0;
+      }
+    #else
+      // Sine Wave Generation
+      uint8_t sample = pgm_read_byte(&sine256[phase >> 8]);
+      uint16_t out = (sample * amplitude) >> 8;
+      OCR1A = out;
+    #endif
+
   } else {
     OCR1A = 0;
   }
