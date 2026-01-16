@@ -13,6 +13,8 @@
 #define NEOPIXELPIN 0
 #define SPEAKERPIN 1
 #define BUTTON_PIN A3
+#define POTI_LEFT  A2
+#define POTI_RIGHT A1
 
 // Button Calibration & States
 #define BUTTON_NONE         0
@@ -24,6 +26,9 @@
 #define Vbutton_right         300
 #define Vbutton_both          224
 #define Vbutton_pressedLevel  Vbutton_left 
+
+#define Vcc                    37 // 3.7 V for LiPo
+#define Vdiv                   26 // measure max Voltage on Analog In
 
 #define BUTTON_NOTPRESSED   0
 #define BUTTON_PRESSED      1
@@ -114,8 +119,8 @@ volatile uint8_t  kick_pitch_decay = 2;
 volatile uint8_t  kick_amp_decay = 8;
 
 // Sequencer Speed
-const uint16_t BPM = 120;
-const uint16_t STEP_MS = (60000 / BPM) / 4; // 16th notes (125ms at 120 BPM)
+// const uint16_t BPM = 120; // controlled by pot now
+uint16_t STEP_MS = 125;      // 16th notes (125ms at 120 BPM)
 const uint16_t FLASH_MS = 50;               // LED Flash duration
 
 struct KickStep {
@@ -134,6 +139,13 @@ struct SnareStep {
 KickStep kickPattern[16];
 SnareStep snarePattern[16];
 uint8_t current_step = 0;
+
+uint16_t analogReadScaled(uint8_t channel) {
+  uint32_t value = analogRead(channel);
+  value = value * Vcc / Vdiv;
+  if (value > 1023) value = 1023;
+  return (uint16_t)value;
+}
 
 uint8_t wasButtonPressed()
 {
@@ -251,6 +263,13 @@ void my_delay(uint16_t ms) {
 }
 
 void loop() {
+  // Read Speed Potentiometer (Right Pot)
+  uint16_t potVal = analogReadScaled(POTI_RIGHT);
+  // Map pot value to step duration (approx 600 BPM to 60 BPM)
+  // Fast (small delay) -> Slow (large delay)
+  // FLASH_MS is 50, so we need > 50 to avoid unsigned underflow in subtraction
+  STEP_MS = map(potVal, 0, 1023, 60, 400); 
+
   // Check Button (Right Button)
   uint8_t button = wasButtonPressed();
   
