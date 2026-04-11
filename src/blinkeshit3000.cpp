@@ -179,6 +179,7 @@ void loop(void) {
     case 47: matrixBlueBouncingBall(10000, 40); break;
     case 48: matrixTechnoOrbit(10000, 40); break;
     case 49: matrixRocketLiftoff(10000, 60); break;
+    case 50: matrixBurningSauna(10000, 80); break;
     default: matrixCCCRocket(10000, 60); break;
   }
   return; // run one visual per loop iteration to keep behavior deterministic per WAV

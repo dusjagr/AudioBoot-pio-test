@@ -191,6 +191,7 @@ int main(int argc, char** argv) {
       case 47: matrixBlueBouncingBall((uint16_t)runtime_ms, 40); break;
       case 48: matrixTechnoOrbit((uint16_t)runtime_ms, 40); break;
       case 49: matrixRocketLiftoff((uint16_t)runtime_ms, 60); break;
+      case 50: matrixBurningSauna((uint16_t)runtime_ms, 80); break;
       default: matrixSunsetPickleSun((uint16_t)runtime_ms, 70); break;
     }
   };

@@ -74,6 +74,7 @@ VISUALS = [
     (47, "blue-bouncing-ball"),
     (48, "techno-orbit"),
     (49, "rocket-liftoff"),
+    (50, "burning-sauna"),
 ]
 
 # Brightness levels to generate

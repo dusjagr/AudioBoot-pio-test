@@ -413,3 +413,11 @@ Notes:
   Your browser does not support the audio element. Use the download link above.
 </audio>
 
+### 50 — Burning Sauna
+<a href="visual-50-burning-sauna.wav">Download</a>
+
+<audio controls>
+  <source src="visual-50-burning-sauna.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
