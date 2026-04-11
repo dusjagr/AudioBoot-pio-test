@@ -70,6 +70,10 @@ VISUALS = [
     (43, "antifa-flag"),
     (44, "trickster-plasma"),
     (45, "chaotic-pink"),
+    (46, "spring-storm"),
+    (47, "blue-bouncing-ball"),
+    (48, "techno-orbit"),
+    (49, "rocket-liftoff"),
 ]
 
 # Brightness levels to generate

@@ -174,6 +174,11 @@ void loop(void) {
     case 42: matrixBeachWave(10000, 80); break;
     case 43: matrixAntifaFlag(10000, 80); break;
     case 44: matrixTricksterPlasmaLoop(23); break;
+    case 45: matrixChaoticPink(10000, 80); break;
+    case 46: matrixSpringStorm(10000, 100); break;
+    case 47: matrixBlueBouncingBall(10000, 40); break;
+    case 48: matrixTechnoOrbit(10000, 40); break;
+    case 49: matrixRocketLiftoff(10000, 60); break;
     default: matrixCCCRocket(10000, 60); break;
   }
   return; // run one visual per loop iteration to keep behavior deterministic per WAV
@@ -185,7 +190,11 @@ void loop(void) {
 
 //matrixBurningSauna(15000, 80);
 //matrixMagentaMiniSnake(15000, 80);  // 15 s magenta mini snake
-matrixMagentaMiniSnake(15000, 80);
+//matrixMagentaMiniSnake(15000, 80);
+//matrixSpringStorm(15000, 100);
+//matrixBlueBouncingBall(15000, 40);
+//matrixTechnoOrbit(15000, 40);
+matrixRocketLiftoff(15000, 60);
 //matrixCounter1to9(15000, 120);  // 15 s Zähler, 120 ms pro Frame
 
    

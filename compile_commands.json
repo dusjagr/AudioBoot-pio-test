@@ -1,0 +1,8 @@
+[
+    {
+        "command": "/usr/bin/g++ -o .pio/build/native/src/emulator_entry.o -c -std=c++17 -DPLATFORMIO=60119 -DMATRIX_W=5 -DMATRIX_H=4 -DVISUAL_ID=6 -Isrc -Iemu -Iinclude src/emulator_entry.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "src/emulator_entry.cpp",
+        "output": ".pio/build/native/src/emulator_entry.o"
+    }
+]

@@ -85,6 +85,10 @@ void matrixUniverseCreation(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixSpear(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixChaoticPink(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixSpringStorm(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixBlueBouncingBall(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixTechnoOrbit(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixRocketLiftoff(uint16_t runtime_ms, uint16_t stepDelay_ms);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Visuals Index and Guide
@@ -4334,5 +4338,358 @@ inline void matrixChaoticPink(uint16_t runtime_ms, uint16_t stepDelay_ms) {
     pixels.show();
     delay(stepDelay_ms);
     t += 0.5;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixSpringStorm
+   A beautiful 5x4 spring landscape transitioning into a stormy thunderstorm.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixSpringStorm(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  
+  uint16_t lfsr = (uint16_t)(millis() ^ 0xBED5);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+  
+  // Raindrop vertical positions per column (0xFF = inactive)
+  uint8_t dropY[5] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+  
+  // Track the progress threshold for the next lightning flash
+  // Initial flash will happen somewhere between 110 and 130 progress
+  uint8_t nextFlashTarget = (uint8_t)(110 + (nextL() % 20));
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint16_t elapsed = (uint16_t)(millis() - start);
+    
+    // Normalize progress mapping (0 to 255)
+    uint32_t prog32 = ((uint32_t)elapsed * 255) / runtime_ms;
+    uint8_t progress = (prog32 > 255) ? 255 : (uint8_t)prog32;
+    
+    // Phase calculation
+    // w: Storm darkness factor (0 in spring, 255 at peak storm)
+    uint8_t w = (progress < 60) ? 0 : ((progress > 120) ? 255 : (uint8_t)((progress - 60) * 255 / 60));
+    
+    // Sky gradient blending: Light blue -> Dark grey
+    uint8_t skyR = (uint8_t)(((uint16_t)100 * (255 - w) + (uint16_t)40 * w) / 255);
+    uint8_t skyG = (uint8_t)(((uint16_t)200 * (255 - w) + (uint16_t)40 * w) / 255);
+    uint8_t skyB = (uint8_t)(((uint16_t)255 * (255 - w) + (uint16_t)50 * w) / 255);
+    uint32_t skyCol = pixels.Color(skyR, skyG, skyB);
+    
+    // Field / Forest coloring
+    uint32_t fieldCol = pixels.Color(30, 200, 20);   // bright spring green
+    uint32_t forestCol = pixels.Color(10, 100, 10);  // darker tree green
+    uint32_t trunkCol = pixels.Color(100, 50, 10);   // warm brown for the trunk
+    if (w > 0) { // Dim everything as the storm clouds gather
+       fieldCol = dimColor(fieldCol, (uint8_t)(255 - (w / 2)));
+       forestCol = dimColor(forestCol, (uint8_t)(255 - (w / 2)));
+       trunkCol = dimColor(trunkCol, (uint8_t)(255 - (w / 2)));
+    }
+    
+    // Global fade out at the end (dawn / dark)
+    // From progress 160 to 220, fade all colors to black. 220 to 255 stays fully dark.
+    uint8_t fadeOut = (progress > 160) ? ((progress >= 220) ? 255 : (uint8_t)((progress - 160) * 255 / 60)) : 0;
+    if (fadeOut > 0) {
+        uint8_t keep = 255 - fadeOut;
+        skyCol = dimColor(skyCol, keep);
+        fieldCol = dimColor(fieldCol, keep);
+        forestCol = dimColor(forestCol, keep);
+        trunkCol = dimColor(trunkCol, keep);
+    }
+    
+    // Draw the static landscape elements
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        if (y == 3) {
+           // Bottom row is the grassy field
+           matrixSet(x, y, fieldCol); 
+        } else if (y == 2 && (x == 0 || x == 4)) {
+           // Edges are small forest patches
+           matrixSet(x, y, forestCol); 
+        } else if (y == 2 && x == 2) {
+           // Central tree trunk
+           matrixSet(x, y, trunkCol);
+        } else if (y == 1 && x == 2) {
+           // Central tree leaves
+           matrixSet(x, y, forestCol);
+        } else {
+           // Rest is sky
+           matrixSet(x, y, skyCol); 
+        }
+      }
+    }
+    
+    // Rain layer (stops when it gets fully dark/dawn)
+    if (progress > 90 && progress <= 190) { 
+      uint8_t rainChanceMask = (progress > 130) ? 0x01 : 0x03; // Heavier downpour later
+      for (uint8_t x = 0; x < W; x++) {
+        if (dropY[x] == 0xFF) {
+           if ((nextL() & rainChanceMask) == 0) {
+             dropY[x] = 0; // Spawn new drop
+           }
+        } else {
+           // Do not draw rain on the bottom row (y=3)
+           if (dropY[x] < 3) {
+               uint32_t dropCol = pixels.Color(150, 200, 255); // Raindrop color against sky/ground
+               if (fadeOut > 0) dropCol = dimColor(dropCol, 255 - fadeOut); // fade raindrops too
+               matrixSet(x, dropY[x], dropCol);
+           }
+           dropY[x]++;
+           if (dropY[x] >= H) dropY[x] = 0xFF; // Splat/reset
+        }
+      }
+    }
+    
+    // Thunderstorm layer (controlled, longer phase with 3-4 distinct flashes)
+    if (progress >= nextFlashTarget && progress <= 200) { 
+       matrixFill(pixels.Color(255, 255, 255)); // Bright flash
+       // Calculate the next flash to happen 20-35 units of progress from now
+       // This spacing ensures roughly 3 or 4 flashes before progress hits 200.
+       nextFlashTarget = (uint8_t)(progress + 20 + (nextL() % 15));
+    }
+
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixBlueBouncingBall
+   A cool ("geils") blue ball bouncing around with a fading trail. 
+   Flashes brightly when hitting the walls.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixBlueBouncingBall(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  
+  // 8.8 fixed-point position (start in middle)
+  int16_t px = (W / 2) << 8;
+  int16_t py = (H / 2) << 8;
+  
+  // 8.8 fixed-point velocity 
+  int16_t vx = 114; // ~0.44 pixels per frame
+  int16_t vy = 77;  // ~0.30 pixels per frame
+  
+  matrixFill(0);
+  pixels.show();
+  
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Leave a long smooth liquid trail
+    matrixFade(100); 
+    
+    px += vx;
+    py += vy;
+    
+    bool hitX = false, hitY = false;
+    
+    // Bounds checking & bouncing
+    if (px <= 0) {
+      px = 0; vx = -vx; hitX = true;
+    } else if (px >= ((W - 1) << 8)) {
+      px = ((W - 1) << 8); vx = -vx; hitX = true;
+    }
+    
+    if (py <= 0) {
+      py = 0; vy = -vy; hitY = true;
+    } else if (py >= ((H - 1) << 8)) {
+      py = ((H - 1) << 8); vy = -vy; hitY = true;
+    }
+    
+    uint8_t bx = (uint8_t)(px >> 8);
+    uint8_t by = (uint8_t)(py >> 8);
+    
+    if (hitX || hitY) {
+       // Bright icy flash on wall impact
+       matrixSet(bx, by, pixels.Color(200, 255, 255));
+    } else {
+       // Pulsing deep blue core
+       uint16_t tPhase = (millis() >> 2) & 0xFF; // fast phase
+       uint8_t tri = (tPhase & 0x80) ? (uint8_t)(255 - ((tPhase & 0x7F) << 1)) : (uint8_t)((tPhase & 0x7F) << 1);
+       uint32_t coreColor = pixels.Color((uint8_t)(tri/4), (uint8_t)(80 + tri/2), 255);
+       matrixSet(bx, by, coreColor);
+    }
+    
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixTechnoOrbit
+   A red point and a blue point float around, while a green object rotates in a circle, 
+   snapping to new positions "im Takt zur Musik" (in sync with a musical beat).
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixTechnoOrbit(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  
+  // 8.8 fixed-point positions for red and blue
+  int16_t rx = (1) << 8, ry = (1) << 8;
+  int16_t bx = (3) << 8, by = (2) << 8;
+  
+  // Floating velocities
+  int16_t rvx = 110, rvy = 140; 
+  int16_t bvx = -125, bvy = 95; 
+
+  const uint16_t beat_ms = 430; // ~140 BPM techno tempo
+  
+  // 8-step circular path around a 5x4 matrix
+  uint8_t ox[8] = {2, 3, 4, 3, 2, 1, 0, 1};
+  uint8_t oy[8] = {0, 1, 2, 3, 3, 2, 1, 0};
+  
+  matrixFill(0);
+  pixels.show();
+  
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Beautiful long trails for the dancing dots
+    matrixFade(110); 
+    
+    // Move Red
+    rx += rvx; ry += rvy;
+    if (rx <= 0) { rx = 0; rvx = -rvx; }
+    else if (rx >= ((W - 1) << 8)) { rx = ((W - 1) << 8); rvx = -rvx; }
+    if (ry <= 0) { ry = 0; rvy = -rvy; }
+    else if (ry >= ((H - 1) << 8)) { ry = ((H - 1) << 8); rvy = -rvy; }
+
+    // Move Blue
+    bx += bvx; by += bvy;
+    if (bx <= 0) { bx = 0; bvx = -bvx; }
+    else if (bx >= ((W - 1) << 8)) { bx = ((W - 1) << 8); bvx = -bvx; }
+    if (by <= 0) { by = 0; bvy = -bvy; }
+    else if (by >= ((H - 1) << 8)) { by = ((H - 1) << 8); bvy = -bvy; }
+
+    uint8_t brx = (uint8_t)(rx >> 8);
+    uint8_t bry = (uint8_t)(ry >> 8);
+    uint8_t bbx = (uint8_t)(bx >> 8);
+    uint8_t bby = (uint8_t)(by >> 8);
+
+    // If red and blue hit the exact same pixel, make a purple collision flash!
+    if (brx == bbx && bry == bby) {
+        matrixSet(brx, bry, pixels.Color(255, 0, 255));
+    } else {
+        matrixSet(brx, bry, pixels.Color(255, 0, 0));
+        matrixSet(bbx, bby, pixels.Color(0, 80, 255));
+    }
+    
+    // Green object orbiting "im Takt" (Pulse logic synced to beat_ms)
+    uint32_t now = millis();
+    uint16_t beatTime = (uint16_t)(now % beat_ms);
+    uint8_t beatIndex = ((uint16_t)(now / beat_ms)) % 8;
+    
+    // Green flashes bright on the beat, then decays
+    uint8_t bright = 255 - (uint8_t)((uint32_t)beatTime * 220 / beat_ms);
+    matrixSet(ox[beatIndex], oy[beatIndex], pixels.Color(0, bright, 0));
+    
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixRocketLiftoff
+   "Der Flammschweif einer abhebenden Mondrakete."
+   Simulation of a moon rocket liftoff, focusing on the turbulent exhaust plume and vertical launch sequence.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixRocketLiftoff(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  
+  uint16_t lfsr = (uint16_t)(millis() ^ 0x1A4C);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+  
+  matrixFill(0);
+  pixels.show();
+  
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint16_t elapsed = (uint16_t)(millis() - start);
+    uint8_t progress = (uint8_t)((uint32_t)elapsed * 255 / runtime_ms);
+    
+    // Dynamic fade: heavier fade during static thrust, slower fade after liftoff leaving persistent smoke
+    uint8_t fadeAmt = (progress > 200) ? 50 : 130;  
+    matrixFade(fadeAmt);
+    
+    if (progress < 25) {
+        // Phase 1: Ignition sparks
+        if ((nextL() % 3) == 0) {
+            uint8_t sx = 1 + (nextL() % 3);
+            matrixSet(sx, 3, pixels.Color(200, 50, 0)); 
+        }
+    } 
+    else if (progress >= 25 && progress < 160) {
+        // Phase 2: Main thrust built up, rocket clamped at top (2,0)
+        matrixSet(2, 0, pixels.Color(255, 255, 200)); 
+        
+        uint8_t r1 = nextL();
+        matrixSet(2, 1, pixels.Color(255, 150 + (r1 % 105), 0)); // Core
+        
+        uint8_t r2 = nextL();
+        matrixSet(2, 2, pixels.Color(255, 80 + (r2 % 50), 0));   // Mid plume
+        if (r2 % 2 == 0) matrixSet(1, 2, pixels.Color(200, 50, 0));
+        if (r2 % 3 == 0) matrixSet(3, 2, pixels.Color(200, 50, 0));
+        
+        uint8_t r3 = nextL();
+        matrixSet(2, 3, pixels.Color(220, 40, 0));               // Base plume
+        matrixSet(1, 3, pixels.Color(180, 20 + (r3 % 30), 0));
+        matrixSet(3, 3, pixels.Color(180, 20 + (r3 % 30), 0));
+        
+        if (r3 % 2 == 0) matrixSet(0, 3, pixels.Color(80, 0, 0));
+        if (r3 % 3 == 0) matrixSet(4, 3, pixels.Color(80, 0, 0));
+    }
+    else if (progress >= 160 && progress < 210) {
+        // Phase 3: Liftoff! Rocket ascends out of frame
+        uint8_t offset = (progress - 160) / 5; // 50/5 = offsets up to 10 pixels offscreen
+        int8_t y_nozzle = 0 - offset;
+        int8_t y_core = 1 - offset;
+        
+        if (y_nozzle >= 0 && y_nozzle < H) matrixSet(2, y_nozzle, pixels.Color(255, 255, 200));
+        if (y_core >= 0 && y_core < H) matrixSet(2, y_core, pixels.Color(255, 150 + (nextL() % 105), 0));
+        
+        // Stretching tail down to the bottom
+        int8_t start_y = y_core + 1;
+        if (start_y < 0) start_y = 0;
+        
+        for (int8_t y = start_y; y < H; y++) {
+             uint8_t r = nextL();
+             
+             int16_t distScale = (y - y_core) * 35; // 35 heat decay per step
+             int16_t intensity_calc = 255 - distScale;
+             uint8_t intensity = (intensity_calc < 20) ? 20 : (uint8_t)intensity_calc;
+             
+             matrixSet(2, y, pixels.Color(intensity, intensity / 3 + (r % 20), 0));
+             
+             if (r % 2 == 0) matrixSet(1, y, pixels.Color(intensity / 2, intensity / 6, 0));
+             if (r % 3 == 0) matrixSet(3, y, pixels.Color(intensity / 2, intensity / 6, 0));
+             
+             // Base spread
+             if (y == 3) {
+                 if (r % 4 == 0) matrixSet(0, y, pixels.Color(intensity / 3, 0, 0));
+                 if (r % 5 == 0) matrixSet(4, y, pixels.Color(intensity / 3, 0, 0));
+             }
+        }
+    }
+    else {
+        // Phase 4: Rocket is gone, faint stars appear through fading smoke
+        if ((nextL() % 15) == 0) {
+            uint8_t sx = nextL() % W;
+            uint8_t sy = nextL() % H;
+            // random bluish stars
+            matrixSet(sx, sy, pixels.Color(nextL()%50, nextL()%100, 100 + (nextL()%155)));
+        }
+    }
+    
+    pixels.show();
+    delay(stepDelay_ms);
   }
 }

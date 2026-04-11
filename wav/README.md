@@ -341,3 +341,75 @@ Notes:
   Your browser does not support the audio element. Use the download link above.
 </audio>
 
+### 41 — Ccc Rocket
+<a href="visual-41-ccc-rocket.wav">Download</a>
+
+<audio controls>
+  <source src="visual-41-ccc-rocket.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 42 — Beach Wave
+<a href="visual-42-beach-wave.wav">Download</a>
+
+<audio controls>
+  <source src="visual-42-beach-wave.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 43 — Antifa Flag
+<a href="visual-43-antifa-flag.wav">Download</a>
+
+<audio controls>
+  <source src="visual-43-antifa-flag.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 44 — Trickster Plasma
+<a href="visual-44-trickster-plasma.wav">Download</a>
+
+<audio controls>
+  <source src="visual-44-trickster-plasma.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 45 — Chaotic Pink
+<a href="visual-45-chaotic-pink.wav">Download</a>
+
+<audio controls>
+  <source src="visual-45-chaotic-pink.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 46 — Spring Storm
+<a href="visual-46-spring-storm.wav">Download</a>
+
+<audio controls>
+  <source src="visual-46-spring-storm.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 47 — Blue Bouncing Ball
+<a href="visual-47-blue-bouncing-ball.wav">Download</a>
+
+<audio controls>
+  <source src="visual-47-blue-bouncing-ball.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 48 — Techno Orbit
+<a href="visual-48-techno-orbit.wav">Download</a>
+
+<audio controls>
+  <source src="visual-48-techno-orbit.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 49 — Rocket Liftoff
+<a href="visual-49-rocket-liftoff.wav">Download</a>
+
+<audio controls>
+  <source src="visual-49-rocket-liftoff.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+

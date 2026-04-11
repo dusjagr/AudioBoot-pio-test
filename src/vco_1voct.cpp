@@ -11,6 +11,7 @@
 #define SPEAKERPIN 1
 #define BUTTON_PIN A3
 #define POTI_PITCH A1 // Right Pot for Pitch
+#define POTI_DETUNE A2 // Left Pot for Detune
 
 // Button Constants
 #define BUTTON_NONE         0
@@ -25,6 +26,9 @@
 #define BUTTON_NOTPRESSED   0
 #define BUTTON_PRESSED      1
 
+#define Vcc                    37 // 3.7 V for LiPo
+#define Vdiv                   26 // measure max Voltage on Analog In
+
 // --- Waveforms ---
 enum Waveform {
   WAVE_SAW = 0,
@@ -38,7 +42,9 @@ volatile uint8_t current_waveform = WAVE_SAW;
 
 // --- Synthesis Variables ---
 volatile uint16_t phase = 0;
+volatile uint16_t phase2 = 0;
 volatile uint16_t phase_increment = 0;
+volatile uint16_t phase_increment2 = 0;
 volatile uint16_t ticks = 0;
 
 // --- NeoPixel ---
@@ -67,11 +73,28 @@ const uint16_t note_increments[] PROGMEM = {
   6869, 7277, 7710, 8169, 8654, 9169, 9714, 10292, 10904, 11552, 12239, 12967, // Octave 6
   13738 // C7
 };
+
+// Logarithmic Detune Curve (x^2 approximation)
+// 33 points for 0-1023 range (step 32)
+const uint16_t detune_log_curve[] PROGMEM = {
+  0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 
+  100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 
+  400, 441, 484, 529, 576, 625, 676, 729, 784, 841, 
+  900, 961, 1023
+};
+
 #define MIN_NOTE 24
 #define MAX_NOTE 96
 #define NOTE_COUNT (MAX_NOTE - MIN_NOTE + 1)
 
 // --- Helper Functions ---
+uint16_t analogReadScaled(uint8_t channel) {
+  uint16_t value = analogRead(channel);
+  value = value * Vcc / Vdiv;
+  if (value > 1023) value = 1023;
+  return value;
+}
+
 uint8_t wasButtonPressed() {
   static uint8_t buttonPressed = false;
   static uint8_t buttonState = 0;
@@ -146,7 +169,7 @@ void setup() {
 
 void loop() {
   // Read Pitch Pot
-  uint16_t rawVal = analogRead(POTI_PITCH);
+  uint16_t rawVal = analogReadScaled(POTI_PITCH);
   
   // EMA Smoothing (Factor 1/16)
   static uint32_t accumulator = 0;
@@ -161,17 +184,27 @@ void loop() {
   uint16_t potVal = accumulator >> 4;
   
   // Map Pot (0-1023) to Note Index (0 to NOTE_COUNT-1)
-  // We want to span the full range
   uint8_t noteIndex = map(potVal, 0, 1023, 0, NOTE_COUNT - 1);
   
-  // Interpolation for smooth pitch
-  // Each note covers approx 1023/NOTE_COUNT ADC steps (~14 steps per semitone)
-  // We can just step to semitones for "1V/Oct" feel or interpolate.
-  // Let's do semitone quantization to be strictly "musical" if it's a VCO tracking pitch.
-  // Actually, analog VCOs are smooth. Let's stick to the nearest semitone for stability, 
-  // or implement fine tuning if requested. For now: Semitone quantization.
+  // Base Frequency
+  uint16_t base_inc = pgm_read_word(&note_increments[noteIndex]);
+  phase_increment = base_inc;
   
-  phase_increment = pgm_read_word(&note_increments[noteIndex]);
+  // Read Detune Pot
+  uint16_t rawDetune = analogReadScaled(POTI_DETUNE);
+  
+  // Logarithmic Lookup with Interpolation
+  uint8_t idx = rawDetune >> 5; // div 32
+  uint8_t rem = rawDetune & 0x1F; // mod 32
+  uint16_t v1 = pgm_read_word(&detune_log_curve[idx]);
+  uint16_t v2 = pgm_read_word(&detune_log_curve[idx+1]);
+  uint16_t detuneVal = v1 + (((v2 - v1) * rem) >> 5);
+  
+  // Calculate Detune (0 to ~50% which is a Perfect Fifth)
+  // We add an offset proportional to the frequency to maintain constant interval ratio
+  // (base_inc * detuneVal) >> 11 gives roughly 0 to 50% shift
+  uint16_t detune_offset = ((uint32_t)base_inc * detuneVal) >> 10;
+  phase_increment2 = base_inc + detune_offset;
   
   // Check Buttons
   uint8_t btn = wasButtonPressed();
@@ -195,48 +228,30 @@ void loop() {
   my_delay(10);
 }
 
+// Inline helper for waveform generation
+static inline uint8_t get_waveform_sample(uint16_t p, uint8_t wave) {
+    uint8_t p_high = p >> 8;
+    switch(wave) {
+        case WAVE_SAW:
+            return p_high;
+        case WAVE_SQUARE:
+            return (p_high > 127) ? 255 : 0;
+        case WAVE_TRIANGLE:
+            return (p & 0x8000) ? ((uint8_t)(~(p >> 7))) : ((uint8_t)(p >> 7));
+        case WAVE_SINE:
+            return pgm_read_byte(&sine256[p_high]);
+        default:
+            return 0;
+    }
+}
+
 ISR(TIMER0_COMPA_vect) {
   ticks++;
   phase += phase_increment;
+  phase2 += phase_increment2;
   
-  uint8_t sample = 0;
-  uint8_t p_high = phase >> 8;
+  uint8_t sample1 = get_waveform_sample(phase, current_waveform);
+  uint8_t sample2 = get_waveform_sample(phase2, current_waveform);
   
-  switch(current_waveform) {
-      case WAVE_SAW:
-          sample = p_high;
-          break;
-          
-      case WAVE_SQUARE:
-          sample = (p_high > 127) ? 255 : 0;
-          break;
-          
-      case WAVE_TRIANGLE:
-          // 0 -> 127 -> 255 -> 127 -> 0
-          // If phase bit 15 is 0 (0-32767), we go up.
-          // If phase bit 15 is 1 (32768-65535), we go down.
-          if (phase & 0x8000) {
-              // Down
-              sample = (uint8_t)((65535 - phase) >> 7); // Scale to 0-255 roughly
-              // (32767 >> 7) is 255.
-          } else {
-              // Up
-              sample = (uint8_t)(phase >> 7);
-          }
-          // Shift result to ensure full range 0-255? 
-          // 32768 >> 7 = 256. Clip?
-          // Let's use simplified:
-          // sample = (phase & 0x8000) ? (~phase >> 7) : (phase >> 7); // Close enough
-           sample = (phase & 0x8000) ? ((uint8_t)(~(phase >> 7))) : ((uint8_t)(phase >> 7));
-           // Actually triangular needs shift by 1 to multiply by 2 slope?
-           // 0 -> 32768 (Half cycle). Output 0 -> 255.
-           // So (phase << 1) >> 8 = phase >> 7.
-          break;
-          
-      case WAVE_SINE:
-          sample = pgm_read_byte(&sine256[p_high]);
-          break;
-  }
-  
-  OCR1A = sample;
+  OCR1A = (sample1 + sample2) >> 1;
 }
