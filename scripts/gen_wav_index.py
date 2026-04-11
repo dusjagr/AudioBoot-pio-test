@@ -13,6 +13,23 @@ import html
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
+VISUALS_H_PATH = ROOT / "include" / "visuals.h"
+
+def extract_descriptions():
+    try:
+        content = VISUALS_H_PATH.read_text(encoding="utf-8")
+        descriptions = {}
+        # match `/* matrix<Name>` then anything up to `Params:` or `//` or `*/`
+        blocks = re.findall(r'/\*\s*(matrix[A-Za-z0-9_]+)\s*\n(.*?)(?:Params:|//|\*/)', content, re.DOTALL | re.MULTILINE)
+        for name, desc in blocks:
+            lines = [line.strip() for line in desc.strip().split('\n')]
+            clean_desc = " ".join([line for line in lines if line and not line.startswith('//')])
+            descriptions[name] = clean_desc
+        return descriptions
+    except Exception as e:
+        print(f"Failed to extract descriptions: {e}")
+        return {}
+
 WAV_DIR = ROOT / "wav"
 INDEX_HTML = WAV_DIR / "index.html"
 README_MD = WAV_DIR / "README.md"
@@ -120,6 +137,7 @@ def collect_wavs():
 
 
 def generate_html(entries):
+    descriptions = extract_descriptions()
     cards = []
     for e in entries:
         title = f"{e['id']} — {html.escape(e['title'])}"
@@ -128,6 +146,19 @@ def generate_html(entries):
         vs = e["variants"]
         main_src = vs.get("default") or vs.get("high") or vs.get("med") or vs.get("low")
         if not main_src: continue
+        
+        # Try to find description
+        desc_text = ""
+        slug_match = e['slug'].replace('-', '').lower()
+        if slug_match == "cccrocket": slug_match = "ccc"
+        if slug_match == "dnbdancer": slug_match = "dnb"
+        if slug_match == "flagsfade": slug_match = "flagsshowfade"
+        if slug_match == "larsondual": slug_match = "larsonscannerdual"
+
+        for k, v in descriptions.items():
+            if slug_match in k.lower():
+                desc_text = html.escape(v)
+                break
         
         # Gif path (assumed from id/slug)
         gif_filename = f"{e['id']:02d}_{e['slug'].replace('-','_')}.gif" # Older convention?
@@ -154,6 +185,7 @@ def generate_html(entries):
       <a href="{gif_path}" target="_blank">
         <img src="{gif_path}" onerror="this.onerror=null;this.src='../emu_out/{gif_path}';" alt="{html.escape(e['title'])}" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">{desc_text}</div>
       <audio controls preload="none" id="audio-{e['id']}">
         <source src="{main_src}" type="audio/wav" />
       </audio>
@@ -206,6 +238,7 @@ def generate_html(entries):
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
     .card { border: 1px solid var(--border); border-radius: 12px; padding: 1rem; background: var(--card); box-shadow: var(--shadow); }
     .title { font-weight: 600; margin: 0 0 0.5rem; color: var(--text); }
+    .desc-box { font-size: 0.85rem; color: #aeb9cc; margin-top: 0.5rem; line-height: 1.35; padding: 6px; background: rgba(0,0,0,0.15); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); min-height: 2.7rem; }
     .links { font-size: 0.9rem; margin-top: 0.5rem; color: var(--muted); }
     .links a { color: var(--link); }
     audio { width: 100%; margin-top: 0.5rem; filter: saturate(0.9) brightness(0.95); }
@@ -317,12 +350,26 @@ def generate_readme(entries):
     lines.append("- Some Markdown renderers (including IDE previews) may not show inline audio controls; in that case use the web player page linked above.\n\n")
     lines.append("## Playlist\n\n")
 
+    descriptions = extract_descriptions()
     for e in entries:
         vs = e["variants"]
         main_src = vs.get("default") or vs.get("high") or vs.get("med") or vs.get("low")
         if not main_src: continue
 
+        slug_match = e['slug'].replace('-', '').lower()
+        if slug_match == "cccrocket": slug_match = "ccc"
+        if slug_match == "dnbdancer": slug_match = "dnb"
+        if slug_match == "flagsfade": slug_match = "flagsshowfade"
+        if slug_match == "larsondual": slug_match = "larsonscannerdual"
+        desc_text = ""
+        for k, v in descriptions.items():
+            if slug_match in k.lower():
+                desc_text = v
+                break
+
         lines.append(f"### {e['id']} — {e['title']}\n")
+        if desc_text:
+            lines.append(f"*{desc_text}*\n\n")
         lines.append(f"<a href=\"{main_src}\">Download</a>\n\n")
         # Inline audio tag (may not render in all viewers, but works on GitHub web)
         lines.append("<audio controls>\n")

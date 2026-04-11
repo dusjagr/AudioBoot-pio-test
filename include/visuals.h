@@ -245,6 +245,13 @@ inline void matrixFiveEightSeam(uint16_t runtime_ms, uint16_t bpm8, uint8_t col)
 }
 
 // Small rainbow planet that flies across with vertical wobble and trail
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixRainbowPlanet
+   A rotating rainbow planet that moves slightly across the display.
+   - Creates a 5x4 spherical illusion by computing distances to a moving center.
+   - Colors cycle through a vibrant 8-bit rainbow palette.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixRainbowPlanet(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   const uint8_t W = MATRIX_W, H = MATRIX_H;
   uint32_t start = millis();
@@ -370,6 +377,13 @@ inline void matrixMonoBlink5s(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 }
 
 // Simple starry sky with twinkling stars on a dark background
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixStarrySky
+   A classic twinkling starry sky on a dark night background.
+   - Smoothly fades stars in and out to simulate atmospheric shimmering.
+   - Occasional brighter blue/white twinkles add depth.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixStarrySky(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   const uint8_t W = MATRIX_W, H = MATRIX_H;
   uint32_t start = millis();
@@ -578,6 +592,13 @@ inline void matrixChristmasTreeAura(uint16_t runtime_ms, uint16_t stepDelay_ms, 
 
 
 // Tiled rainbow noise field inspired by Perlin_Tiled.cs
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixRainbowTiledNoise
+   A generative noise pattern mapping Perlin-like cellular noise to a rainbow palette.
+   - Creates an organic, flowing lava-lamp or stained glass effect.
+   - The palette is smoothly shifted over time for endless variation.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixRainbowTiledNoise(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   const uint8_t W = MATRIX_W, H = MATRIX_H;
   uint32_t start = millis();
@@ -649,6 +670,13 @@ inline void matrixRainbowTiledNoise(uint16_t runtime_ms, uint16_t stepDelay_ms) 
 }
 
 // Soft fog/cloud effect using a simple random-walk brightness field
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixFogNoise
+   A moody, thick atmospheric fog simulation using grayscale noise.
+   - Fading and blending algorithm simulates dense shifting mist.
+   - Subtle variations in brightness create a convincing volumetric effect.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixFogNoise(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   const uint8_t W = MATRIX_W, H = MATRIX_H;
   uint32_t start = millis();
@@ -991,6 +1019,13 @@ inline void matrixPinkVelvet(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 }
 
 // Wobbling pink slime at the bottom with bright sprouts
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixPinkSlimeSprouts
+   An organic, generative simulation of creeping pink vines or slime molds.
+   - Roots grow downwards and occasionally branch outwards.
+   - Uses warm pink, magenta, and purple hues against a dark background.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixPinkSlimeSprouts(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   const uint8_t W = MATRIX_W, H = MATRIX_H;
   uint32_t start = millis();
@@ -1072,6 +1107,13 @@ inline void matrixPinkSlimeSprouts(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixMilkySea
+   A flowing, bio-luminescent milky sea simulation.
+   - Slow, gentle noise fields mapped to cyan, blue, and white tones.
+   - Mimics the glowing phenomena seen in noctiluca scintillans algae blooms.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixMilkySea(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   const uint8_t W = MATRIX_W, H = MATRIX_H;
   uint32_t start = millis();
@@ -1143,6 +1185,13 @@ inline void matrixMilkySea(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 }
 
 // Rainbow half-donut that spins colors around the arc
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixRainbowHalfDonut
+   A stylized, rotating half-donut arc sweeping across the matrix.
+   - The arc displays a cross-section of a dynamic rainbow gradient.
+   - Rotates rhythmically back and forth or fully around the center.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixRainbowHalfDonut(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   uint32_t start = millis();
   uint8_t t = 0;
@@ -2867,6 +2916,13 @@ static const uint32_t FLAG_PIRATE[20] PROGMEM = {
   COL_BLACK, COL_WHITE, COL_BLACK, COL_WHITE, COL_BLACK
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixFlagsShow
+   Cycles through several distinct 5x4 national flags (DE, FR, IT, CH, SE, UA, PL, NL, PIRATE).
+   - Each flag is displayed as a solid, static 5x4 image.
+   - Instantly jumps between flags after the specified hold duration.
+   Params: runtime_ms, hold_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixFlagsShow(uint16_t runtime_ms, uint16_t hold_ms) {
   const uint8_t N = 9; const uint32_t* flags[N] = { FLAG_DE, FLAG_FR, FLAG_IT, FLAG_CH, FLAG_SE, FLAG_UA, FLAG_PL, FLAG_NL, FLAG_PIRATE };
   uint32_t start = millis(); uint8_t idx = 0; while ((uint16_t)(millis() - start) < runtime_ms) { displayFlag(flags[idx]); delay(hold_ms); idx = (idx + 1) % N; }
@@ -2888,6 +2944,13 @@ inline void fadeFlags(const uint32_t* a, const uint32_t* b, uint16_t fade_ms, ui
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixFlagsShowFade
+   Cycles through a series of national flags using smooth cross-fades.
+   - Gradually interpolates the RGB values of every pixel to the next flag.
+   - Configurable fade duration for smooth or snappy transitions.
+   Params: runtime_ms, hold_ms, fade_ms, steps
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixFlagsShowFade(uint16_t runtime_ms, uint16_t hold_ms, uint16_t fade_ms, uint8_t steps) {
   const uint8_t N = 9; const uint32_t* flags[N] = { FLAG_DE, FLAG_FR, FLAG_IT, FLAG_CH, FLAG_SE, FLAG_UA, FLAG_PL, FLAG_NL, FLAG_PIRATE };
   uint32_t start = millis(); uint8_t idx = 0;
@@ -3040,6 +3103,13 @@ inline void matrixLarsonScanner(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 }
 
 // Dual-row Larson scanner: top goes L->R, bottom goes R->L, both with tails
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixLarsonScannerDual
+   A dual-row Larson scanner featuring two counter-propagating lines.
+   - The top line sweeps Left-to-Right while the bottom sweeps Right-to-Left.
+   - Both leave classic Knight Rider / Cylon fading trails.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixLarsonScannerDual(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   uint32_t start = millis();
   const uint8_t yTop = 0;
@@ -3074,6 +3144,13 @@ inline void matrixLarsonScannerDual(uint16_t runtime_ms, uint16_t stepDelay_ms) 
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixBlueScreen
+   A classic "Blue Screen of Death" simulation.
+   - Entire display floods with maximum-intensity pure blue light.
+   - Random subtle flickering to emulate a dying CRT or signal sync failure.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixBlueScreen(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   uint32_t start = millis();
   uint32_t blue = pixels.Color(0, 0, 255);
@@ -3085,6 +3162,13 @@ inline void matrixBlueScreen(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixSnowWhite
+   Intense randomized static noise, resembling a detuned analog television.
+   - Rapidly flashes black and white pixels at maximum speed.
+   - Perfect for jarring "Poltergeist" static transitions.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixSnowWhite(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   uint32_t start = millis();
   uint16_t t = 0;
@@ -3107,6 +3191,13 @@ inline void matrixSnowWhite(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixBigBadWolf
+   An aggressive, intense stroboscopic display featuring jagged shapes.
+   - High-contrast red and black flashes paired with jagged white teeth.
+   - Fast, chaotic motion designed strictly for short burst impacts.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixBigBadWolf(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   uint32_t start = millis();
   int8_t eyeX = 0, dir = 1;
@@ -4226,6 +4317,13 @@ inline void matrixTricksterPlasmaLoop(uint16_t stepDelay_ms) {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixAntifaFlag
+   A stylized, animated pixel-art depiction of the Antifaschistische Aktion flag.
+   - A central red/black dual flag icon unfurls and waves gently.
+   - Background is rimmed with high-contrast framing pixels.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 inline void matrixAntifaFlag(uint16_t runtime_ms, uint16_t stepDelay_ms) {
   const uint8_t W = MATRIX_W, H = MATRIX_H;
   uint32_t start = millis();

@@ -21,6 +21,7 @@
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
     .card { border: 1px solid var(--border); border-radius: 12px; padding: 1rem; background: var(--card); box-shadow: var(--shadow); }
     .title { font-weight: 600; margin: 0 0 0.5rem; color: var(--text); }
+    .desc-box { font-size: 0.85rem; color: #aeb9cc; margin-top: 0.5rem; line-height: 1.35; padding: 6px; background: rgba(0,0,0,0.15); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); min-height: 2.7rem; }
     .links { font-size: 0.9rem; margin-top: 0.5rem; color: var(--muted); }
     .links a { color: var(--link); }
     audio { width: 100%; margin-top: 0.5rem; filter: saturate(0.9) brightness(0.95); }
@@ -66,6 +67,7 @@
       <a href="gifs/00_larson.gif" target="_blank">
         <img src="gifs/00_larson.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/00_larson.gif';" alt="Larson" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Classic Cylon/Knight Rider scanner with symmetric fading tails.</div>
       <audio controls preload="none" id="audio-0">
         <source src="visual-00-larson.wav" type="audio/wav" />
       </audio>
@@ -82,6 +84,7 @@
       <a href="gifs/01_bouncing-dot.gif" target="_blank">
         <img src="gifs/01_bouncing-dot.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/01_bouncing-dot.gif';" alt="Bouncing Dot" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A single colored dot bounces around with a fading trail.</div>
       <audio controls preload="none" id="audio-1">
         <source src="visual-01-bouncing-dot.wav" type="audio/wav" />
       </audio>
@@ -98,6 +101,7 @@
       <a href="gifs/02_rain.gif" target="_blank">
         <img src="gifs/02_rain.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/02_rain.gif';" alt="Rain" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A rotating rainbow planet that moves slightly across the display. - Creates a 5x4 spherical illusion by computing distances to a moving center. - Colors cycle through a vibrant 8-bit rainbow palette.</div>
       <audio controls preload="none" id="audio-2">
         <source src="visual-02-rain.wav" type="audio/wav" />
       </audio>
@@ -114,6 +118,7 @@
       <a href="gifs/03_twinkle.gif" target="_blank">
         <img src="gifs/03_twinkle.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/03_twinkle.gif';" alt="Twinkle" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Soft, random multicolor twinkles that fade away gradually.</div>
       <audio controls preload="none" id="audio-3">
         <source src="visual-03-twinkle.wav" type="audio/wav" />
       </audio>
@@ -130,6 +135,7 @@
       <a href="gifs/04_wipe.gif" target="_blank">
         <img src="gifs/04_wipe.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/04_wipe.gif';" alt="Wipe" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Wipes a solid color across rows left-to-right and back again.</div>
       <audio controls preload="none" id="audio-4">
         <source src="visual-04-wipe.wav" type="audio/wav" />
       </audio>
@@ -146,6 +152,7 @@
       <a href="gifs/05_spinner.gif" target="_blank">
         <img src="gifs/05_spinner.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/05_spinner.gif';" alt="Spinner" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A rainbow dot runs around the outer edge of the matrix.</div>
       <audio controls preload="none" id="audio-5">
         <source src="visual-05-spinner.wav" type="audio/wav" />
       </audio>
@@ -162,6 +169,7 @@
       <a href="gifs/06_fire.gif" target="_blank">
         <img src="gifs/06_fire.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/06_fire.gif';" alt="Fire" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Classic Fire2012-inspired effect adapted to 5x4 with hotter center.</div>
       <audio controls preload="none" id="audio-6">
         <source src="visual-06-fire.wav" type="audio/wav" />
       </audio>
@@ -178,6 +186,7 @@
       <a href="gifs/07_rainbow-zoom.gif" target="_blank">
         <img src="gifs/07_rainbow-zoom.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/07_rainbow-zoom.gif';" alt="Rainbow Zoom" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Concentric rainbow rings that appear to zoom in/out.</div>
       <audio controls preload="none" id="audio-7">
         <source src="visual-07-rainbow-zoom.wav" type="audio/wav" />
       </audio>
@@ -194,6 +203,7 @@
       <a href="gifs/08_pink-spiral.gif" target="_blank">
         <img src="gifs/08_pink-spiral.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/08_pink-spiral.gif';" alt="Pink Spiral" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A vivid pink dot traces an inward spiral path with a gentle trail.</div>
       <audio controls preload="none" id="audio-8">
         <source src="visual-08-pink-spiral.wav" type="audio/wav" />
       </audio>
@@ -210,6 +220,7 @@
       <a href="gifs/09_pong.gif" target="_blank">
         <img src="gifs/09_pong.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/09_pong.gif';" alt="Pong" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Mini Pong: AI paddles on the sides, ball bounces with simple spin.</div>
       <audio controls preload="none" id="audio-9">
         <source src="visual-09-pong.wav" type="audio/wav" />
       </audio>
@@ -226,6 +237,7 @@
       <a href="gifs/10_dnb-dancer.gif" target="_blank">
         <img src="gifs/10_dnb-dancer.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/10_dnb-dancer.gif';" alt="DnB Dancer" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Two-frame dancer that pulses on bass hits with accent colors.</div>
       <audio controls preload="none" id="audio-10">
         <source src="visual-10-dnb-dancer.wav" type="audio/wav" />
       </audio>
@@ -242,6 +254,7 @@
       <a href="gifs/11_kanji-scroll.gif" target="_blank">
         <img src="gifs/11_kanji-scroll.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/11_kanji-scroll.gif';" alt="Kanji Scroll" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Scrolls a 10x4 kanji-like glyph across the 5x4 display.</div>
       <audio controls preload="none" id="audio-11">
         <source src="visual-11-kanji-scroll.wav" type="audio/wav" />
       </audio>
@@ -258,6 +271,7 @@
       <a href="gifs/12_explosion.gif" target="_blank">
         <img src="gifs/12_explosion.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/12_explosion.gif';" alt="Explosion" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A nasty explosion: blinding flash, expanding shockwave, flying debris, smoky afterglow.</div>
       <audio controls preload="none" id="audio-12">
         <source src="visual-12-explosion.wav" type="audio/wav" />
       </audio>
@@ -274,6 +288,7 @@
       <a href="gifs/13_shoggoth.gif" target="_blank">
         <img src="gifs/13_shoggoth.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/13_shoggoth.gif';" alt="Shoggoth" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A wobbling pink blob with soft rim and blinking eyes.</div>
       <audio controls preload="none" id="audio-13">
         <source src="visual-13-shoggoth.wav" type="audio/wav" />
       </audio>
@@ -290,6 +305,7 @@
       <a href="gifs/14_rainbow-waves.gif" target="_blank">
         <img src="gifs/14_rainbow-waves.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/14_rainbow-waves.gif';" alt="Rainbow Waves" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Flowing rainbow stripes across the matrix.</div>
       <audio controls preload="none" id="audio-14">
         <source src="visual-14-rainbow-waves.wav" type="audio/wav" />
       </audio>
@@ -306,6 +322,7 @@
       <a href="gifs/15_tetris.gif" target="_blank">
         <img src="gifs/15_tetris.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/15_tetris.gif';" alt="Tetris" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Simple falling blocks stack up; full rows are cleared.</div>
       <audio controls preload="none" id="audio-15">
         <source src="visual-15-tetris.wav" type="audio/wav" />
       </audio>
@@ -322,6 +339,7 @@
       <a href="gifs/16_five-eight-seam.gif" target="_blank">
         <img src="gifs/16_five-eight-seam.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/16_five-eight-seam.gif';" alt="Five Eight Seam" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Illuminate one matrix column as a 5/8 rhythm (5 eighths per bar) with non-repeating accents. - Strong beats (group starts) are bright; other beats are dim. - Accents vary per bar using a tiny LFSR and rotating start offset so it practically never repeats.</div>
       <audio controls preload="none" id="audio-16">
         <source src="visual-16-five-eight-seam.wav" type="audio/wav" />
       </audio>
@@ -338,6 +356,7 @@
       <a href="gifs/17_cote-azur.gif" target="_blank">
         <img src="gifs/17_cote-azur.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/17_cote-azur.gif';" alt="Côte d’Azur" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">French coastal landscape on 5x4: deep blue sea with shimmering waves at bottom, green coastline band above, peppered with rock-gray accents. Gentle motion.</div>
       <audio controls preload="none" id="audio-17">
         <source src="visual-17-cote-azur.wav" type="audio/wav" />
       </audio>
@@ -354,6 +373,7 @@
       <a href="gifs/18_sunset-pickle-sun.gif" target="_blank">
         <img src="gifs/18_sunset-pickle-sun.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/18_sunset-pickle-sun.gif';" alt="Sunset Pickle Sun" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Sunset gradient sky with a small &quot;cucumber&quot; sun composed of green rings. - Warm sky fades from pink/magenta (top) to orange/yellow (horizon) over time. - Sun is a 2x2 disc centered near the horizon with cucumber-green tones and subtle sparkle.</div>
       <audio controls preload="none" id="audio-18">
         <source src="visual-18-sunset-pickle-sun.wav" type="audio/wav" />
       </audio>
@@ -370,6 +390,7 @@
       <a href="gifs/19_lightning.gif" target="_blank">
         <img src="gifs/19_lightning.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/19_lightning.gif';" alt="Lightning" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Colder blue lightning variant: blue-white bolt with soft blue halo and blue room flash.</div>
       <audio controls preload="none" id="audio-19">
         <source src="visual-19-lightning.wav" type="audio/wav" />
       </audio>
@@ -386,6 +407,7 @@
       <a href="gifs/20_flags.gif" target="_blank">
         <img src="gifs/20_flags.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/20_flags.gif';" alt="Flags" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Cycles through several distinct 5x4 national flags (DE, FR, IT, CH, SE, UA, PL, NL, PIRATE). - Each flag is displayed as a solid, static 5x4 image. - Instantly jumps between flags after the specified hold duration.</div>
       <audio controls preload="none" id="audio-20">
         <source src="visual-20-flags.wav" type="audio/wav" />
       </audio>
@@ -402,6 +424,7 @@
       <a href="gifs/21_flags-fade.gif" target="_blank">
         <img src="gifs/21_flags-fade.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/21_flags-fade.gif';" alt="Flags Fade" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Cycles through a series of national flags using smooth cross-fades. - Gradually interpolates the RGB values of every pixel to the next flag. - Configurable fade duration for smooth or snappy transitions.</div>
       <audio controls preload="none" id="audio-21">
         <source src="visual-21-flags-fade.wav" type="audio/wav" />
       </audio>
@@ -418,6 +441,7 @@
       <a href="gifs/22_digital-rain.gif" target="_blank">
         <img src="gifs/22_digital-rain.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/22_digital-rain.gif';" alt="Digital Rain" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Matrix-style code rain in warm amber/brown/yellow tones. Same mechanics as matrixDigitalRain, with a warm palette and slightly softer trails.</div>
       <audio controls preload="none" id="audio-22">
         <source src="visual-22-digital-rain.wav" type="audio/wav" />
       </audio>
@@ -434,6 +458,7 @@
       <a href="gifs/23_waterfall.gif" target="_blank">
         <img src="gifs/23_waterfall.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/23_waterfall.gif';" alt="Waterfall" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A misty/spraying waterfall adapted to 5x4: - Soft blue drops fall in each column leaving trails. - On hitting the bottom, a light white/blue mist spreads sideways. - Continuous subtle seep along bottom row for a wet look.</div>
       <audio controls preload="none" id="audio-23">
         <source src="visual-23-waterfall.wav" type="audio/wav" />
       </audio>
@@ -450,6 +475,7 @@
       <a href="gifs/24_larson-dual.gif" target="_blank">
         <img src="gifs/24_larson-dual.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/24_larson-dual.gif';" alt="Larson Dual" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A dual-row Larson scanner featuring two counter-propagating lines. - The top line sweeps Left-to-Right while the bottom sweeps Right-to-Left. - Both leave classic Knight Rider / Cylon fading trails.</div>
       <audio controls preload="none" id="audio-24">
         <source src="visual-24-larson-dual.wav" type="audio/wav" />
       </audio>
@@ -466,6 +492,7 @@
       <a href="gifs/25_night-street-2000.gif" target="_blank">
         <img src="gifs/25_night-street-2000.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/25_night-street-2000.gif';" alt="Night Street 2000" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Night street scene on 5x4: - Warm streetlights cast a vertical glow with subtle flicker. - Passing car headlights sweep across the bottom row (paired white). - Neon sign flickers in pink/cyan tones in a small 2x2 area. - Distant window twinkles in the top rows.</div>
       <audio controls preload="none" id="audio-25">
         <source src="visual-25-night-street-2000.wav" type="audio/wav" />
       </audio>
@@ -482,6 +509,7 @@
       <a href="gifs/26_switch-toggle.gif" target="_blank">
         <img src="gifs/26_switch-toggle.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/26_switch-toggle.gif';" alt="Switch Toggle" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A small switch body whose lever animates between closed/open.</div>
       <audio controls preload="none" id="audio-26">
         <source src="visual-26-switch-toggle.wav" type="audio/wav" />
       </audio>
@@ -498,6 +526,7 @@
       <a href="gifs/27_blue-screen.gif" target="_blank">
         <img src="gifs/27_blue-screen.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/27_blue-screen.gif';" alt="Blue Screen" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A classic &quot;Blue Screen of Death&quot; simulation. - Entire display floods with maximum-intensity pure blue light. - Random subtle flickering to emulate a dying CRT or signal sync failure.</div>
       <audio controls preload="none" id="audio-27">
         <source src="visual-27-blue-screen.wav" type="audio/wav" />
       </audio>
@@ -514,6 +543,7 @@
       <a href="gifs/28_snow-white.gif" target="_blank">
         <img src="gifs/28_snow-white.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/28_snow-white.gif';" alt="Snow White" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Intense randomized static noise, resembling a detuned analog television. - Rapidly flashes black and white pixels at maximum speed. - Perfect for jarring &quot;Poltergeist&quot; static transitions.</div>
       <audio controls preload="none" id="audio-28">
         <source src="visual-28-snow-white.wav" type="audio/wav" />
       </audio>
@@ -530,6 +560,7 @@
       <a href="gifs/29_big-bad-wolf.gif" target="_blank">
         <img src="gifs/29_big-bad-wolf.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/29_big-bad-wolf.gif';" alt="Big Bad Wolf" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">An aggressive, intense stroboscopic display featuring jagged shapes. - High-contrast red and black flashes paired with jagged white teeth. - Fast, chaotic motion designed strictly for short burst impacts.</div>
       <audio controls preload="none" id="audio-29">
         <source src="visual-29-big-bad-wolf.wav" type="audio/wav" />
       </audio>
@@ -546,6 +577,7 @@
       <a href="gifs/30_trickster-plasma.gif" target="_blank">
         <img src="gifs/30_trickster-plasma.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/30_trickster-plasma.gif';" alt="Trickster Plasma" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Endless version of matrixTricksterPlasma: same plasma, but no runtime limit. This blocks forever (until reset) and advances motion phases continuously.</div>
       <audio controls preload="none" id="audio-30">
         <source src="visual-30-trickster-plasma.wav" type="audio/wav" />
       </audio>
@@ -562,6 +594,7 @@
       <a href="gifs/31_pink-slime-sprouts.gif" target="_blank">
         <img src="gifs/31_pink-slime-sprouts.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/31_pink-slime-sprouts.gif';" alt="Pink Slime Sprouts" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">An organic, generative simulation of creeping pink vines or slime molds. - Roots grow downwards and occasionally branch outwards. - Uses warm pink, magenta, and purple hues against a dark background.</div>
       <audio controls preload="none" id="audio-31">
         <source src="visual-31-pink-slime-sprouts.wav" type="audio/wav" />
       </audio>
@@ -578,6 +611,7 @@
       <a href="gifs/32_milky-sea.gif" target="_blank">
         <img src="gifs/32_milky-sea.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/32_milky-sea.gif';" alt="Milky Sea" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A flowing, bio-luminescent milky sea simulation. - Slow, gentle noise fields mapped to cyan, blue, and white tones. - Mimics the glowing phenomena seen in noctiluca scintillans algae blooms.</div>
       <audio controls preload="none" id="audio-32">
         <source src="visual-32-milky-sea.wav" type="audio/wav" />
       </audio>
@@ -594,6 +628,7 @@
       <a href="gifs/33_rainbow-half-donut.gif" target="_blank">
         <img src="gifs/33_rainbow-half-donut.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/33_rainbow-half-donut.gif';" alt="Rainbow Half Donut" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A stylized, rotating half-donut arc sweeping across the matrix. - The arc displays a cross-section of a dynamic rainbow gradient. - Rotates rhythmically back and forth or fully around the center.</div>
       <audio controls preload="none" id="audio-33">
         <source src="visual-33-rainbow-half-donut.wav" type="audio/wav" />
       </audio>
@@ -610,6 +645,7 @@
       <a href="gifs/34_rainbow-planet.gif" target="_blank">
         <img src="gifs/34_rainbow-planet.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/34_rainbow-planet.gif';" alt="Rainbow Planet" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A rotating rainbow planet that moves slightly across the display. - Creates a 5x4 spherical illusion by computing distances to a moving center. - Colors cycle through a vibrant 8-bit rainbow palette.</div>
       <audio controls preload="none" id="audio-34">
         <source src="visual-34-rainbow-planet.wav" type="audio/wav" />
       </audio>
@@ -626,6 +662,7 @@
       <a href="gifs/35_starry-sky.gif" target="_blank">
         <img src="gifs/35_starry-sky.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/35_starry-sky.gif';" alt="Starry Sky" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A classic twinkling starry sky on a dark night background. - Smoothly fades stars in and out to simulate atmospheric shimmering. - Occasional brighter blue/white twinkles add depth.</div>
       <audio controls preload="none" id="audio-35">
         <source src="visual-35-starry-sky.wav" type="audio/wav" />
       </audio>
@@ -642,6 +679,7 @@
       <a href="gifs/36_fog-noise.gif" target="_blank">
         <img src="gifs/36_fog-noise.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/36_fog-noise.gif';" alt="Fog Noise" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A moody, thick atmospheric fog simulation using grayscale noise. - Fading and blending algorithm simulates dense shifting mist. - Subtle variations in brightness create a convincing volumetric effect.</div>
       <audio controls preload="none" id="audio-36">
         <source src="visual-36-fog-noise.wav" type="audio/wav" />
       </audio>
@@ -658,6 +696,7 @@
       <a href="gifs/37_rainbow-tiled-noise.gif" target="_blank">
         <img src="gifs/37_rainbow-tiled-noise.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/37_rainbow-tiled-noise.gif';" alt="Rainbow Tiled Noise" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A generative noise pattern mapping Perlin-like cellular noise to a rainbow palette. - Creates an organic, flowing lava-lamp or stained glass effect. - The palette is smoothly shifted over time for endless variation.</div>
       <audio controls preload="none" id="audio-37">
         <source src="visual-37-rainbow-tiled-noise.wav" type="audio/wav" />
       </audio>
@@ -674,6 +713,7 @@
       <a href="gifs/38_universe-creation.gif" target="_blank">
         <img src="gifs/38_universe-creation.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/38_universe-creation.gif';" alt="Universe Creation" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">&quot;My theory is, when a particle with super-light-speed zips around and hits another in the universe, then what? Then it hits itself. Then it hits itself and then a new universe is created.&quot; Phase 1: Super-luminal particle zips around (fast random movement with trail). Phase 2: Collision (White flash). Phase 3: New Universe (Expanding swirling colors).</div>
       <audio controls preload="none" id="audio-38">
         <source src="visual-38-universe-creation.wav" type="audio/wav" />
       </audio>
@@ -690,6 +730,7 @@
       <a href="gifs/39_spear.gif" target="_blank">
         <img src="gifs/39_spear.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/39_spear.gif';" alt="Spear" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">&quot;Bring me a spear!&quot; A spear is thrown across the matrix. - It appears from one side and flies to the other. - Has a sharp tip and a shaft.</div>
       <audio controls preload="none" id="audio-39">
         <source src="visual-39-spear.wav" type="audio/wav" />
       </audio>
@@ -706,6 +747,7 @@
       <a href="gifs/40_christmas-tree-aura.gif" target="_blank">
         <img src="gifs/40_christmas-tree-aura.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/40_christmas-tree-aura.gif';" alt="Christmas Tree Aura" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Small central green tree with a soft, slow color-changing &quot;aura&quot; of pixels on the border around the tree. Tree stays mostly stable; edge pixels fade in and out individually in warm/cool Christmas tones.</div>
       <audio controls preload="none" id="audio-40">
         <source src="visual-40-christmas-tree-aura.wav" type="audio/wav" />
       </audio>
@@ -722,6 +764,7 @@
       <a href="gifs/41_ccc-rocket.gif" target="_blank">
         <img src="gifs/41_ccc-rocket.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/41_ccc-rocket.gif';" alt="Ccc Rocket" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">&quot;Mega Blinker-Rakete!&quot; - A tribute to the Chaos Computer Club. Launches a rocket with a blinking engine and a fairy dust trail.</div>
       <audio controls preload="none" id="audio-41">
         <source src="visual-41-ccc-rocket.wav" type="audio/wav" />
       </audio>
@@ -738,6 +781,7 @@
       <a href="gifs/42_beach-wave.gif" target="_blank">
         <img src="gifs/42_beach-wave.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/42_beach-wave.gif';" alt="Beach Wave" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Simple Strand-Welle: unten Sand, darüber blaues Wasser mit einer weißen Wellenkante, die langsam seitlich hin- und herwandert. Oben ein ruhiger Himmel.</div>
       <audio controls preload="none" id="audio-42">
         <source src="visual-42-beach-wave.wav" type="audio/wav" />
       </audio>
@@ -754,6 +798,7 @@
       <a href="gifs/43_antifa-flag.gif" target="_blank">
         <img src="gifs/43_antifa-flag.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/43_antifa-flag.gif';" alt="Antifa Flag" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A stylized, animated pixel-art depiction of the Antifaschistische Aktion flag. - A central red/black dual flag icon unfurls and waves gently. - Background is rimmed with high-contrast framing pixels.</div>
       <audio controls preload="none" id="audio-43">
         <source src="visual-43-antifa-flag.wav" type="audio/wav" />
       </audio>
@@ -770,6 +815,7 @@
       <a href="gifs/44_trickster-plasma.gif" target="_blank">
         <img src="gifs/44_trickster-plasma.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/44_trickster-plasma.gif';" alt="Trickster Plasma" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Endless version of matrixTricksterPlasma: same plasma, but no runtime limit. This blocks forever (until reset) and advances motion phases continuously.</div>
       <audio controls preload="none" id="audio-44">
         <source src="visual-44-trickster-plasma.wav" type="audio/wav" />
       </audio>
@@ -786,6 +832,7 @@
       <a href="gifs/45_chaotic-pink.gif" target="_blank">
         <img src="gifs/45_chaotic-pink.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/45_chaotic-pink.gif';" alt="Chaotic Pink" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Emulator version of the audio-reactive chaotic pink visual. Simulates audio intensity using a sine wave + noise.</div>
       <audio controls preload="none" id="audio-45">
         <source src="visual-45-chaotic-pink.wav" type="audio/wav" />
       </audio>
@@ -802,6 +849,7 @@
       <a href="gifs/46_spring-storm.gif" target="_blank">
         <img src="gifs/46_spring-storm.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/46_spring-storm.gif';" alt="Spring Storm" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A beautiful 5x4 spring landscape transitioning into a stormy thunderstorm.</div>
       <audio controls preload="none" id="audio-46">
         <source src="visual-46-spring-storm.wav" type="audio/wav" />
       </audio>
@@ -818,6 +866,7 @@
       <a href="gifs/47_blue-bouncing-ball.gif" target="_blank">
         <img src="gifs/47_blue-bouncing-ball.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/47_blue-bouncing-ball.gif';" alt="Blue Bouncing Ball" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A cool (&quot;geils&quot;) blue ball bouncing around with a fading trail. Flashes brightly when hitting the walls.</div>
       <audio controls preload="none" id="audio-47">
         <source src="visual-47-blue-bouncing-ball.wav" type="audio/wav" />
       </audio>
@@ -834,6 +883,7 @@
       <a href="gifs/48_techno-orbit.gif" target="_blank">
         <img src="gifs/48_techno-orbit.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/48_techno-orbit.gif';" alt="Techno Orbit" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">A red point and a blue point float around, while a green object rotates in a circle, snapping to new positions &quot;im Takt zur Musik&quot; (in sync with a musical beat).</div>
       <audio controls preload="none" id="audio-48">
         <source src="visual-48-techno-orbit.wav" type="audio/wav" />
       </audio>
@@ -850,6 +900,7 @@
       <a href="gifs/49_rocket-liftoff.gif" target="_blank">
         <img src="gifs/49_rocket-liftoff.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/49_rocket-liftoff.gif';" alt="Rocket Liftoff" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">&quot;Der Flammschweif einer abhebenden Mondrakete.&quot; Simulation of a moon rocket liftoff, focusing on the turbulent exhaust plume and vertical launch sequence.</div>
       <audio controls preload="none" id="audio-49">
         <source src="visual-49-rocket-liftoff.wav" type="audio/wav" />
       </audio>
@@ -866,6 +917,7 @@
       <a href="gifs/50_burning-sauna.gif" target="_blank">
         <img src="gifs/50_burning-sauna.gif" onerror="this.onerror=null;this.src='../emu_out/gifs/50_burning-sauna.gif';" alt="Burning Sauna" loading="lazy" style="width:100%;border-radius:6px"/>
       </a>
+      <div class="desc-box">Kleine brennende Sauna auf dunklem Eisfeld: - Hintergrund: kaltes, dunkles Blau (Eis / Nacht) - Sauna: warmes Holzrechteck links unten mit Schornstein - Feuer: flackerndes, oranges/rotes Leuchten im Inneren, plus Rauchpixel oben</div>
       <audio controls preload="none" id="audio-50">
         <source src="visual-50-burning-sauna.wav" type="audio/wav" />
       </audio>
