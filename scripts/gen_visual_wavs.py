@@ -75,6 +75,8 @@ VISUALS = [
     (48, "techno-orbit"),
     (49, "rocket-liftoff"),
     (50, "burning-sauna"),
+    (51, "tetris-frantic"),
+    (52, "schaffhauser-bock"),
 ]
 
 # Brightness levels to generate

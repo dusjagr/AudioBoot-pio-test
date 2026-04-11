@@ -523,3 +523,23 @@ Notes:
   Your browser does not support the audio element. Use the download link above.
 </audio>
 
+### 51 — Tetris Frantic
+*A fast-paced Tetris simulation where the drop speed continually accelerates. - Falling blocks stack up and full rows are cleared. - The delay between drops becomes 10% shorter with every new piece.*
+
+<a href="visual-51-tetris-frantic.wav">Download</a>
+
+<audio controls>
+  <source src="visual-51-tetris-frantic.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 52 — Schaffhauser Bock
+*A pixel-art tribute to the heraldic animal of Canton Schaffhausen. - Displays a stylized black ram rearing up on a golden yellow background. - Alternates between frames to simulate the ram bucking. - Features a glowing red eye for extra attitude.*
+
+<a href="visual-52-schaffhauser-bock.wav">Download</a>
+
+<audio controls>
+  <source src="visual-52-schaffhauser-bock.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+

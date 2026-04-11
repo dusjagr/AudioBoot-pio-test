@@ -3458,6 +3458,201 @@ inline void matrixTetris(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixTetrisFrantic
+   A fast-paced Tetris simulation where the drop speed continually accelerates.
+   - Falling blocks stack up and full rows are cleared.
+   - The delay between drops becomes 10% shorter with every new piece.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixTetrisFrantic(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t GW = (MATRIX_H < 4 ? MATRIX_H : 4);
+  const uint8_t GH = (MATRIX_W < 5 ? MATRIX_W : 5);
+  uint8_t field[GW * GH];
+  for (uint8_t i = 0; i < GW * GH; i++) field[i] = 0;
+
+  uint16_t currentDelay = stepDelay_ms;
+  randomSeed((unsigned long)millis());
+
+  auto idx = [&](int8_t x, int8_t y) -> int { return y * GW + x; };
+  auto occupied = [&](int8_t x, int8_t y) -> bool {
+    if (x < 0 || x >= (int8_t)GW || y >= (int8_t)GH) return true;
+    if (y < 0) return false;
+    return field[idx(x, y)] != 0;
+  };
+
+  const int8_t P0[4][2] = {{0,0},{1,0},{0,1},{1,1}};
+  const int8_t P1[3][2] = {{0,0},{1,0},{2,0}};
+  const int8_t P2[4][2] = {{0,0},{0,1},{1,1},{2,1}};
+  const int8_t P3[4][2] = {{2,0},{0,1},{1,1},{2,1}};
+  const int8_t P4[4][2] = {{1,0},{0,1},{1,1},{2,1}};
+  const int8_t P5[4][2] = {{1,0},{2,0},{0,1},{1,1}};
+  const int8_t P6[4][2] = {{0,0},{1,0},{1,1},{2,1}};
+
+  auto orient = [&](const int8_t base[][2], uint8_t count, uint8_t var, int8_t out[][2]) {
+    for (uint8_t i = 0; i < count; i++) {
+      int8_t x = base[i][0], y = base[i][1];
+      int8_t rx = x, ry = y;
+      switch (var & 0x03) {
+        case 1: rx = -y; ry = x;  break;
+        case 2: rx = -x; ry = -y; break;
+        case 3: rx = y;  ry = -x; break;
+        default: break;
+      }
+      out[i][0] = rx; out[i][1] = ry;
+    }
+    int8_t minx = 127, miny = 127;
+    for (uint8_t i = 0; i < count; i++) { if (out[i][0] < minx) minx = out[i][0]; if (out[i][1] < miny) miny = out[i][1]; }
+    for (uint8_t i = 0; i < count; i++) { out[i][0] = (int8_t)(out[i][0] - minx); out[i][1] = (int8_t)(out[i][1] - miny); }
+  };
+
+  auto drawRot = [&](uint8_t gx, uint8_t gy, uint32_t col) {
+    uint8_t rx = (uint8_t)(GH - 1 - gy);
+    uint8_t ry = gx;
+    if (rx < MATRIX_W && ry < MATRIX_H) matrixSet(rx, ry, col);
+  };
+
+  uint32_t start = millis();
+  uint8_t hueBase = 0;
+  uint8_t pieceCounter = 0;
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    const uint8_t KINDS = 7;
+    uint8_t kind = (uint8_t)(pieceCounter % KINDS);
+    uint8_t var = (uint8_t)((pieceCounter * 3 + hueBase) & 0x03);
+    int8_t cells[4][2]; uint8_t count = 4;
+    switch (kind) {
+      case 0: orient(P0, 4, 0, cells); break;
+      case 1: orient(P1, 3, var, cells); count = 3; break;
+      case 2: orient(P2, 4, var, cells); break;
+      case 3: orient(P3, 4, var, cells); break;
+      case 4: orient(P4, 4, var, cells); break;
+      case 5: orient(P5, 4, var, cells); break;
+      default: orient(P6, 4, var, cells); break;
+    }
+
+    int8_t maxx = 0, maxy = 0; for (uint8_t i = 0; i < count; i++) { if (cells[i][0] > maxx) maxx = cells[i][0]; if (cells[i][1] > maxy) maxy = cells[i][1]; }
+    int8_t px = (int8_t)random(0, (int8_t)(GW - maxx)); if (px < 0) px = 0;
+    int8_t py = (int8_t)(-maxy);
+    uint8_t hue = hueBase;
+
+    bool locked = false;
+    while (!locked && (uint16_t)(millis() - start) < runtime_ms) {
+      int8_t ny = (int8_t)(py + 1);
+      bool hit = false;
+      for (uint8_t i = 0; i < count; i++) { if (occupied((int8_t)(px + cells[i][0]), (int8_t)(ny + cells[i][1]))) { hit = true; break; } }
+
+      if (hit) {
+        uint8_t wrote = 0;
+        for (uint8_t i = 0; i < count; i++) {
+          int8_t ax = (int8_t)(px + cells[i][0]);
+          int8_t ay = (int8_t)(py + cells[i][1]);
+          if (ax >= 0 && ax < (int8_t)GW && ay >= 0 && ay < (int8_t)GH) { field[idx(ax, ay)] = 1; wrote++; }
+        }
+        if (wrote == 0) { py = ny; continue; }
+        locked = true;
+        for (uint8_t y = 0; y < GH; y++) {
+          bool full = true;
+          for (uint8_t x = 0; x < GW; x++) { if (!field[idx(x, y)]) { full = false; break; } }
+          if (full) {
+            for (int yy = y; yy < (int)GH - 1; yy++) {
+              for (uint8_t x = 0; x < GW; x++) field[idx(x, yy)] = field[idx(x, yy + 1)];
+            }
+            for (uint8_t x = 0; x < GW; x++) field[idx(x, GH - 1)] = 0;
+            y--;
+          }
+        }
+        matrixFill(0);
+        for (uint8_t ry = 0; ry < GH; ry++) {
+          for (uint8_t rx = 0; rx < GW; rx++) {
+            if (field[idx(rx, ry)]) drawRot(rx, ry, dimColor(pixels.Color(255,160,80), 180));
+          }
+        }
+        pixels.show();
+        delay((uint16_t)(currentDelay > 40 ? 40 : currentDelay));
+        break;
+      } else {
+        py = ny;
+      }
+
+      matrixFill(0);
+      for (uint8_t y = 0; y < GH; y++) {
+        for (uint8_t x = 0; x < GW; x++) {
+          if (field[idx(x, y)]) drawRot(x, y, dimColor(pixels.Color(255,160,80), 180));
+        }
+      }
+      uint32_t col = Wheel(hue);
+      for (uint8_t i = 0; i < count; i++) {
+        int8_t ax = (int8_t)(px + cells[i][0]);
+        int8_t ay = (int8_t)(py + cells[i][1]);
+        if (ax >= 0 && ax < (int8_t)GW && ay >= 0 && ay < (int8_t)GH) drawRot((uint8_t)ax, (uint8_t)ay, col);
+      }
+      pixels.show();
+      delay(currentDelay);
+      hue += 7;
+    }
+    
+    pieceCounter++;
+    if (currentDelay > 15) {
+      currentDelay = (currentDelay * 9) / 10;
+    }
+    hueBase = (uint8_t)(hueBase + 23);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixSchaffhauserBock
+   A pixel-art tribute to the heraldic animal of Canton Schaffhausen.
+   - Displays a stylized black ram rearing up on a golden yellow background.
+   - Alternates between frames to simulate the ram bucking.
+   - Features a glowing red eye for extra attitude.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixSchaffhauserBock(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  uint32_t start = millis();
+  
+  uint32_t colBg = dimColor(pixels.Color(255, 180, 0), 100); // Golden yellow
+  uint32_t colRam = pixels.Color(0, 0, 0); // Black
+  uint32_t colPizzle = pixels.Color(255, 220, 0); // Vibrant Gold
+
+  // 1 = Ram, 0 = Bg. Leftmost bit is x=0.
+  const uint8_t frames[2][4] = {
+    { 0b01100,
+      0b01110,
+      0b01110,
+      0b10010 },
+    { 0b11000,
+      0b11100,
+      0b01110,
+      0b01010 }
+  };
+
+  uint8_t f = 0;
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    for (uint8_t y = 0; y < H; y++) {
+      for (uint8_t x = 0; x < W; x++) {
+        bool isRam = (frames[f][y] & (1 << (4 - x)));
+        matrixSet(x, y, isRam ? colRam : colBg);
+      }
+    }
+    
+    // Glowing red eye for the Bock
+    if (f == 0) {
+       matrixSet(1, 0, pixels.Color(255, 0, 0)); 
+    } else {
+       matrixSet(0, 0, pixels.Color(255, 0, 0)); 
+    }
+    
+    // Middle pixel in the lowest row (x=2, y=3) receives the golden touch
+    matrixSet(2, 3, colPizzle);
+
+    pixels.show();
+    delay(stepDelay_ms);
+    f = 1 - f; // toggle frame
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* matrixRainbowWaves
    Flowing rainbow stripes across the matrix.
    Params: runtime_ms, stepDelay_ms

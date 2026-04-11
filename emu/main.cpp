@@ -189,9 +189,11 @@ int main(int argc, char** argv) {
       case 45: matrixChaoticPink((uint16_t)runtime_ms, 80); break;
       case 46: matrixSpringStorm((uint16_t)runtime_ms, 100); break;
       case 47: matrixBlueBouncingBall((uint16_t)runtime_ms, 40); break;
-      case 48: matrixTechnoOrbit((uint16_t)runtime_ms, 40); break;
-      case 49: matrixRocketLiftoff((uint16_t)runtime_ms, 60); break;
-      case 50: matrixBurningSauna((uint16_t)runtime_ms, 80); break;
+      case 48: matrixRocketLiftoff((uint16_t)runtime_ms, 70); break;
+      case 49: matrixChaoticPink((uint16_t)runtime_ms, 80); break;
+      case 50: matrixBurningSauna((uint16_t)runtime_ms, 70); break;
+      case 51: matrixTetrisFrantic((uint16_t)runtime_ms, 120); break;
+      case 52: matrixSchaffhauserBock((uint16_t)runtime_ms, 1000); break;
       default: matrixSunsetPickleSun((uint16_t)runtime_ms, 70); break;
     }
   };
