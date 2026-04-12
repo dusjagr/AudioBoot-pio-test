@@ -1,6 +1,7 @@
 #include "matrix_helpers.h"
 #include "visuals.h"
 #include <Adafruit_NeoPixel.h>
+#include <Arduino.h>
 #include <avr/pgmspace.h>
 #include <neolib.h>
 

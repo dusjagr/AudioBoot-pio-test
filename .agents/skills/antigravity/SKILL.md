@@ -1,3 +1,8 @@
+---
+name: Antigravity Codebase Management
+description: Comprehensive framework for generating 8-bit POV/Audio matrices, creating visuals, and managing the WAV pipeline on ATtiny85 hardware. Includes rules for iterative hardware testing before pipeline asset rendering.
+---
+
 # Antigravity ATtiny85 Project Context
 
 This document provides essential context, architectural patterns, and workflow instructions for AI assistants (Claude, Gemini, Cascade) working on the Antigravity codebase.
@@ -74,11 +79,18 @@ void matrixEffect(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 }
 ```
 
-### Steps to Add a New Visual
-1.  **Define**: Add function prototype to `include/visuals.h`.
-2.  **Implement**: Add code to `src/blinkeshit3000.cpp` (or a dedicated file if large).
-3.  **Register**: Add a new case in the `switch(VISUAL_ID)` block in `src/blinkeshit3000.cpp`.
-4.  **List**: Add the ID and Slug to `scripts/gen_visual_gifs.py` and `scripts/gen_visual_wavs.py`.
+### Steps to Add a New Visual (Iterative Workflow)
+Always follow this exact step-by-step iterative order to avoid overwriting assets prematurely:
+1.  **Define & Implement**: Add function logic and prototype in `include/visuals.h`.
+2.  **Test on Hardware First**: Add a hardcoded call at the bottom of the `loop()` function in `src/blinkeshit3000.cpp` (e.g., `matrixNewVisual(10000, 100);`). The user will flash and review this physically. Do NOT batch-generate WAVs or update the library yet!
+3.  **Create Custom Preview GIF**: Run the emulator manually for just this specific visual. Ensure you pass a custom `--fps` that matches the actual hardware `stepDelay_ms` speed:
+    `python3 scripts/run_emulator.py --vid <ID> --fps <MATCH_SPEED> --out wav/gifs/<ID>_<slug>.gif --cleanup`
+4.  **Refine & Iterate**: Adjust colors/timing based on user feedback. Hardware NeoPixels behave differently than monitors (e.g., intense green-bleed on yellow tones, retina opponent-process afterimages). 
+5.  **Register & Automate (ONLY ON REQUEST)**: When the user explicitly requests to update the web index and generate the final WAVs:
+    *   Add the ID to the `switch(VISUAL_ID)` block in `src/blinkeshit3000.cpp`.
+    *   Add the ID to the dispatch switch in `emu/main.cpp`.
+    *   Add the ID and slug list to `scripts/gen_visual_gifs.py` and `scripts/gen_visual_wavs.py`.
+    *   Run the targeted pipeline: `python3 scripts/gen_visual_wavs.py --only <ID> && python3 scripts/gen_wav_index.py`.
 
 ### Matrix Helpers (`include/matrix_helpers.h`)
 *   `matrixIndex(x, y)`: Handles serpentine (zig-zag) mapping.

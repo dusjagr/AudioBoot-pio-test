@@ -275,8 +275,10 @@ inline void matrixRainbowPlanet(uint16_t runtime_ms, uint16_t stepDelay_ms) {
     uint8_t wobV = tri8((uint8_t)(phase * 3 + 37));   // 0..255, phasenverschoben
     int8_t cx = (int8_t)(baseX + (int8_t)((int16_t)(wobH - 128) / 90));  // ca. -2..+2
     int8_t cy = (int8_t)(baseY + (int8_t)((int16_t)(wobV - 128) / 120)); // etwas kleinerer Hub
-    if (cx < 0) cx = 0; if (cx >= (int8_t)W) cx = (int8_t)W - 1;
-    if (cy < 0) cy = 0; if (cy >= (int8_t)H) cy = (int8_t)H - 1;
+    if (cx < 0) cx = 0;
+    if (cx >= (int8_t)W) cx = (int8_t)W - 1;
+    if (cy < 0) cy = 0;
+    if (cy >= (int8_t)H) cy = (int8_t)H - 1;
 
     // Planetfarben: heller Kern, bunte Regenbogen-Bänder über der Kugel, deutlich rotierend
     uint8_t bandPhase = (uint8_t)(phase * 2);   // schnellerer Band-Offset
@@ -1796,12 +1798,17 @@ inline void matrixTricksterPlasma(uint16_t runtime_ms, uint16_t stepDelay_ms) {
         v += 0.6f * sin((x * 0.5f - y * 0.7f) + p2 * 0.9f); // extra cross-term for contrasty motion
         // normalize from [-3,3] -> [0,1]
         v = (v * (1.0f / 7.2f)) + 0.5f; // adjust normalization for added term
-        if (v < 0.f) v = 0.f; if (v > 1.f) v = 1.f;
+        if (v < 0.f) v = 0.f;
+        if (v > 1.f) v = 1.f;
         // add slight pulsing bias to mimic flickery trickster look
         float pulse = (sin(p1 * 0.25f) * 0.15f);
-        float vv = v + pulse; if (vv < 0.f) vv = 0.f; if (vv > 1.f) vv = 1.f;
+        float vv = v + pulse;
+        if (vv < 0.f) vv = 0.f;
+        if (vv > 1.f) vv = 1.f;
         // logarithmic/gamma-like contrast to bias toward darkness
-        vv = vv * 1.05f; if (vv > 1.f) vv = 1.f; if (vv < 0.f) vv = 0.f;
+        vv = vv * 1.05f;
+        if (vv > 1.f) vv = 1.f;
+        if (vv < 0.f) vv = 0.f;
         vv = pow(vv, 2.4f);               // gamma > 1 darkens mid/highs
         if (vv < 0.06f) vv = 0.f;         // black floor for deeper shadows
         uint8_t a = (uint8_t)(vv * 255.0f + 0.5f);
@@ -2929,7 +2936,8 @@ inline void matrixFlagsShow(uint16_t runtime_ms, uint16_t hold_ms) {
 }
 
 inline void fadeFlags(const uint32_t* a, const uint32_t* b, uint16_t fade_ms, uint8_t steps) {
-  if (steps == 0 || fade_ms == 0) return; uint16_t stepDelay = fade_ms / steps;
+  if (steps == 0 || fade_ms == 0) return;
+  uint16_t stepDelay = fade_ms / steps;
   for (uint8_t s = 1; s <= steps; s++) {
     uint8_t w2 = s; uint8_t w1 = steps - s;
     for (uint8_t y = 0; y < 4; y++) {

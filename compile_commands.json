@@ -1,8 +1,152 @@
 [
     {
-        "command": "/usr/bin/g++ -o .pio/build/native/src/emulator_entry.o -c -std=c++17 -DPLATFORMIO=60119 -DMATRIX_W=5 -DMATRIX_H=4 -DVISUAL_ID=6 -Isrc -Iemu -Iinclude src/emulator_entry.cpp",
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/HardwareSerial.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/HardwareSerial.cpp",
         "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
-        "file": "src/emulator_entry.cpp",
-        "output": ".pio/build/native/src/emulator_entry.o"
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/HardwareSerial.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/HardwareSerial.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/Print.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/Print.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/Print.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/Print.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/Stream.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/Stream.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/Stream.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/Stream.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/TinySoftwareSerial.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/TinySoftwareSerial.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/TinySoftwareSerial.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/TinySoftwareSerial.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/Tone.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/Tone.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/Tone.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/Tone.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/attiny85/FrameworkArduino/WInterrupts.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/WInterrupts.c",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/WInterrupts.c",
+        "output": ".pio/build/attiny85/FrameworkArduino/WInterrupts.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/WMath.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/WMath.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/WMath.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/WMath.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/WString.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/WString.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/WString.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/WString.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/abi.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/abi.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/abi.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/abi.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/main.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/main.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/main.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/main.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/FrameworkArduino/new.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/new.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/new.cpp",
+        "output": ".pio/build/attiny85/FrameworkArduino/new.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/attiny85/FrameworkArduino/wiring.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring.c",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring.c",
+        "output": ".pio/build/attiny85/FrameworkArduino/wiring.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/attiny85/FrameworkArduino/wiring_analog.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_analog.c",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_analog.c",
+        "output": ".pio/build/attiny85/FrameworkArduino/wiring_analog.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/attiny85/FrameworkArduino/wiring_digital.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_digital.c",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_digital.c",
+        "output": ".pio/build/attiny85/FrameworkArduino/wiring_digital.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -mmcu=attiny85 -x assembler-with-cpp -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 -c -o .pio/build/attiny85/FrameworkArduino/wiring_pulse.S.o /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_pulse.S",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_pulse.S",
+        "output": ".pio/build/attiny85/FrameworkArduino/wiring_pulse.S.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/attiny85/FrameworkArduino/wiring_pulse.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_pulse.c",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_pulse.c",
+        "output": ".pio/build/attiny85/FrameworkArduino/wiring_pulse.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/attiny85/FrameworkArduino/wiring_shift.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 /home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_shift.c",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny/wiring_shift.c",
+        "output": ".pio/build/attiny85/FrameworkArduino/wiring_shift.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/libe2e/OneWire/OneWire.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -I.pio/libdeps/attiny85/OneWire -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 .pio/libdeps/attiny85/OneWire/OneWire.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": ".pio/libdeps/attiny85/OneWire/OneWire.cpp",
+        "output": ".pio/build/attiny85/libe2e/OneWire/OneWire.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o \".pio/build/attiny85/libe1e/Adafruit NeoPixel/Adafruit_NeoPixel.cpp.o\" -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB \"-I.pio/libdeps/attiny85/Adafruit NeoPixel\" -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 \".pio/libdeps/attiny85/Adafruit NeoPixel/Adafruit_NeoPixel.cpp\"",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": ".pio/libdeps/attiny85/Adafruit NeoPixel/Adafruit_NeoPixel.cpp",
+        "output": ".pio/build/attiny85/libe1e/Adafruit NeoPixel/Adafruit_NeoPixel.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o \".pio/build/attiny85/libe1e/Adafruit NeoPixel/Adafruit_Neopixel_RP2.cpp.o\" -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB \"-I.pio/libdeps/attiny85/Adafruit NeoPixel\" -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 \".pio/libdeps/attiny85/Adafruit NeoPixel/Adafruit_Neopixel_RP2.cpp\"",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": ".pio/libdeps/attiny85/Adafruit NeoPixel/Adafruit_Neopixel_RP2.cpp",
+        "output": ".pio/build/attiny85/libe1e/Adafruit NeoPixel/Adafruit_Neopixel_RP2.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o \".pio/build/attiny85/libe1e/Adafruit NeoPixel/esp.c.o\" -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB \"-I.pio/libdeps/attiny85/Adafruit NeoPixel\" -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 \".pio/libdeps/attiny85/Adafruit NeoPixel/esp.c\"",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": ".pio/libdeps/attiny85/Adafruit NeoPixel/esp.c",
+        "output": ".pio/build/attiny85/libe1e/Adafruit NeoPixel/esp.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o \".pio/build/attiny85/libe1e/Adafruit NeoPixel/esp8266.c.o\" -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB \"-I.pio/libdeps/attiny85/Adafruit NeoPixel\" -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 \".pio/libdeps/attiny85/Adafruit NeoPixel/esp8266.c\"",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": ".pio/libdeps/attiny85/Adafruit NeoPixel/esp8266.c",
+        "output": ".pio/build/attiny85/libe1e/Adafruit NeoPixel/esp8266.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o \".pio/build/attiny85/libe1e/Adafruit NeoPixel/kendyte_k210.c.o\" -c -std=gnu11 -fno-fat-lto-objects -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB \"-I.pio/libdeps/attiny85/Adafruit NeoPixel\" -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 \".pio/libdeps/attiny85/Adafruit NeoPixel/kendyte_k210.c\"",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": ".pio/libdeps/attiny85/Adafruit NeoPixel/kendyte_k210.c",
+        "output": ".pio/build/attiny85/libe1e/Adafruit NeoPixel/kendyte_k210.c.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/libe51/_8Bit-Mixtape-NEO-Lib/neolib.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -Ilib/_8Bit-Mixtape-NEO-Lib \"-I.pio/libdeps/attiny85/Adafruit NeoPixel\" -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 lib/_8Bit-Mixtape-NEO-Lib/neolib.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "lib/_8Bit-Mixtape-NEO-Lib/neolib.cpp",
+        "output": ".pio/build/attiny85/libe51/_8Bit-Mixtape-NEO-Lib/neolib.cpp.o"
+    },
+    {
+        "command": "/home/dusjagr/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/attiny85/src/blinkeshit3000.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=attiny85 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60119 -DARDUINO_AVR_ATTINYX5 -DF_CPU=16000000L -DARDUINO_AVR_ATTINYX5 -DCLOCK_SOURCE=8 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DNEOPIXELPORT=PORTB -Iinclude -Isrc -Ilib/_8Bit-Mixtape-NEO-Lib \"-I.pio/libdeps/attiny85/Adafruit NeoPixel\" -I.pio/libdeps/attiny85/OneWire -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/cores/tiny -I/home/dusjagr/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5 src/blinkeshit3000.cpp",
+        "directory": "/home/dusjagr/Documents/PlatformIO/Projects/251011-201954-attiny85",
+        "file": "src/blinkeshit3000.cpp",
+        "output": ".pio/build/attiny85/src/blinkeshit3000.cpp.o"
     }
 ]
