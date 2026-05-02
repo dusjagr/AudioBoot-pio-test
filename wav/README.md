@@ -543,3 +543,43 @@ Notes:
   Your browser does not support the audio element. Use the download link above.
 </audio>
 
+### 53 — Green Bouncing Ball
+*A cool ("geils") green ball bouncing around with a fading trail. Flashes brightly when hitting the walls.*
+
+<a href="visual-53-green-bouncing-ball.wav">Download</a>
+
+<audio controls>
+  <source src="visual-53-green-bouncing-ball.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 54 — Thai Logo
+*Scrolls a 10x4 Thai-like logo across the 5x4 display in blue and pink.*
+
+<a href="visual-54-thai-logo.wav">Download</a>
+
+<audio controls>
+  <source src="visual-54-thai-logo.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 55 — Random Strobe
+*A fast, random frequency strobe effect. Flashes the entire matrix brightly at changing, unpredictable intervals.*
+
+<a href="visual-55-random-strobe.wav">Download</a>
+
+<audio controls>
+  <source src="visual-55-random-strobe.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+
+### 56 — Clapping Music
+*Flashing pattern based on Steve Reich's "Clapping Music". Top half plays the static pattern, bottom half plays the shifting pattern.*
+
+<a href="visual-56-clapping-music.wav">Download</a>
+
+<audio controls>
+  <source src="visual-56-clapping-music.wav" type="audio/wav">
+  Your browser does not support the audio element. Use the download link above.
+</audio>
+

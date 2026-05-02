@@ -293,6 +293,18 @@ void loop(void) {
   case 52:
     matrixSchaffhauserBock(10000, 1000);
     break;
+  case 53:
+    matrixGreenBouncingBall(10000, 40);
+    break;
+  case 54:
+    matrixThaiLogo(10000, 100);
+    break;
+  case 55:
+    matrixRandomStrobe(10000);
+    break;
+  case 56:
+    matrixClappingMusic(10000, 140);
+    break;
   default:
     matrixCCCRocket(10000, 60);
     break;
@@ -313,6 +325,6 @@ void loop(void) {
   // matrixTechnoOrbit(15000, 40);
   // matrixRocketLiftoff(15000, 60);
   // matrixTetrisFrantic(10000, 120);
-  matrixSchaffhauserBock(10000, 1000);
+  matrixClappingMusic(10000, 140);
   // matrixCounter1to9(15000, 120);  // 15 s Zähler, 120 ms pro Frame
 }

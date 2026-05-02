@@ -77,6 +77,10 @@ VISUALS = [
     (50, "burning-sauna"),
     (51, "tetris-frantic"),
     (52, "schaffhauser-bock"),
+    (53, "green-bouncing-ball"),
+    (54, "thai-logo"),
+    (55, "random-strobe"),
+    (56, "clapping-music"),
 ]
 
 # Brightness levels to generate

@@ -87,6 +87,10 @@ void matrixCCCRocket(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixChaoticPink(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixSpringStorm(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixBlueBouncingBall(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixGreenBouncingBall(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixThaiLogo(uint16_t runtime_ms, uint16_t stepDelay_ms);
+void matrixRandomStrobe(uint16_t runtime_ms);
+void matrixClappingMusic(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixTechnoOrbit(uint16_t runtime_ms, uint16_t stepDelay_ms);
 void matrixRocketLiftoff(uint16_t runtime_ms, uint16_t stepDelay_ms);
 
@@ -3050,6 +3054,131 @@ inline void matrixKanjiScroll(uint16_t runtime_ms, uint16_t stepDelay_ms) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixThaiLogo
+   Scrolls a 10x4 Thai-like logo across the 5x4 display in blue and pink.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixThaiLogo(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  const uint8_t W = 5, H = 4;
+  const uint8_t GW = 10;
+  static const uint8_t PROGMEM glyph[40] = {
+    0,1,1,0,0, 0,0,0,1,0,
+    1,0,1,0,0, 0,0,1,0,1,
+    1,1,1,1,0, 0,0,1,0,1,
+    0,0,1,1,0, 0,0,0,1,1
+  };
+  const uint32_t colPink = pixels.Color(255, 40, 180);
+  const uint32_t colBlue = pixels.Color(40, 150, 255);
+  uint32_t start = millis();
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    for (int8_t ox = W; ox >= -(int8_t)GW; ox--) {
+      matrixFade(100);
+      for (uint8_t y = 0; y < H; y++) {
+        for (uint8_t gx = 0; gx < GW; gx++) {
+          uint8_t v = pgm_read_byte(&glyph[y * GW + gx]);
+          int8_t tx = (int8_t)gx + ox;
+          if (v && tx >= 0 && tx < (int8_t)W) {
+            uint32_t c = (gx < 5) ? colPink : colBlue;
+            matrixSet((uint8_t)tx, y, c);
+          }
+        }
+      }
+      pixels.show();
+      delay(stepDelay_ms);
+      if ((uint16_t)(millis() - start) >= runtime_ms) return;
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixRandomStrobe
+   A fast, random frequency strobe effect. 
+   Flashes the entire matrix brightly at changing, unpredictable intervals.
+   Params: runtime_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixRandomStrobe(uint16_t runtime_ms) {
+  uint32_t start = millis();
+  
+  // Tiny LFSR for fast pseudo-randomness
+  uint16_t lfsr = (uint16_t)(millis() ^ 0xABCD);
+  auto nextL = [&]() {
+    uint16_t b = (uint16_t)(((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1);
+    lfsr = (uint16_t)((lfsr >> 1) | (b << 15));
+    return lfsr;
+  };
+
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    matrixFill(pixels.Color(255, 255, 255));
+    pixels.show();
+    
+    uint16_t onMs = 5 + (nextL() % 10);
+    delay(onMs);
+    
+    matrixFill(0);
+    pixels.show();
+    
+    uint16_t offMs = 10 + (nextL() % 70);
+    delay(offMs);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixClappingMusic
+   Flashing pattern based on Steve Reich's "Clapping Music".
+   Top half plays the static pattern, bottom half plays the shifting pattern.
+   Params: runtime_ms, stepDelay_ms (duration of an 8th note rest)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixClappingMusic(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t pattern[12] = {1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0};
+  
+  uint16_t beatCount = 0;
+  uint8_t shift = 0;
+  
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    uint8_t beatInBar = beatCount % 12;
+    uint8_t bars = beatCount / 12;
+    
+    // Shift the second pattern every 4 bars
+    shift = (bars / 4) % 12;
+    
+    uint8_t p1 = pattern[beatInBar];
+    uint8_t p2 = pattern[(beatInBar + shift) % 12];
+    
+    matrixFill(0);
+    
+    if (p1) {
+      // Top half (Player 1)
+      for (uint8_t x=0; x<MATRIX_W; x++) {
+        matrixSet(x, 0, pixels.Color(255, 100, 40));
+        matrixSet(x, 1, pixels.Color(255, 100, 40));
+      }
+    }
+    
+    if (p2) {
+      // Bottom half (Player 2)
+      for (uint8_t x=0; x<MATRIX_W; x++) {
+        matrixSet(x, 2, pixels.Color(40, 100, 255));
+        matrixSet(x, 3, pixels.Color(40, 100, 255));
+      }
+    }
+    
+    pixels.show();
+    
+    // The visual "hit" is quick, the rest of the 8th note is dark
+    uint16_t flashDuration = stepDelay_ms / 2;
+    delay(flashDuration);
+    
+    matrixFill(0);
+    pixels.show();
+    
+    delay(stepDelay_ms - flashDuration);
+    
+    beatCount++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* matrixLarsonScanner
    Classic Cylon/Knight Rider scanner with symmetric fading tails.
    Params: runtime_ms, stepDelay_ms
@@ -4813,6 +4942,68 @@ inline void matrixBlueBouncingBall(uint16_t runtime_ms, uint16_t stepDelay_ms) {
        uint16_t tPhase = (millis() >> 2) & 0xFF; // fast phase
        uint8_t tri = (tPhase & 0x80) ? (uint8_t)(255 - ((tPhase & 0x7F) << 1)) : (uint8_t)((tPhase & 0x7F) << 1);
        uint32_t coreColor = pixels.Color((uint8_t)(tri/4), (uint8_t)(80 + tri/2), 255);
+       matrixSet(bx, by, coreColor);
+    }
+    
+    pixels.show();
+    delay(stepDelay_ms);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* matrixGreenBouncingBall
+   A cool ("geils") green ball bouncing around with a fading trail. 
+   Flashes brightly when hitting the walls.
+   Params: runtime_ms, stepDelay_ms
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+inline void matrixGreenBouncingBall(uint16_t runtime_ms, uint16_t stepDelay_ms) {
+  uint32_t start = millis();
+  const uint8_t W = MATRIX_W, H = MATRIX_H;
+  
+  // 8.8 fixed-point position (start in middle)
+  int16_t px = (W / 2) << 8;
+  int16_t py = (H / 2) << 8;
+  
+  // 8.8 fixed-point velocity 
+  int16_t vx = 114; // ~0.44 pixels per frame
+  int16_t vy = 77;  // ~0.30 pixels per frame
+  
+  matrixFill(0);
+  pixels.show();
+  
+  while ((uint16_t)(millis() - start) < runtime_ms) {
+    // Leave a long smooth liquid trail
+    matrixFade(100); 
+    
+    px += vx;
+    py += vy;
+    
+    bool hitX = false, hitY = false;
+    
+    // Bounds checking & bouncing
+    if (px <= 0) {
+      px = 0; vx = -vx; hitX = true;
+    } else if (px >= ((W - 1) << 8)) {
+      px = ((W - 1) << 8); vx = -vx; hitX = true;
+    }
+    
+    if (py <= 0) {
+      py = 0; vy = -vy; hitY = true;
+    } else if (py >= ((H - 1) << 8)) {
+      py = ((H - 1) << 8); vy = -vy; hitY = true;
+    }
+    
+    uint8_t bx = (uint8_t)(px >> 8);
+    uint8_t by = (uint8_t)(py >> 8);
+    
+    if (hitX || hitY) {
+       // Bright green/white flash on wall impact
+       matrixSet(bx, by, pixels.Color(150, 255, 150));
+    } else {
+       // Pulsing deep green core
+       uint16_t tPhase = (millis() >> 2) & 0xFF; // fast phase
+       uint8_t tri = (tPhase & 0x80) ? (uint8_t)(255 - ((tPhase & 0x7F) << 1)) : (uint8_t)((tPhase & 0x7F) << 1);
+       uint32_t coreColor = pixels.Color((uint8_t)(tri/4), 255, (uint8_t)(tri/4));
        matrixSet(bx, by, coreColor);
     }
     
